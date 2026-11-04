@@ -4,6 +4,18 @@ type GalleryImage = { file: string; url: string; label: string }
 
 const labels: Record<string, string> = {
   'intro-print.png': '상자 위에 펼쳐진 우리 동네',
+  'town-board.png': '네 시설을 잇는 동네 지도',
+  'library-building.png': '동네 도서관',
+  'school-building.png': '우리 동네 학교',
+  'community-building.png': '주민센터',
+  'park-building.png': '동네 공원',
+  'product-atlas.png': '동네에 도착하는 물품 아홉 가지',
+  'resident-atlas.png': '동네에서 만나는 여섯 사람',
+  'shade-canopy.png': '공원 행사의 이동식 그늘막',
+  'chapter-transition.png': '다음 임무를 여는 종이',
+  'progress-workbench.png': '상자를 준비하는 작업대',
+  'result-paper.png': '동네의 변화가 적히는 결과지',
+  'ending-neighborhood.png': '불이 켜진 저녁의 동네',
 }
 
 const images: GalleryImage[] = __GALLERY_FILES__.map((file) => ({

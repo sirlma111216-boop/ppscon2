@@ -1,0 +1,695 @@
+{
+  "schemaVersion": 1,
+  "generator": "OpenAI imagegen",
+  "pngCount": 13,
+  "atlasSpriteCount": 15,
+  "assets": [
+    {
+      "id": "intro-print",
+      "file": "intro-print.png",
+      "path": "assets/images/intro-print.png",
+      "kind": "background",
+      "label": "상자 위에 펼쳐진 우리 동네",
+      "usage": "시작 장면과 시작 버튼",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 3321938,
+      "sha256": "b964295616991e3452cc24049cd2a030a7bf40c7a046de0c748ce54f7cfe9e86",
+      "alphaZeroPixels": 0,
+      "alphaZeroRatio": 0.0,
+      "domSafeRegion": {
+        "location": "왼쪽 위",
+        "rectNormalized": [
+          0.045,
+          0.06,
+          0.29,
+          0.34
+        ],
+        "content": "제목·한 문장·시작 버튼"
+      }
+    },
+    {
+      "id": "town-board",
+      "file": "town-board.png",
+      "path": "assets/images/town-board.png",
+      "kind": "map",
+      "label": "네 시설을 잇는 동네 지도",
+      "usage": "시설·물품·주민 레이어의 바탕",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 3013976,
+      "sha256": "8073dfee2b904c82d110afed56f03e3192e2eb0cb7b9869ba57e0b6a11609132",
+      "alphaZeroPixels": 0,
+      "alphaZeroRatio": 0.0
+    },
+    {
+      "id": "library-building",
+      "file": "library-building.png",
+      "path": "assets/images/library-building.png",
+      "kind": "building",
+      "label": "동네 도서관",
+      "usage": "임무 1의 독서·프로그램 공간",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "bytes": 2316231,
+      "sha256": "cfe96b535307b45454aea05f8470386bd372cd381ef3876c1f52a5f98cb0bcb9",
+      "alphaZeroPixels": 669755,
+      "alphaZeroRatio": 0.42563637,
+      "placement": {
+        "facility": "library",
+        "slot": "왼쪽 위",
+        "boardAnchorNormalized": [
+          0.25,
+          0.36
+        ],
+        "spriteAnchorNormalized": [
+          0.5,
+          0.865
+        ],
+        "widthRatioToBoard": 0.32
+      }
+    },
+    {
+      "id": "school-building",
+      "file": "school-building.png",
+      "path": "assets/images/school-building.png",
+      "kind": "building",
+      "label": "우리 동네 학교",
+      "usage": "임무 1의 높이 조절 책상과 임무 3의 공유 학습 공간",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "bytes": 2344513,
+      "sha256": "0833b73e1aa5d1563db0890777d10ffeddf857311b4d5e0558374f29fb783804",
+      "alphaZeroPixels": 561767,
+      "alphaZeroRatio": 0.35700886,
+      "placement": {
+        "facility": "school",
+        "slot": "오른쪽 위",
+        "boardAnchorNormalized": [
+          0.75,
+          0.42
+        ],
+        "spriteAnchorNormalized": [
+          0.5,
+          0.92
+        ],
+        "widthRatioToBoard": 0.33
+      }
+    },
+    {
+      "id": "community-building",
+      "file": "community-building.png",
+      "path": "assets/images/community-building.png",
+      "kind": "building",
+      "label": "주민센터",
+      "usage": "임무 2의 첫 안내 도구 시범사용·개선·재확인",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "bytes": 2269296,
+      "sha256": "fa534f1d5255fcee03a1e508a9d43ccc02f27e665a137855125bd868bf935d2e",
+      "alphaZeroPixels": 618776,
+      "alphaZeroRatio": 0.39323868,
+      "placement": {
+        "facility": "community",
+        "slot": "왼쪽 아래",
+        "boardAnchorNormalized": [
+          0.235,
+          0.755
+        ],
+        "spriteAnchorNormalized": [
+          0.5,
+          0.915
+        ],
+        "widthRatioToBoard": 0.32
+      }
+    },
+    {
+      "id": "park-building",
+      "file": "park-building.png",
+      "path": "assets/images/park-building.png",
+      "kind": "building",
+      "label": "동네 공원",
+      "usage": "임무 2의 길찾기와 임무 3의 행사 쉼터",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "bytes": 1912999,
+      "sha256": "148f1afc628937130cbaa36cec352d86ef8e940bc0813ec7d504714e847ba073",
+      "alphaZeroPixels": 802558,
+      "alphaZeroRatio": 0.51003408,
+      "placement": {
+        "facility": "park",
+        "slot": "오른쪽 아래",
+        "boardAnchorNormalized": [
+          0.75,
+          0.825
+        ],
+        "spriteAnchorNormalized": [
+          0.5,
+          0.95
+        ],
+        "widthRatioToBoard": 0.34
+      }
+    },
+    {
+      "id": "product-atlas",
+      "file": "product-atlas.png",
+      "path": "assets/images/product-atlas.png",
+      "kind": "atlas",
+      "label": "동네에 도착하는 물품 아홉 가지",
+      "usage": "물품 비교·사용과 납품 연출",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "bytes": 1539467,
+      "sha256": "4cbda3aee3db4f27616e382127e408a02a5df4bbcb91dedab4ee374baf8d5fee",
+      "alphaZeroPixels": 979214,
+      "alphaZeroRatio": 0.62270527,
+      "grid": {
+        "columns": 3,
+        "rows": 3,
+        "splitX": [
+          424,
+          818
+        ],
+        "splitY": [
+          412,
+          812
+        ]
+      },
+      "sprites": [
+        {
+          "id": "foldTable",
+          "label": "접이식 활동 테이블",
+          "cropRect": [
+            23,
+            16,
+            401,
+            396
+          ],
+          "subjectRect": [
+            58,
+            103,
+            318,
+            279
+          ],
+          "missionIds": [
+            1
+          ],
+          "optionIds": [
+            "L1"
+          ],
+          "usage": "접힘 동작으로 프로그램 바닥 공간 확보"
+        },
+        {
+          "id": "mobileTable",
+          "label": "이동 모듈 테이블",
+          "cropRect": [
+            425,
+            0,
+            393,
+            412
+          ],
+          "subjectRect": [
+            439,
+            102,
+            364,
+            268
+          ],
+          "missionIds": [
+            1
+          ],
+          "optionIds": [
+            "L2"
+          ],
+          "usage": "바퀴 이동과 모아두기로 배치 전환"
+        },
+        {
+          "id": "compactDesk",
+          "label": "소형 높이 조절 책상",
+          "cropRect": [
+            819,
+            0,
+            417,
+            412
+          ],
+          "subjectRect": [
+            887,
+            69,
+            290,
+            316
+          ],
+          "missionIds": [
+            1,
+            3
+          ],
+          "optionIds": [
+            "S1",
+            "E1"
+          ],
+          "usage": "수동 높이 설정과 여유 있는 좌석 간격"
+        },
+        {
+          "id": "wideDesk",
+          "label": "넓은 높이 조절 책상",
+          "cropRect": [
+            0,
+            412,
+            424,
+            400
+          ],
+          "subjectRect": [
+            40,
+            487,
+            362,
+            288
+          ],
+          "missionIds": [
+            1,
+            3
+          ],
+          "optionIds": [
+            "S2",
+            "E2"
+          ],
+          "usage": "높이 조절 뒤 넓은 상판에 학습 재료 전개"
+        },
+        {
+          "id": "kiosk",
+          "label": "안내 도구",
+          "cropRect": [
+            425,
+            412,
+            393,
+            400
+          ],
+          "subjectRect": [
+            486,
+            439,
+            276,
+            353
+          ],
+          "missionIds": [
+            2
+          ],
+          "optionIds": [
+            "I1",
+            "I2"
+          ],
+          "usage": "공통 기기. I1의 문구와 I2의 메뉴 배치·개선은 각각 DOM으로 표시"
+        },
+        {
+          "id": "portableSign",
+          "label": "이동 안내판",
+          "cropRect": [
+            819,
+            412,
+            421,
+            400
+          ],
+          "subjectRect": [
+            894,
+            448,
+            281,
+            344
+          ],
+          "missionIds": [
+            2
+          ],
+          "optionIds": [
+            "G1",
+            "G2"
+          ],
+          "usage": "공통 안내판. G1은 현장 조립, G2는 완성형 도착"
+        },
+        {
+          "id": "bench",
+          "label": "공원 벤치",
+          "cropRect": [
+            0,
+            812,
+            424,
+            419
+          ],
+          "subjectRect": [
+            24,
+            901,
+            380,
+            273
+          ],
+          "missionIds": [
+            2,
+            3
+          ],
+          "optionIds": [],
+          "usage": "공원 방문 경로의 기존 좌석. 새 그늘막 옆 생활 장면에서 선택적으로 사용"
+        },
+        {
+          "id": "solarLamp",
+          "label": "공원 태양광 등",
+          "cropRect": [
+            425,
+            812,
+            391,
+            442
+          ],
+          "subjectRect": [
+            520,
+            835,
+            191,
+            363
+          ],
+          "missionIds": [
+            3
+          ],
+          "optionIds": [],
+          "usage": "공원 저녁의 기존 환경 소품. 구매·제도 판정에 관여하지 않음"
+        },
+        {
+          "id": "deliveryVan",
+          "label": "납품 차량",
+          "cropRect": [
+            819,
+            812,
+            417,
+            422
+          ],
+          "subjectRect": [
+            831,
+            873,
+            392,
+            300
+          ],
+          "missionIds": [
+            1,
+            2,
+            3
+          ],
+          "optionIds": [],
+          "usage": "해당 임무의 설치 일정에 맞춰 물품이 도착하는 짧은 연출"
+        }
+      ],
+      "cropCheck": {
+        "alphaNonzeroPixels": 593302,
+        "uncoveredAlphaNonzeroPixels": 0,
+        "overlapPixels": 0
+      }
+    },
+    {
+      "id": "resident-atlas",
+      "file": "resident-atlas.png",
+      "path": "assets/images/resident-atlas.png",
+      "kind": "atlas",
+      "label": "동네에서 만나는 여섯 사람",
+      "usage": "시민의 이용, 현장 관찰, 공급자의 개선",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "bytes": 1945424,
+      "sha256": "585485883377987263e75506b2a42f2b6fa648a74395e4f2cf8892fcea956d44",
+      "alphaZeroPixels": 1177699,
+      "alphaZeroRatio": 0.74876086,
+      "grid": {
+        "columns": 3,
+        "rows": 2,
+        "splitX": [
+          570,
+          970
+        ],
+        "splitY": [
+          512
+        ]
+      },
+      "sprites": [
+        {
+          "id": "walkingAdult",
+          "label": "걸어가는 주민",
+          "cropRect": [
+            0,
+            33,
+            556,
+            461
+          ],
+          "subjectRect": [
+            177,
+            36,
+            243,
+            455
+          ],
+          "missionIds": [
+            1,
+            2,
+            3
+          ],
+          "optionIds": [],
+          "usage": "도서관 방문·안내 도구 사용 후 목적지 이동·공원 행사 방문"
+        },
+        {
+          "id": "child",
+          "label": "가방을 멘 학생",
+          "cropRect": [
+            583,
+            13,
+            377,
+            477
+          ],
+          "subjectRect": [
+            682,
+            151,
+            149,
+            336
+          ],
+          "missionIds": [
+            1,
+            3
+          ],
+          "optionIds": [],
+          "usage": "독서와 학습 책상 높이·상판 사용"
+        },
+        {
+          "id": "readingElder",
+          "label": "책 읽는 주민",
+          "cropRect": [
+            1007,
+            34,
+            519,
+            460
+          ],
+          "subjectRect": [
+            1108,
+            84,
+            281,
+            404
+          ],
+          "missionIds": [
+            1,
+            3
+          ],
+          "optionIds": [],
+          "usage": "도서관 독서와 행사 쉼터 이용. 의자가 포함된 그림"
+        },
+        {
+          "id": "wheelchairUser",
+          "label": "휠체어를 이용하는 주민",
+          "cropRect": [
+            103,
+            527,
+            459,
+            481
+          ],
+          "subjectRect": [
+            130,
+            569,
+            358,
+            437
+          ],
+          "missionIds": [
+            1,
+            2,
+            3
+          ],
+          "optionIds": [],
+          "usage": "책상 아래 공간·현장 길찾기·공원 행사 참여"
+        },
+        {
+          "id": "staff",
+          "label": "현장 담당자",
+          "cropRect": [
+            639,
+            529,
+            255,
+            481
+          ],
+          "subjectRect": [
+            682,
+            534,
+            195,
+            472
+          ],
+          "missionIds": [
+            1,
+            2,
+            3
+          ],
+          "optionIds": [],
+          "usage": "설치 확인·이용 관찰·개선 뒤 재확인"
+        },
+        {
+          "id": "supplier",
+          "label": "상자를 든 공급자",
+          "cropRect": [
+            1009,
+            529,
+            505,
+            479
+          ],
+          "subjectRect": [
+            1131,
+            534,
+            255,
+            472
+          ],
+          "missionIds": [
+            1,
+            2,
+            3
+          ],
+          "optionIds": [],
+          "usage": "물품 전달과 시범사용 피드백에 따른 개선"
+        }
+      ],
+      "cropCheck": {
+        "alphaNonzeroPixels": 395165,
+        "uncoveredAlphaNonzeroPixels": 0,
+        "overlapPixels": 0
+      }
+    },
+    {
+      "id": "shade-canopy",
+      "file": "shade-canopy.png",
+      "path": "assets/images/shade-canopy.png",
+      "kind": "prop",
+      "label": "공원 행사의 이동식 그늘막",
+      "usage": "임무 3의 P1·P2 이동식 쉼 공간",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "bytes": 1006568,
+      "sha256": "19dc40bc9cfbe84b643c90d407ddfd1ca2259bfbc6c1ad68a5c0a60048c3b26a",
+      "alphaZeroPixels": 1165775,
+      "alphaZeroRatio": 0.74086231,
+      "missionIds": [
+        3
+      ],
+      "optionIds": [
+        "P1",
+        "P2"
+      ]
+    },
+    {
+      "id": "chapter-transition",
+      "file": "chapter-transition.png",
+      "path": "assets/images/chapter-transition.png",
+      "kind": "background",
+      "label": "다음 임무를 여는 종이",
+      "usage": "임무 전환 목표·계속 버튼",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 3128413,
+      "sha256": "316c459c483e957cb81b6c0098bc5da36a6d0301511e21fa1410c2b9e688d8ee",
+      "alphaZeroPixels": 0,
+      "alphaZeroRatio": 0.0,
+      "domSafeRegion": {
+        "location": "가운데 종이",
+        "rectNormalized": [
+          0.205,
+          0.21,
+          0.59,
+          0.56
+        ],
+        "content": "임무 이름·목표·계속 버튼"
+      }
+    },
+    {
+      "id": "progress-workbench",
+      "file": "progress-workbench.png",
+      "path": "assets/images/progress-workbench.png",
+      "kind": "background",
+      "label": "상자를 준비하는 작업대",
+      "usage": "진행 중인 실제 납품·검수 단계",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2893847,
+      "sha256": "ca0a12590d7b030d2a292dcacc7c6f32b0de468d0c3b37d45f63a73bf4bdc3ee",
+      "alphaZeroPixels": 0,
+      "alphaZeroRatio": 0.0,
+      "domSafeRegion": {
+        "location": "작업대 위쪽",
+        "rectNormalized": [
+          0.09,
+          0.08,
+          0.82,
+          0.43
+        ],
+        "content": "일정·납품·관찰·검수의 현재 단계"
+      }
+    },
+    {
+      "id": "result-paper",
+      "file": "result-paper.png",
+      "path": "assets/images/result-paper.png",
+      "kind": "background",
+      "label": "동네의 변화가 적히는 결과지",
+      "usage": "임무 결과와 다음 행동",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 2413477,
+      "sha256": "a3c961685da65dbd5f1a19467b6869b15bc05e04f769464075561e56d4f55245",
+      "alphaZeroPixels": 0,
+      "alphaZeroRatio": 0.0,
+      "domSafeRegion": {
+        "location": "왼쪽 종이",
+        "rectNormalized": [
+          0.07,
+          0.115,
+          0.57,
+          0.75
+        ],
+        "content": "충족한 조건·선택 근거·남은 예산·다음 행동"
+      }
+    },
+    {
+      "id": "ending-neighborhood",
+      "file": "ending-neighborhood.png",
+      "path": "assets/images/ending-neighborhood.png",
+      "kind": "background",
+      "label": "불이 켜진 저녁의 동네",
+      "usage": "엔딩 장면과 개인별 결과 요약",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "bytes": 3249807,
+      "sha256": "ac9b74c34f1c8a825c4894bd4e1c93f6a0d48f4ca2e6a2100d3cbb16cd47be96",
+      "alphaZeroPixels": 0,
+      "alphaZeroRatio": 0.0,
+      "domSafeRegion": {
+        "location": "왼쪽 위의 짙은 하늘",
+        "rectNormalized": [
+          0.045,
+          0.07,
+          0.285,
+          0.25
+        ],
+        "content": "밝은 글씨로 엔딩 제목·요약"
+      }
+    }
+  ]
+}
