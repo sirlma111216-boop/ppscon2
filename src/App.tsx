@@ -1,160 +1,225 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { audio } from './audio/AudioManager'
+import type { MusicId } from './audio/AudioManager'
+import { BG, BUILDING, CANOPY, preload, spriteUrl } from './assets/images'
+import { SPRITES } from './assets/sprites.generated'
+import type { SpriteId } from './assets/sprites.generated'
+import { SettingsDialog } from './components/SettingsDialog'
+import { getMission } from './game/missions'
+import { clearSave, getBrowserStorage, hasProgress, loadSave, loadSettings, writeSave, writeSettings } from './game/persistence'
+import type { Settings } from './game/persistence'
+import { gameReducer, initialState } from './game/reducer'
+import type { GameState, MissionId } from './game/types'
+import { ChapterScene } from './scenes/ChapterScene'
+import { EndingScene } from './scenes/EndingScene'
+import { IntroScene } from './scenes/IntroScene'
+import { ExecutionView, PlanningView, UsageView } from './scenes/PlayScene'
+import { ResultScene } from './scenes/ResultScene'
 
-type GalleryImage = { file: string; url: string; label: string }
+const storage = getBrowserStorage()
 
-const labels: Record<string, string> = {
-  'intro-print.png': '상자 위에 펼쳐진 우리 동네',
-  'town-board.png': '네 시설을 잇는 동네 지도',
-  'library-building.png': '동네 도서관',
-  'school-building.png': '우리 동네 학교',
-  'community-building.png': '주민센터',
-  'park-building.png': '동네 공원',
-  'product-atlas.png': '동네에 도착하는 물품 아홉 가지',
-  'resident-atlas.png': '동네에서 만나는 여섯 사람',
-  'shade-canopy.png': '공원 행사의 이동식 그늘막',
-  'chapter-transition.png': '다음 임무를 여는 종이',
-  'progress-workbench.png': '상자를 준비하는 작업대',
-  'result-paper.png': '동네의 변화가 적히는 결과지',
-  'ending-neighborhood.png': '불이 켜진 저녁의 동네',
+function loadInitialState(): GameState {
+  // 저장이 있어도 늘 처음 화면에서 시작하고, '이어하기'로 돌아간다.
+  const saved = loadSave(storage)
+  return saved ? { ...saved, screen: 'intro' } : initialState
 }
 
-const images: GalleryImage[] = __GALLERY_FILES__.map((file) => ({
-  file,
-  url: `${import.meta.env.BASE_URL}assets/images/${encodeURIComponent(file)}`,
-  label: labels[file] ?? file.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' '),
-})).sort((a, b) => Number(b.file === 'intro-print.png') - Number(a.file === 'intro-print.png'))
-
-function Lightbox({ index, onClose, onStep }: {
-  index: number
-  onClose: () => void
-  onStep: (offset: number) => void
-}) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const image = images[index]
-
+function usePrefersReducedMotion(): boolean {
+  const [prefers, setPrefers] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
   useEffect(() => {
-    const dialog = dialogRef.current
-    dialog?.showModal()
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      dialog?.close()
-      document.body.style.overflow = previousOverflow
-    }
+    const query = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+    if (!query) return
+    const update = () => setPrefers(query.matches)
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
   }, [])
+  return prefers
+}
 
-  return (
-    <dialog
-      ref={dialogRef}
-      className="lightbox"
-      aria-labelledby="lightbox-title"
-      aria-describedby="lightbox-hint"
-      onCancel={(event) => { event.preventDefault(); onClose() }}
-      onClick={(event) => { if (event.target === event.currentTarget) onClose() }}
-      onKeyDown={(event) => {
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-          event.preventDefault()
-          onStep(event.key === 'ArrowLeft' ? -1 : 1)
-        }
-      }}
-    >
-      <div className="lightbox-content">
-        <div className="lightbox-heading">
-          <div>
-            <p className="eyebrow">이미지 크게 보기 · {index + 1} / {images.length}</p>
-            <h2 id="lightbox-title">{image.label}</h2>
-          </div>
-          <button className="button button-secondary" onClick={onClose} autoFocus>닫기 <span aria-hidden="true">×</span></button>
-        </div>
-        <div className="lightbox-image-wrap">
-          <img src={image.url} alt={image.label} className="lightbox-image" />
-        </div>
-        <div className="lightbox-footer">
-          <div>
-            <p className="filename">{image.file}</p>
-            <p id="lightbox-hint">좌우 방향키로 이동 · Esc로 닫기</p>
-          </div>
-          <div className="lightbox-actions">
-            <button className="button button-secondary" onClick={() => onStep(-1)} disabled={images.length < 2} aria-label="이전 이미지">← 이전</button>
-            <button className="button button-secondary" onClick={() => onStep(1)} disabled={images.length < 2} aria-label="다음 이미지">다음 →</button>
-            <a className="button button-primary" href={image.url} download={image.file}>이미지 저장</a>
-          </div>
-        </div>
-      </div>
-    </dialog>
-  )
+function musicFor(state: GameState): MusicId | null {
+  if (state.screen === 'intro') return 'music.intro'
+  if (state.screen === 'ending') return 'music.ending'
+  if (state.screen === 'chapter' || !state.run) return 'music.plan'
+  switch (state.run.phase) {
+    case 'executing':
+    case 'observing':
+    case 'verifying':
+      return 'music.execute'
+    case 'result':
+      return 'music.result'
+    default:
+      return 'music.plan'
+  }
 }
 
 export default function App() {
-  const [selected, setSelected] = useState<number | null>(null)
-  const closeLightbox = useCallback(() => setSelected(null), [])
-  const stepImage = useCallback((offset: number) => {
-    setSelected((current) => current === null ? null : (current + offset + images.length) % images.length)
+  const [state, dispatch] = useReducer(gameReducer, undefined, loadInitialState)
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(storage))
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [saveWorks, setSaveWorks] = useState(storage !== null)
+  // 다시 계획할 때마다 올려, 계획 화면의 임시 상태(보던 시설·미리보기·집은 작업)를 비운다.
+  const [planSerial, setPlanSerial] = useState(0)
+  const prefersReduced = usePrefersReducedMotion()
+  const reducedMotion = settings.reducedMotion ?? prefersReduced
+  const skipSave = useRef(true)
+  const run = state.run
+  const mission = run ? getMission(run.missionId) : null
+
+  // 설정 반영: 음량과 '동작 줄이기'
+  useEffect(() => {
+    audio.setVolumes({ muted: settings.muted, music: settings.music, sfx: settings.sfx, ambience: settings.ambience })
+    writeSettings(storage, settings)
+  }, [settings])
+
+  useEffect(() => {
+    document.documentElement.dataset.motion = reducedMotion ? 'reduced' : 'full'
+  }, [reducedMotion])
+
+  // 오디오는 첫 사용자 입력 뒤에만 시작한다.
+  useEffect(() => {
+    const start = () => {
+      void audio.start()
+    }
+    window.addEventListener('pointerdown', start, { once: true })
+    window.addEventListener('keydown', start, { once: true })
+    return () => {
+      window.removeEventListener('pointerdown', start)
+      window.removeEventListener('keydown', start)
+    }
   }, [])
-  const hero = images[0]
+
+  const music = musicFor(state)
+  useEffect(() => {
+    audio.setMusic(music)
+    if (state.screen !== 'play') audio.setAmbience(null)
+  }, [music, state.screen])
+
+  // 자동 저장: 임무 경계, 계획 변경, 확정 같은 안정적인 시점에만 쓴다(실행 연출의 매 단계에는 쓰지 않는다).
+  const phase = run?.phase
+  const missionId = run?.missionId
+  const plan = run?.plan
+  const previewed = run?.previewed
+  const compareOpened = run?.compareOpened
+  const results = state.results
+  useEffect(() => {
+    if (skipSave.current) {
+      skipSave.current = false
+      return
+    }
+    if (!hasProgress(state)) return
+    setSaveWorks(writeSave(storage, state))
+    // state 전체가 아니라 저장 내용이 달라지는 값만 본다.
+  }, [phase === 'executing' || phase === 'observing' || phase === 'verifying' ? 'confirmed' : phase, missionId, plan, previewed, compareOpened, results])
+
+  // 다음 화면에서 쓸 그림을 미리 받는다. 처음에는 인트로만, 임무에 들어가면 지도·건물·소품을 받는다.
+  useEffect(() => {
+    if (state.screen === 'intro') preload([BG.chapter, BG.town])
+    if (state.screen === 'chapter' || state.screen === 'play') {
+      preload([BG.town, BG.progress, BG.result, ...Object.values(BUILDING), ...(Object.keys(SPRITES) as SpriteId[]).map(spriteUrl)])
+      if (missionId === 'M3') preload([CANOPY, BG.ending])
+    }
+  }, [state.screen, missionId])
+
+  const openSettings = useCallback(() => setSettingsOpen(true), [])
+  const openMission = useCallback((id: MissionId) => dispatch({ type: 'OPEN_MISSION', missionId: id }), [])
+
+  const startNew = () => {
+    clearSave(storage)
+    setPlanSerial((serial) => serial + 1)
+    dispatch({ type: 'START_NEW' })
+  }
+
+  const replan = () => {
+    audio.playSfx('session.reset')
+    setPlanSerial((serial) => serial + 1)
+    dispatch({ type: 'REPLAN_MISSION' })
+  }
+
+  const renderScreen = () => {
+    if (state.screen === 'intro') {
+      return (
+        <IntroScene
+          state={state}
+          hasProgress={hasProgress(state)}
+          onStart={startNew}
+          onContinue={() => dispatch({ type: 'RESUME' })}
+          onOpenMission={openMission}
+          onOpenSettings={openSettings}
+        />
+      )
+    }
+    if (state.screen === 'ending') {
+      return <EndingScene state={state} onOpenMission={openMission} onGoIntro={() => dispatch({ type: 'GO_INTRO' })} onOpenSettings={openSettings} />
+    }
+    if (!run || !mission) return null
+    if (state.screen === 'chapter' || run.phase === 'briefing') {
+      return <ChapterScene mission={mission} onBegin={() => dispatch({ type: 'BEGIN_PLANNING' })} onOpenSettings={openSettings} />
+    }
+    const viewProps = { state, run, dispatch, reducedMotion, onOpenSettings: openSettings }
+    switch (run.phase) {
+      case 'planning':
+        return <PlanningView key={`${run.missionId}:${planSerial}`} {...viewProps} />
+      case 'executing':
+      case 'observing':
+        return <ExecutionView key={run.missionId} {...viewProps} />
+      case 'verifying':
+        return <UsageView key={run.missionId} {...viewProps} />
+      case 'result': {
+        const result = state.results[run.missionId]
+        if (!result) return null
+        return (
+          <ResultScene
+            mission={mission}
+            run={run}
+            result={result}
+            onNext={() => dispatch({ type: 'NEXT_MISSION' })}
+            onReplan={replan}
+            onOpenSettings={openSettings}
+          />
+        )
+      }
+    }
+  }
+
+  const inMission = state.screen === 'play' && run !== null && run.phase !== 'result'
 
   return (
     <>
-      <a className="skip-link" href="#main">본문으로 이동</a>
-      <header className="site-header">
-        <a className="wordmark" href="#main" aria-label="내일을 여는 상자 처음으로">
-          <span className="wordmark-symbol" aria-hidden="true">＋</span>
-          <span>내일을 여는 상자</span>
-        </a>
-        <a className="header-link" href="#gallery">이미지 자료실 <span aria-hidden="true">↗</span></a>
-      </header>
-
-      <main id="main" tabIndex={-1}>
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <p className="status"><span className="status-dot" aria-hidden="true" />개발 준비 자료 · 게임 개발 전</p>
-            <h1 id="hero-title">작은 선택으로,<br />동네의 내일을<br /><span>열어갑니다.</span></h1>
-            <p className="hero-description">필요한 곳에, 필요한 물건이 닿는 이야기.<br />《내일을 여는 상자》의 이미지와 분위기를<br className="desktop-break" /> 한곳에 모았습니다.</p>
-            <a className="button button-primary hero-cta" href="#gallery">이미지 둘러보기 <span aria-hidden="true">↓</span></a>
-            <p className="hero-note">현재는 개발용 이미지 자료실입니다.<br />게임 플레이는 아직 제공되지 않습니다.</p>
-          </div>
-          {hero && <figure className="hero-art">
-            <button className="hero-art-button" onClick={() => setSelected(0)} aria-label={`${hero.label} 크게 보기`}>
-              <img src={hero.url} alt={hero.label} loading="eager" fetchPriority="high" width="1536" height="1024" />
-              <span className="image-zoom">크게 보기 <span aria-hidden="true">↗</span></span>
-            </button>
-            <figcaption>첫 장면의 분위기 · 따뜻한 종이와 인쇄의 질감</figcaption>
-          </figure>}
-        </section>
-
-        <section className="gallery-section" id="gallery" aria-labelledby="gallery-title">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">시각 자료 모음</p>
-              <h2 id="gallery-title">상자 안의 장면들<span className="count">{images.length}</span></h2>
-            </div>
-            <p className="section-description">이미지를 선택하면 크게 볼 수 있습니다.<br />게임 화면에 적용하기 전의 제작 자산입니다.</p>
-          </div>
-
-          {images.length ? <div className="gallery-grid">
-            {images.map((image, index) => <article className="asset-card" key={image.file}>
-              <button className="asset-button" onClick={() => setSelected(index)} aria-label={`${image.label} 크게 보기`}>
-                <div className="asset-preview">
-                  <img src={image.url} alt="" loading="lazy" decoding="async" width="1536" height="1024" />
-                  <span className="asset-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-                  <span className="asset-open" aria-hidden="true">↗</span>
-                </div>
-                <div className="asset-copy">
-                  <h3>{image.label}</h3>
-                  <p className="filename">{image.file}</p>
-                </div>
-              </button>
-            </article>)}
-          </div> : <p className="empty-state">이미지를 준비하고 있습니다.</p>}
-        </section>
-      </main>
-
-      <footer className="site-footer">
-        <div><strong>내일을 여는 상자</strong><p>우리 동네의 내일을 준비하는 작은 선택.</p></div>
-        <p>개발 준비 자료<br />조달청 공모전 출품 준비 프로젝트 · 비공식</p>
-      </footer>
-
-      {selected !== null && <Lightbox index={selected} onClose={closeLightbox} onStep={stepImage} />}
+      {renderScreen()}
+      {settingsOpen && (
+        <SettingsDialog
+          settings={settings}
+          reducedMotion={reducedMotion}
+          saveWorks={saveWorks}
+          onChange={setSettings}
+          onClose={() => setSettingsOpen(false)}
+          onReplan={
+            inMission
+              ? () => {
+                  replan()
+                  setSettingsOpen(false)
+                }
+              : undefined
+          }
+          onGoIntro={
+            state.screen !== 'intro'
+              ? () => {
+                  dispatch({ type: 'GO_INTRO' })
+                  setSettingsOpen(false)
+                }
+              : undefined
+          }
+          onNewGame={
+            hasProgress(state)
+              ? () => {
+                  audio.playSfx('session.reset')
+                  startNew()
+                  setSettingsOpen(false)
+                }
+              : undefined
+          }
+        />
+      )}
     </>
   )
 }

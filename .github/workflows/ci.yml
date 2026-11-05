@@ -27,5 +27,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - run: npm test
       - run: npm run build
       # Deployment is handled by Cloudflare Pages Git integration, not this workflow.

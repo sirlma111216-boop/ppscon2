@@ -1,9 +1,9 @@
 {
   "name": "ppscon",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
-  "description": "내일을 여는 상자 — 게임 개발 전 이미지 자료실",
+  "description": "내일을 여는 상자 — 수요에 맞는 공공구매를 체험하는 웹 게임",
   "engines": {
     "node": "24.x",
     "npm": ">=11"
@@ -11,8 +11,11 @@
   "scripts": {
     "dev": "vite",
     "check": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.ts\"",
     "build": "npm run check && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "assets": "node scripts/build-assets.mjs",
+    "e2e": "node scripts/e2e-playthrough.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
@@ -23,6 +26,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.2.1",
+    "sharp": "0.35.5",
     "typescript": "7.0.2",
     "vite": "8.3.5"
   }

@@ -47,7 +47,9 @@
 | 기획·개발 지침 | 작성 | AI가 초안·정책 정합성·수치 검토, 제작자가 방향·1인 제작·스타일 요구 제시 |
 | 이미지 PNG | 생성 및 선별 | OpenAI imagegen 내장 도구. 한국 동네 리소그래프 종이 무대 방향, 프롬프트·참조·수정 기록 별도 보관 |
 | 음악·효과음·환경음 | 프롬프트만 작성 | ElevenLabs용 제작 명세. 실제 음원 생성·청음·편집은 미수행 |
-| 게임 코드 | 아직 미구현 | 현재 코드는 에셋 갤러리·배포 준비. Claude Code에서 게임 구현 예정 |
+| 게임 코드 | 구현(2026-11-05) | Claude Code(모델 Claude Fable 5.1)가 이 저장소의 지침·명세·에셋을 읽고 게임 코드·테스트·점검 스크립트를 작성. 제작자가 방향과 자료를 제시하고 ‘음원은 나중에 제공’으로 범위를 정함 |
+| 게임용 이미지 파생본 | 생성(2026-11-05) | 위 원본 PNG를 `scripts/build-assets.mjs`(sharp 0.35.5)로 WebP 변환·자르기·낮은 알파 정리. 새 그림을 생성하지 않음. 대응표: `IMAGE_DERIVATIVES.md` |
+| 범용 조각 그림(SVG) | 작성(2026-11-05) | 전용 그림이 없는 부적격 제시안 6종과 학습 재료·해·파비콘을 Claude Code가 코드(SVG 도형)로 그림. 이미지 생성 모델은 쓰지 않음. 위치: `src/components/GenericProp.tsx`, `public/favicon.svg` |
 
 Google Imagen을 사용했다고 표기하지 않는다. 실제 이미지 도구는 이 세션의 OpenAI imagegen이며 정확한 내부 모델 버전은 도구가 노출하지 않아 임의로 적지 않는다.
 
@@ -69,6 +71,20 @@ Google Imagen을 사용했다고 표기하지 않는다. 실제 이미지 도구
 게임 / 시연 영상 / 주최 측 홍보 재사용 범위:
 최종 파일 해시와 원본 위치:
 실제 검사 결과:
+```
+
+#### 게임 코드에 대해 채운 기록
+
+```text
+자산/파일 ID: src/, tests/, scripts/build-assets.mjs, scripts/e2e-playthrough.mjs, index.html
+실제 생성·제작 도구와 버전: Claude Code, 모델 Claude Fable 5.1 (claude-fable-5-1)
+제작 날짜: 2026-11-05
+프롬프트/참조 원본: PROMPT_CLAUDE_CODE.md, CLAUDE.md, DESIGN.md, docs/GAME_SPEC.md, docs/IMAGE_ASSETS.md, 두 매니페스트
+사람이 수정·선별한 내용: (제작자가 플레이해 보고 고친 내용을 여기에 적는다. 2026-11-05 현재 없음)
+생성 당시 사용 요금제와 권리 확인 자료: (제작자가 확인해 적는다)
+게임 / 시연 영상 / 주최 측 홍보 재사용 범위: (제작자가 확인해 적는다)
+최종 파일 해시와 원본 위치: 저장소 커밋으로 관리(이번 작업은 아직 커밋·푸시하지 않음)
+실제 검사 결과: docs/DELIVERY_STATUS.md
 ```
 
 토큰·비밀번호·개인정보·서명한 신청서는 이 기록에 포함하지 않는다. 음원은 `AUDIO_ELEVENLABS.md`의 매체별 권리 확인을 완료한 뒤 사용한다.
