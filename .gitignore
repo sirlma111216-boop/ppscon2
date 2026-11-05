@@ -11,3 +11,5 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 e2e-shots/
+.npm-cache/
+.preview/

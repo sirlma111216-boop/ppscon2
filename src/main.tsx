@@ -11,8 +11,8 @@ window.addEventListener('hashchange', () => window.location.reload())
 const Screen = isGallery
   ? lazy(() => import('./dev/AssetGallery'))
   : lazy(async () => {
-      await import('./styles.css')
-      return import('./App')
+      await import('./center/center.css')
+      return import('./center/CenterGame')
     })
 
 createRoot(root).render(

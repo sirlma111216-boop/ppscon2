@@ -1,9 +1,9 @@
 {
   "name": "ppscon",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "내일을 여는 상자 — 수요에 맞는 공공구매를 체험하는 웹 게임",
+  "description": "센터장님, 다음 주는요? — 문화체육센터 육성·경영 시뮬레이션",
   "engines": {
     "node": "24.x",
     "npm": ">=11"
@@ -11,11 +11,12 @@
   "scripts": {
     "dev": "vite",
     "check": "tsc --noEmit",
-    "test": "node --test \"tests/*.test.ts\"",
+    "test": "node --test \"tests/*.test.ts\" \"tests/center/*.test.ts\"",
     "build": "npm run check && vite build",
     "preview": "vite preview",
     "assets": "node scripts/build-assets.mjs",
-    "e2e": "node scripts/e2e-playthrough.mjs"
+    "e2e": "node scripts/e2e-playthrough.mjs",
+    "test:center": "node --test \"tests/center/*.test.ts\""
   },
   "dependencies": {
     "react": "19.3.1",

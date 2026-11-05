@@ -1,69 +1,60 @@
-# 내일을 여는 상자
+# 센터장님, 다음 주는요?
 
-2026 조달청 AI 게임·콘텐츠 공모전 출품을 준비하는 한국어 웹 게임입니다.
-공공기관이 말한 필요를 읽고, 같은 기준으로 공급안을 비교해 고르고, 준비 일정을 맞춘 뒤, 그 물품이 동네에서 실제로 쓰이는 모습을 확인합니다.
+문화체육센터를 키우는 한국어 육성·경영 시뮬레이션의 첫 플레이 버전입니다. 물품 구매 → 주간 편성 → 주민 활동 → 계절 결산 → 연말 평가를 반복하며 5년을 운영합니다. 공간·예산·준비 인력·주민 요청 사이에서 선택하는 게임입니다.
 
-- 임무 3개 · 시설 4곳 · 첫 플레이 10~14분 · 시간 제한 없음
-- 로그인·서버·실시간 AI 호출 없음. 진행은 이 기기의 브라우저에만 저장됩니다.
-- 물품·가격·일정·점수는 게임을 위한 가상의 값이며, 실제 조달 절차를 단순화했습니다.
+## 바로 실행
 
-현재 구현·검증 상태와 남은 일은 [docs/DELIVERY_STATUS.md](docs/DELIVERY_STATUS.md)에 있습니다.
-**효과음·배경음악은 아직 제작 전이라 게임은 소리 없이 진행됩니다.** 음원을 넣는 방법은 [docs/AUDIO_HOOKUP.md](docs/AUDIO_HOOKUP.md)를 보세요.
+Windows에서는 이 폴더의 **start-game.cmd**를 더블 클릭하세요. 개발 서버와 브라우저가 열립니다. 실행 창을 닫으면 서버도 종료됩니다.
 
-## 실행
-
-Node.js 24와 npm을 사용합니다.
+Node.js 24, npm 11 이상을 사용합니다. 현재 폴더에는 의존성이 설치되어 있습니다. 다른 컴퓨터에서 처음 실행할 때는 `npm ci`를 먼저 실행합니다.
 
 ```sh
-npm ci
-npm run dev        # 개발 서버
-npm run check      # 타입 검사
-npm test           # 규칙·상태·저장·그림 연결 검사
-npm run build      # 타입 검사 + 빌드(dist)
-npm run preview    # 빌드 결과 확인
+npm run dev -- --host 127.0.0.1 --port 5174 --open
+npm run check
+npm test
+npm run build
 ```
 
-실제 브라우저에서 세 임무와 엔딩까지 자동으로 플레이해 보는 점검(Chrome 또는 Edge 필요):
+로그인이나 서버 없이 브라우저에 자동 저장됩니다. 같은 컴퓨터에서도 브라우저·주소·포트가 다르면 저장 기록은 별개입니다. 도움말에서 새 게임을 시작할 수 있습니다.
 
-```sh
-node scripts/e2e-playthrough.mjs --url http://localhost:4173 --out ./e2e-shots
-```
+## 첫 플레이
 
-원본 PNG를 바꿨다면 `npm run assets`로 게임용 파생본을 다시 만듭니다.
-개발용 이미지 자료실은 주소 끝에 `#dev-assets`를 붙이면 열립니다.
+1. 첫 안내에서 공예 또는 생활체육을 선택해 물품을 들입니다. 기본 가구만으로도 시작할 수 있습니다.
+2. 방을 고르고 활동을 선택한 뒤, 원하는 시간 칸을 누릅니다. 끌어 놓기도 됩니다.
+3. 주민 신청 버튼에서 가능한 시간과 희망 요금을 확인합니다. 모든 활동을 채울 필요는 없습니다.
+4. **이번 계절 시작**을 누르면 첫 주 준비와 대표 2주차 운영을 보여줍니다. 실제 결산은 13주 전체를 계산합니다.
+5. 결과를 보고 다음 계절의 계획을 바꿉니다. 이웃 센터 10곳도 같은 운영 규칙으로 성장합니다.
 
-## 게임의 흐름
+시설 관리에서 정비·교육·요금·주말 지원·장비 이전을 할 수 있습니다. 설치가 끝난 방별 장비는 8점을 내고 다른 열린 방으로 옮깁니다. 원래 방의 일정은 남으므로 필요한 활동을 다시 편성하세요.
 
-인트로 → 생활 수요 발견 → 필수 조건 두 가지 확인 → 공급안 비교(사용 미리보기·나란히 비교표) → 선택 → 준비 일정 6칸에 배치 →
-계획 검증 → 공급·설치 → 실제 이용 확인 → 결과 → 다음 임무 → 엔딩.
-임무 2는 새 안내 도구를 처음 사서 써 보고, 이용 모습을 관찰해 공급자가 고친 뒤 다시 확인하는 단계가 더 있습니다.
+## 구현 범위
 
-조작은 클릭만으로 끝까지 할 수 있고, 키보드(Tab 이동, Enter·Space 선택, Esc로 창 닫기)로도 모두 할 수 있습니다.
-설정에서 전체 음소거, 음악·효과음·환경음 음량, 동작 줄이기를 바꿉니다.
+- 5년 × 4계절, 총 260주 계산과 최종 평가
+- 문화교실·다목적실·행사실, 활동 10종, 물품안 12종
+- 주민 수요, 수입·유지비·유보금, 장비 마모·정비, 소음·준비 시간
+- 성향이 다른 경쟁기관 10곳과 연말 평가
+- 새 배경 1장·캐릭터 초상 3장, 물품 표시와 활동 애니메이션
+- 자동 저장, 기본 키보드 조작, 모바일 배치, 동작 줄이기
+- 직접 작성한 합성 BGM·효과음 스케치. 우측 상단 음악 버튼으로 켭니다.
 
-## 자료 위치
+**공모전 제출 완성본은 아닙니다.** 계절 중 사건 분기, 캐릭터 관계·이야기, 혁신제품 시범사용, 최종 캐릭터 동작과 녹음 음원, 장기간 밸런스 검증은 다음 단계입니다. 예산·기관·평가·포상은 창작 설정이며 실제 조달·행정 절차를 재현하지 않습니다.
 
-| 파일 | 내용 |
+## 프로젝트 구조
+
+| 위치 | 용도 |
 |---|---|
-| [PROMPT_CLAUDE_CODE.md](PROMPT_CLAUDE_CODE.md) | 전체 개발 지시문, 단계별 완료 기준 |
-| [DESIGN.md](DESIGN.md) | 게임에 적용하는 디자인 기준 |
-| [docs/GAME_SPEC.md](docs/GAME_SPEC.md) | 3개 임무의 수치, 규칙, 정책 표현, 검산 사례 |
-| [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md) | 코드 구조, 구현하며 정한 내용, 검사 방법 |
-| [docs/DELIVERY_STATUS.md](docs/DELIVERY_STATUS.md) | 실제로 구현·검사한 것과 남은 일 |
-| [docs/AUDIO_HOOKUP.md](docs/AUDIO_HOOKUP.md) | 비어 있는 음원 27개의 경로와 연결 순서 |
-| [docs/AUDIO_ELEVENLABS.md](docs/AUDIO_ELEVENLABS.md) | 음악 5곡·효과음 18개·환경음 4개 제작 프롬프트 |
-| [docs/IMAGE_ASSETS.md](docs/IMAGE_ASSETS.md) | 원본 이미지 목록, 용도, 조합 방식 |
-| [docs/IMAGE_DERIVATIVES.md](docs/IMAGE_DERIVATIVES.md) | 원본 PNG와 게임용 WebP 파생본의 대응표 |
-| [docs/IMAGE_PROMPTS.json](docs/IMAGE_PROMPTS.json) | 이미지 생성에 사용한 프롬프트 |
-| [docs/PLAYTEST_OBSERVATION.md](docs/PLAYTEST_OBSERVATION.md) | 비개발자 5명 관찰 기록지(아직 미실시) |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | GitHub → Cloudflare Pages 자동 배포 설정 |
-| [docs/CONTEST_AND_CREDITS.md](docs/CONTEST_AND_CREDITS.md) | 공모전 기준, 제출물, 출처·AI 활용 기록 |
-| [docs/references/DESIGN-zapier.md](docs/references/DESIGN-zapier.md) | 사용자가 제공한 원본 스타일 파일 |
+| `src/center/simulation.ts` | 화면과 분리된 운영·경제·경쟁기관 계산 |
+| `src/center/CenterGame.tsx` | 편성·구매·대화·결산 화면 |
+| `src/center/CenterScene.tsx` | 방·물품·활동 인물 연출 |
+| `src/center/audio.ts` | 합성 음향 스케치 |
+| `public/center/` | 새 게임 이미지 |
+| `tests/center/` | 새 게임 규칙 회귀 검사 |
+| `docs/center-growth/` | 새 기획·경제·아트 문서, 출처와 진행 기록 |
+
+`AGENTS.md`와 `docs/center-growth/`가 현재 개발 기준입니다. `src/center` 밖의 이전 게임 소스·기존 미션 문서·`PROMPT_CLAUDE_CODE.md`·기존 `e2e`/`assets` 스크립트는 이전 작품의 기록입니다. 새 게임 검증에 이전 게임 E2E를 사용하지 않습니다.
 
 ## 저장소와 배포
 
-- 저장소: https://github.com/sirlma111216-boop/ppscon
-- 배포 방식: Cloudflare Pages의 Git 연동, `main`, 빌드 `npm run build`, 출력 `dist`
-- GitHub Actions: 타입 검사·테스트·빌드 확인만 수행합니다. Cloudflare와 중복 배포하지 않습니다.
+저장소: https://github.com/sirlma111216-boop/ppscon
 
-공모전 응모, 음원 생성, 개인정보가 있는 신청서의 공개 업로드는 이 저장소의 작업에 포함되지 않습니다.
+개발 브랜치: `feat/center-growth-reboot`. 이번 첫 플레이 버전은 로컬 작업이며 GitHub에 푸시하거나 기존 Cloudflare 공개 게임을 교체하지 않았습니다. 추후 공개할 때는 검증된 커밋을 배포 브랜치에 반영합니다. 기존 설정은 `npm run build` → `dist`입니다.

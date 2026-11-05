@@ -1,81 +1,15 @@
-# DESIGN.md — 내일을 여는 상자
+# Center growth — current art direction
 
-## 기준과 우선순위
+This branch replaces the former card/mission game's Zapier and printed-collage styling.
 
-2026-11-04. getdesign.md 목록의 **Zapier**를 선택했고, 사용자가 제공한 `docs/references/DESIGN-zapier.md`를 원본으로 보관한다. 출처: https://getdesign.md/zapier/design-md
+- Modern Korean 2D life-simulation art: drawn lines, restrained cel shading, warm natural light, believable adult characters.
+- The cutaway center scene is the main surface. Room selection and five weekly blocks stay directly connected to it.
+- Warm green, cream, muted coral, light wood. Avoid a corporate dashboard or neon game template.
+- Generated raster environment and dialogue portraits, separate SVG equipment/actors for the playable prototype, live DOM text and controls.
+- One short contextual character line. Hide detailed rules and financial controls until requested.
+- Text stays separate from images for accessibility. New assets live in public/center.
+- Mobile uses readable type and tap targets; weekly slots wrap instead of shrinking into tiny labels.
 
-원본의 따뜻한 크림색 바탕, 짙은 잉크색 글자, 한 가지 주행동 색상, 12px 버튼 모서리, 넉넉한 간격을 채택한다. 원본에 있는 SaaS 가격표·회원가입·마케팅 섹션은 만들지 않는다. 이 파일은 **게임에 적용할 최종 규칙**이다. 원본과 다르면 이 파일을 따른다. 원본의 WCAG 충족 주장이나 옅은 글자색을 검증 없이 복사하지 않는다.
-
-## 시각적 정체성
-
-**한국 동네의 공공생활을 담은 리소그래프 종이 무대.** 물품을 담은 상자가 열리면 인쇄된 길과 건물이 이어지고, 주민의 하루가 움직인다. 판화의 잉크 입자, 약간 어긋난 색판, 칼로 오려낸 외곽선, 넓은 색면이 특징이다. 사실적인 3D 대신 2.5D 종이 레이어의 앞뒤 관계로 깊이를 만든다.
-
-그림의 개성은 다음 다섯 가지에서 유지한다.
-
-1. 한국 동네의 평평한 옥상, 붉은 벽돌 도서관, 낮은 학교, 주민센터의 경사로, 작은 공원. 서양 동화 마을·일본풍 골목으로 치환하지 않는다.
-2. 감색·청록·감빛 주황·겨자색을 제한적으로 겹쳐 찍는다. 모든 색을 같은 비율로 쓰지 않는다.
-3. 비대칭 구도와 손으로 자른 윤곽. 큰 눈 캐릭터, 둥근 점토, 말랑한 장난감, 광택 플라스틱, 파랑-보라 발광은 쓰지 않는다.
-4. 인물은 자연스러운 비율의 작은 종이 인형. 아동·노인·휠체어 이용자를 과장하거나 도움의 대상으로만 연출하지 않는다.
-5. 완료 보상은 큰 폭죽보다 실제 생활의 변화다. 접힌 테이블이 정리되고, 책상 높이가 맞고, 안내를 받은 주민이 이동한다.
-
-## 색상: UI와 그림을 구분
-
-| 역할 | 색 | 사용 |
-|---|---|---|
-| UI canvas | `#FFFEFB` | 페이지, 밝은 패널 |
-| UI cream | `#F8F4F0` | 비교 카드, 낮은 강조면 |
-| UI ink | `#201515` | 본문·제목 |
-| UI body | `#605D52` | 보조 설명. 흐린 회색으로 더 낮추지 않음 |
-| Primary action | `#A63C1F` | 시작·계획 확정·다음 임무. 밝은 글자와 대비 검증 |
-| Primary hover | `#843018` | 주행동 호버·누름 |
-| Focus | `#1C6268` | 3px 외곽선 + 3px 밝은 간격 |
-| Art paper | `#F1E4C9` | 그림 종이 바탕 |
-| Art indigo | `#243747` | 그림 윤곽·그늘 |
-| Art teal | `#286C70` | 나무·지붕·보조 잉크 |
-| Art persimmon | `#C65C3B` | 벽돌·인쇄 강조 |
-| Art mustard | `#D6A442` | 햇빛·상자·목재 |
-
-원본의 `#FF4F00` 위 작은 흰 글자는 그대로 사용하지 않는다. 주행동은 더 짙은 `#A63C1F`로 조정했다. 색상만으로 성공·불가를 구분하지 않는다. “필수 조건 충족”, “준비 칸 겹침”과 아이콘·외곽선이 함께 변한다. 장식 주황을 또 하나의 클릭 버튼처럼 쓰지 않는다.
-
-## 글꼴과 읽기
-
-- 초기 개발은 `"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif` 시스템 대체 글꼴로 동작한다. 선택한 오픈소스 한글 글꼴을 실제로 제공할 때만 self-host하고 라이선스를 포함한다.
-- 제목의 선택적 개성은 Noto Serif KR의 굵은 글꼴로 낼 수 있다. 도입하면 출처·라이선스·용량을 확인한다. 유료 Degular Display 파일을 임의로 구하거나 배포하지 않는다.
-- 본문 18px/1.55, 최소 일반 UI 16px/1.5. 보조 출처만 14px. 버튼 18px/600. 제목 40~60px, 모바일 30~38px.
-- 한글을 이미지에 구워 넣지 않는다. 제목, 숫자, 비교 항목, 일정, 점수, 버튼, 피드백 모두 실제 DOM 텍스트다.
-- 화면을 축소해 모든 정보를 억지로 넣지 않는다. 200% 확대와 360px 폭에서도 읽고 조작할 수 있게 재배치한다.
-
-## 레이아웃과 이미지 계약
-
-게임의 중심은 마을과 선택이다. 사이트 소개 페이지 같은 큰 헤더, 가격 카드, 후기 카드, 대시보드 KPI 행을 게임 화면에 만들지 않는다.
-
-- **인트로:** `intro-print.png`, 좌측 여백에 제목·한 문장·시작 버튼. 작은 화면은 그림 위/텍스트 아래. 이미지의 전체 장면을 강제 `cover`해서 주제를 잘라내지 않는다.
-- **플레이:** `town-board.png` 위에 건물·물품·주민을 별도 레이어로 배치. 건물 이미지를 변형하거나 휘게 만들지 않는다. 선택 가능한 실제 버튼을 시각 레이어와 대응시킨다.
-- **임무 전환:** `chapter-transition.png`의 빈 종이 영역에 짧은 목표와 계속 버튼. 자동으로 읽기를 끝내지 않는다.
-- **진행:** `progress-workbench.png` 위에 실제 상태 목록을 얹는다. 가짜 로딩 퍼센트를 표시하지 않는다. 실행은 결정된 상태 변화에 맞춘다.
-- **결과:** `result-paper.png`의 빈 종이에 충족 조건·선택 이유·남은 예산·다음 행동을 배치. 이미지 속 빈 도장에 실제 DOM 아이콘/문구를 겹칠 수 있다.
-- **엔딩:** `ending-neighborhood.png`와 실제 수행 결과를 함께 표시. 그림 속 모든 장면을 사용자가 선택한 결과인 것처럼 말하지 않는다.
-- **아틀라스:** `manifest.json`의 cropRect로 원본을 렌더 시 잘라 사용. 이미지를 늘여 찌그러뜨리지 않는다. 검증한 매니페스트가 최종 좌표 기준이다.
-
-전체 화면 이미지는 분위기·재질·무대를 담당하고, 클릭·판정·텍스트는 DOM이 담당한다. 이를 지키면서 이미지 중심의 완성도를 높인다. 이미지 한 장에 가짜 버튼을 그려 놓는 방식은 사용하지 않는다.
-
-## 컴포넌트
-
-- 4px 간격 기준: 4/8/12/16/24/32/48/64. 카드 내부 기본24px, 모바일16px.
-- 주 버튼·비교 카드 12px radius, 작은 입력6px. 카드가 모두 둥근 알약처럼 보이지 않게 한다.
-- 버튼 최소48×48px, 아이콘만 있으면 한국어 접근성 이름 제공. 클릭영역을 실제 그림보다 넓힐 수 있다.
-- 비교 카드: 물품 이미지 → 이용 상황 한 문장 → 필수 기능2개 → 비용/준비/설치 → 선택. 늘 같은 순서.
-- 선택 상태는 외곽선+선택됨 글자+체크로 보인다. 호버만 강조하지 않는다.
-- 일정은 날짜3열×오전오후2칸. 선택 후 클릭으로 배치 가능. 충돌 이유는 해당칸 가까이에 한 문장으로 표시.
-- 패널 바탕은 평평하고 깨끗하다. 리소 질감을 글자 밑에 강하게 겹치지 않는다. 그림 내부의 입자와 UI 종이를 구분한다.
-- 그림 장식은 그림자 대신 잉크 면으로 깊이를 표현한다. UI shadow는 짧고 약하게, 유리·블러 패널은 사용하지 않는다.
-
-## 움직임과 음향
-
-종이 펼침 250~450ms, 선택 피드백120~180ms, 배송·시설 사용8~15초, 전체 임무 실행연출24초 이하. 화면 전체 확대·흔들림·반복 바운스를 쓰지 않는다. `prefers-reduced-motion`과 게임 설정을 모두 반영한다. 줄이기 모드에서는 짧은 전환으로 같은 정보가 전달된다.
-
-주민 이동은 목적 있는 짧은 경로로 한다. 작은 정적 종이 인물의 위치를 옮겨도 된다. 없는 애니메이션 프레임을 발명해 스프라이트 시트라고 주장하지 않는다. 시작 입력 뒤에만 소리를 켜고, 음악·효과음·환경음·전체 음소거를 제공한다.
-
-## 완료 전 시각 검사
-
-1366×768, 1920×1080, 768×1024, 390×844에서 비교 카드·일정·하단 버튼이 가리지 않는지 확인한다. PNG 투명 여백·색 테두리·건물 정렬을 실제 합성 화면에서 확인하고, 폰트 로딩 실패·음원 없음·동작 줄이기 상태도 확인한다. 이 문서만으로 접근성 인증이나 공모전 수상을 주장하지 않는다.
+Detailed plan: docs/center-growth/ART_AND_AUDIO_DRAFT.md.
+Actual generation prompts: docs/center-growth/ASSET_PROVENANCE.md.
+Remaining production art: docs/center-growth/IMPLEMENTATION_STATUS.md.
