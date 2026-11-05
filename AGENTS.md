@@ -3,6 +3,7 @@
 Use docs/center-growth/GAME_DESIGN_DRAFT.md, ECONOMY_AND_CONTENT_DRAFT.md and ART_AND_AUDIO_DRAFT.md as the design baseline. New implementation lives in src/center. The old game remains in Git history and is not the gameplay foundation.
 
 - Korean, scene-first interface, short contextual dialogue. Avoid dashboard-like walls of text.
+- Read DESIGN.md for UI work. It adapts getdesign.md's Oura analysis to this game. The upstream reference in docs/references/DESIGN-oura.md is preserved as data; the game-specific overrides in DESIGN.md take precedence.
 - Deterministic simulation, persistent purchases, recoverable mistakes, ten independently simulated rivals.
 - All new assets under public/center. Do not reuse the old art direction.
 - Keep simulation separate from rendering. Never grant money from animation completion.

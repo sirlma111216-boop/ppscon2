@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import type { CSSProperties } from 'react'
 import './CenterScene.css'
 
 type RoomId = 'A' | 'B' | 'C'
@@ -27,64 +26,6 @@ const programNames: Record<string, string> = {
 const roomPositions: Record<RoomId, { left: number; width: number }> = {
   A: { left: 1, width: 23.5 }, B: { left: 28, width: 41 }, C: { left: 73, width: 25 },
 }
-const palettes = [
-  { shirt: '#cc735b', skin: '#eac0a0', hair: '#49372e', trousers: '#4d6070', variant: 0 },
-  { shirt: '#528b84', skin: '#d5a27e', hair: '#26343a', trousers: '#344454', variant: 1 },
-  { shirt: '#d7ad59', skin: '#f0c6a6', hair: '#646361', trousers: '#72786c', variant: 2 },
-  { shirt: '#7689bd', skin: '#e3b495', hair: '#4c3745', trousers: '#454259', variant: 3 },
-]
-
-function Person({ variant, activity, animated, delay, staff = false }: {
-  variant: number; activity: string | null; animated: boolean; delay: number; staff?: boolean
-}) {
-  const c = palettes[variant % palettes.length]
-  const movement = !activity ? 'idle' : activity === 'P03' || activity === 'P04' ? 'yoga'
-    : activity === 'P09' ? 'dance'
-      : activity === 'P01' || activity === 'P02' || activity === 'P07' ? 'craft'
-        : activity === 'P08' || activity === 'P10' ? 'present' : 'talk'
-  const seated = movement === 'craft' || movement === 'talk'
-  return (
-    <svg className={`center-person center-person--${movement} ${animated ? 'center-person--active' : ''}`}
-      viewBox="0 0 96 160" aria-hidden="true" style={{ '--actor-delay': `${delay}s` } as CSSProperties}>
-      <ellipse cx="48" cy="148" rx="23" ry="5" fill="#253f3c" opacity=".14" />
-      {(movement === 'yoga' || movement === 'dance') && <path d="M9 145L70 137 91 147 29 156Z" fill="#809eae" stroke="#5d7a8e" strokeWidth="1.5" />}
-      {seated && <g stroke="#555a56" strokeWidth="3" strokeLinecap="round"><path d="M28 99V145M65 100V145" /><path d="M25 100H69" strokeWidth="7" /></g>}
-      <g className="center-person__body">
-        <g className="center-person__leg center-person__leg--back">
-          <path d={seated ? 'M55 100 L65 120 L58 142' : 'M55 99 L57 123 L62 143'} fill="none" stroke={c.trousers} strokeWidth="12" strokeLinecap="round" />
-          <path d={seated ? 'M57 143h13' : 'M61 144h12'} stroke="#363b40" strokeWidth="7" strokeLinecap="round" />
-        </g>
-        <g className="center-person__leg center-person__leg--front">
-          <path d={seated ? 'M40 100 L30 121 L32 143' : 'M40 99 L37 123 L33 143'} fill="none" stroke={c.trousers} strokeWidth="12" strokeLinecap="round" />
-          <path d="M23 144h13" stroke="#363b40" strokeWidth="7" strokeLinecap="round" />
-        </g>
-        <path d="M35 58Q47 53 60 59L65 96Q49 106 31 97Z" fill={staff ? '#41796f' : c.shirt} stroke="#33454a" strokeWidth="1.6" />
-        <path d="M34 94Q48 99 64 94" stroke="#263c47" strokeWidth="2" opacity=".3" fill="none" />
-        {staff && <><path d="M40 59L46 72 54 59" fill="#f4f1e4" /><rect x="52" y="75" width="8" height="6" rx="1" fill="#e8e6d6" /></>}
-        <path d="M44 49V60Q49 64 54 58V49" fill={c.skin} stroke="#6d5044" strokeWidth="1" />
-        <g className="center-person__head">
-          {c.variant === 1 && <ellipse cx="62" cy="32" rx="7" ry="9" fill={c.hair} />}
-          <path d="M33 32Q33 14 49 15Q65 16 64 34L62 42H35Z" fill={c.hair} />
-          <path d="M35 30Q48 20 61 31L61 43Q57 56 48 55Q36 51 35 40Z" fill={c.skin} stroke="#765749" strokeWidth="1.1" />
-          <path d={c.variant === 2 ? 'M33 34Q27 29 33 23Q31 17 39 17Q45 9 52 15Q64 12 66 26L62 32 55 24 48 28 42 24Z' : 'M32 32Q31 13 49 15Q63 16 64 33L58 27 52 25 46 30 42 26 38 33Z'} fill={c.hair} />
-          <path d="M41 36h2m11 0h2" stroke="#394044" strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M48 38l-1 5h3M44 47q5 3 9-1" stroke="#9b6754" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-          {c.variant === 2 && <g fill="none" stroke="#54585a" strokeWidth="1.2"><rect x="37" y="32" width="11" height="9" rx="3" /><rect x="51" y="32" width="11" height="9" rx="3" /><path d="M48 35h3" /></g>}
-        </g>
-        <g className="center-person__arm center-person__arm--back">
-          <path d="M60 63 L69 81" stroke={staff ? '#41796f' : c.shirt} strokeWidth="11" strokeLinecap="round" />
-          <g className="center-person__forearm"><path d="M69 81L67 98" stroke={c.skin} strokeWidth="7" strokeLinecap="round" /><ellipse cx="67" cy="100" rx="4" ry="5" fill={c.skin} /></g>
-        </g>
-        <g className="center-person__arm center-person__arm--front">
-          <path d="M34 64 L25 81" stroke={staff ? '#41796f' : c.shirt} strokeWidth="11" strokeLinecap="round" />
-          <g className="center-person__forearm"><path d="M25 81L29 98" stroke={c.skin} strokeWidth="7" strokeLinecap="round" /><ellipse cx="29" cy="100" rx="4" ry="5" fill={c.skin} /></g>
-        </g>
-      </g>
-      {movement === 'craft' && <g><path d="M11 104H83L88 112H6Z" fill="#c29567" stroke="#826449" strokeWidth="1.3" /><path d="M14 113v32m65-32v32" stroke="#856345" strokeWidth="4" /><path d="M39 105l7-8 13 7Z" fill={activity === 'P07' ? '#586f7e' : '#d9b6ca'} stroke="#727c80" /><rect x="57" y="102" width="11" height="3" rx="1" fill="#f4e4bb" /></g>}
-    </svg>
-  )
-}
-
 function Equipment({ ids }: { ids: string[] }) {
   const has = (key: string) => ids.some(id => id === key || id === `${key}B`)
   return <svg className="center-scene__equipment" viewBox="0 0 300 220" aria-hidden="true">
@@ -113,7 +54,6 @@ export default function CenterScene({ selectedRoom, onSelectRoom, rooms, plan, r
       const activity = report?.activity.find(a => a.room === room.id && a.slot === activeSlot)
       const scheduled = plan[room.id]?.[activeSlot] ?? null
       const attendance = running && activity ? activity.attendees : 0
-      const population = Math.min(4, attendance)
       const style = { left: `${pos.left}%`, width: `${pos.width}%` }
       return <div className={`center-scene__room ${selectedRoom === room.id ? 'center-scene__room--selected' : ''} ${room.open ? '' : 'center-scene__room--locked'}`} style={style} key={room.id}>
         <button className="center-scene__room-label" onClick={() => onSelectRoom(room.id)} aria-pressed={selectedRoom === room.id}>
@@ -123,16 +63,12 @@ export default function CenterScene({ selectedRoom, onSelectRoom, rooms, plan, r
         <button className="center-scene__room-hit" aria-label={`${roomNames[room.id]} ${room.open ? '선택' : '개방 살펴보기'}`} onClick={() => onSelectRoom(room.id)} tabIndex={-1} />
         {room.open && <Equipment ids={room.equipment} />}
         {!room.open && <div className="center-scene__storage" aria-hidden="true"><span /><span /><span /></div>}
-        {room.open && Array.from({ length: population }, (_, i) => <div className="center-scene__actor" key={`${room.id}-${i}`} style={{ left: `${room.id === 'B' ? [10, 32, 53, 75][i] : [12, 55, 10, 54][i]}%`, bottom: `${room.id === 'B' ? [4, 11, 5, 15][i] : [2, 5, 21, 23][i]}%`, width: `${((i >= 2 && room.id !== 'B' ? 4.6 : 5.4) / pos.width) * 100}%`, zIndex: i >= 2 && room.id !== 'B' ? 2 : 3 }}>
-          <Person variant={i + (room.id === 'B' ? 1 : 0)} activity={activity?.program ?? scheduled} animated={running && !reducedMotion} delay={i * -.47} />
-        </div>)}
         {room.open && running && scheduled && <div className={`center-scene__activity-tag ${attendance === 0 ? 'center-scene__activity-tag--empty' : ''}`}>
           {attendance > 0 && <span className="center-scene__live-dot" aria-hidden="true" />}
           <span>{programNames[scheduled] ?? '운영 중'}</span><strong>{attendance > 0 ? `${attendance}명` : '예약 없음'}</strong>
         </div>}
       </div>
     })}
-    {!running && <div className="center-scene__caretaker"><Person variant={1} activity={null} animated={false} delay={0} staff /></div>}
     <div className="center-scene__front-caption">{running ? '이번 주의 하루가 펼쳐집니다' : '방을 선택해서 다음 주를 준비하세요'}</div>
   </section>
 }

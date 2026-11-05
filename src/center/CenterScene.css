@@ -1,59 +1,158 @@
-.center-scene{position:relative;isolation:isolate;width:100%;aspect-ratio:16/9;min-height:260px;overflow:hidden;border-radius:20px;background:#dce5d4;border:1px solid rgba(36,61,56,.12);box-shadow:0 15px 35px -24px #284e4c55}
-.center-scene__background{position:absolute;width:100%;height:100%;object-fit:cover;inset:0;user-select:none;pointer-events:none}
-.center-scene__light{position:absolute;inset:0;background:linear-gradient(150deg,#f6d69715,transparent 55%);pointer-events:none;transition:background 1s}
-.center-scene--evening .center-scene__light{background:linear-gradient(140deg,#e1ac7d30,#405a7950);mix-blend-mode:multiply}
-.center-scene__season{position:absolute;left:20px;top:16px;padding:7px 12px;border-radius:30px;background:#f9fcf1db;backdrop-filter:blur(10px);font-size:11px;font-weight:700;color:#526353;display:flex;align-items:center;gap:7px;box-shadow:0 2px 5px #455e4710}
-.center-scene__season>span{color:#8b9472;font-size:16px;line-height:1}
-.center-scene__room{position:absolute;top:28%;height:41%;pointer-events:none}
-.center-scene__room-label{pointer-events:auto;position:absolute;top:-8%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid #ffffffb8;border-radius:30px;background:#fbfcf2e8;color:#476053;padding:8px 12px 8px 7px;box-shadow:0 3px 8px #273d4420;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s,box-shadow .2s;z-index:6;backdrop-filter:blur(8px)}
-.center-scene__room-label:hover{background:#fff;box-shadow:0 4px 14px #1b47483d}
-.center-scene__room-label:focus-visible{outline:3px solid #f4bd56;outline-offset:3px}
-.center-scene__room-letter{display:grid;place-items:center;background:#e6ecdf;color:#5d745d;width:22px;height:22px;border-radius:50%;font-size:10px}
-.center-scene__room--selected .center-scene__room-label{background:#1d6d69;color:#fff;border-color:#1d6d69}
-.center-scene__room--selected .center-scene__room-letter{background:#ffffff22;color:#fff}
-.center-scene__room--locked .center-scene__room-label{color:#7a766b;background:#eee9dce8}
-.center-scene__room-hit{pointer-events:auto;position:absolute;inset:16% 0 1%;border:2px solid transparent;border-radius:15px;background:transparent;cursor:pointer;z-index:1;transition:background .2s,border-color .2s}
-.center-scene__room-hit:hover{background:#fff6d313;border-color:#fff9}
-.center-scene__room--selected .center-scene__room-hit{border-color:#faf8d555;background:linear-gradient(0deg,#e6f6a619,transparent 50%)}
-.center-scene__equipment{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
-.center-scene__actor{position:absolute;pointer-events:none;transform-origin:50% 100%;filter:drop-shadow(0 1px 1px #293e3d22)}
-.center-person{width:100%;height:auto;overflow:visible;display:block}
-.center-person__arm--front{transform-origin:34px 64px}.center-person__arm--back{transform-origin:60px 63px}.center-person__head{transform-origin:49px 54px}.center-person__leg--front{transform-origin:40px 99px}.center-person__leg--back{transform-origin:55px 99px}.center-person__body{transform-origin:48px 145px}.center-person__arm--front .center-person__forearm{transform-origin:25px 81px}.center-person__arm--back .center-person__forearm{transform-origin:69px 81px}
-.center-person--active .center-person__head{animation:center-head-look 4s ease-in-out infinite;animation-delay:var(--actor-delay)}
-.center-person--yoga .center-person__arm--front{transform:rotate(137deg)}.center-person--yoga .center-person__arm--back{transform:rotate(-137deg)}
-.center-person--yoga.center-person--active .center-person__body{animation:center-yoga-bend 4.8s ease-in-out infinite;animation-delay:var(--actor-delay)}
-.center-person--yoga.center-person--active .center-person__arm--front{animation:center-yoga-left 4.8s ease-in-out infinite;animation-delay:var(--actor-delay)}
-.center-person--yoga.center-person--active .center-person__arm--back{animation:center-yoga-right 4.8s ease-in-out infinite;animation-delay:var(--actor-delay)}
-.center-person--craft .center-person__arm--front{transform:rotate(-38deg)}.center-person--craft .center-person__arm--back{transform:rotate(40deg)}
-.center-person--craft.center-person--active .center-person__arm--front .center-person__forearm{animation:center-craft-hand .9s ease-in-out infinite alternate;animation-delay:var(--actor-delay)}
-.center-person--craft.center-person--active .center-person__arm--back .center-person__forearm{animation:center-craft-hand 1.4s ease-in-out infinite alternate-reverse;animation-delay:var(--actor-delay)}
-.center-person--dance.center-person--active .center-person__arm--front{animation:center-dance-left 1.4s ease-in-out infinite alternate;animation-delay:var(--actor-delay)}
-.center-person--dance.center-person--active .center-person__arm--back{animation:center-dance-right 1.4s ease-in-out infinite alternate;animation-delay:var(--actor-delay)}
-.center-person--dance.center-person--active .center-person__leg--front{animation:center-dance-foot .7s ease-in-out infinite alternate;animation-delay:var(--actor-delay)}
-.center-person--dance.center-person--active .center-person__leg--back{animation:center-dance-foot .7s ease-in-out infinite alternate-reverse;animation-delay:var(--actor-delay)}
-.center-person--dance.center-person--active .center-person__body{animation:center-dance-body 1.4s ease-in-out infinite alternate;animation-delay:var(--actor-delay)}
-.center-person--present .center-person__arm--back{transform:rotate(-70deg)}.center-person--present.center-person--active .center-person__arm--back{animation:center-present-hand 2.2s ease-in-out infinite;animation-delay:var(--actor-delay)}
-.center-person--talk.center-person--active .center-person__arm--front{animation:center-talk-hand 3s ease-in-out infinite;animation-delay:var(--actor-delay)}
-.center-scene__activity-tag{position:absolute;left:50%;bottom:-5%;transform:translateX(-50%);white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:10px;color:#36564b;background:#fffef1ed;padding:5px 9px;border-radius:7px;box-shadow:0 3px 8px #29454415;z-index:5}
-.center-scene__activity-tag strong{font-size:10px;color:#2e7060}.center-scene__activity-tag--empty{color:#7a7b70;background:#f2efe4dc}.center-scene__activity-tag--empty strong{color:#8d8779}
-.center-scene__live-dot{width:5px;height:5px;border-radius:50%;background:#68a77c;box-shadow:0 0 0 3px #68a77c17;animation:center-dot-pulse 1.8s ease-in-out infinite}
-.center-scene__caretaker{position:absolute;left:48%;width:5.4%;bottom:12%;z-index:5;pointer-events:none}
-.center-scene__front-caption{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.02em;white-space:nowrap;color:#536a58;background:#f7f9e4d9;padding:6px 11px;border-radius:30px;backdrop-filter:blur(6px);z-index:5}
-.center-scene__storage{position:absolute;left:26%;bottom:19%;width:48%;height:35%;opacity:.92}.center-scene__storage span{position:absolute;width:45%;height:43%;background:#bea98b;border:1px solid #9b8970;border-radius:3px;box-shadow:inset -7px 0 #aa9577}.center-scene__storage span:after{content:'';position:absolute;left:45%;top:0;height:100%;width:10%;background:#d0c4a6}.center-scene__storage span:nth-child(1){left:0;bottom:0}.center-scene__storage span:nth-child(2){left:47%;bottom:0}.center-scene__storage span:nth-child(3){left:25%;bottom:44%}
-.center-scene__fallback{position:absolute;inset:0;background:linear-gradient(155deg,#dfe8d3 0 19%,#f1eddb 20% 65%,#c9bea0 66% 80%,#d7dfc0 81%);display:flex;gap:8px;padding:19% 6% 16%;perspective:800px}
-.center-scene__fallback>span{flex:1;border-left:8px solid #d4d7c0;border-right:6px solid #c9cbb5;border-top:65px solid #eae9d6;background:repeating-linear-gradient(0deg,#dbb992 0 24px,#cba782 25px 26px);box-shadow:inset 0 8px 20px #6c674e22;transform:rotateX(12deg)}
-.center-scene--reduced *{animation:none!important;transition:none!important}
-@keyframes center-head-look{0%,100%{transform:rotate(0)}45%{transform:rotate(-4deg)}65%{transform:rotate(2deg)}}
-@keyframes center-yoga-bend{0%,100%{transform:rotate(0)}40%,60%{transform:rotate(8deg)}}
-@keyframes center-yoga-left{0%,100%{transform:rotate(128deg)}45%,60%{transform:rotate(160deg)}}
-@keyframes center-yoga-right{0%,100%{transform:rotate(-128deg)}45%,60%{transform:rotate(-105deg)}}
-@keyframes center-craft-hand{from{transform:rotate(-14deg)}to{transform:rotate(17deg)}}
-@keyframes center-dance-left{from{transform:rotate(45deg)}to{transform:rotate(108deg)}}
-@keyframes center-dance-right{from{transform:rotate(-110deg)}to{transform:rotate(-42deg)}}
-@keyframes center-dance-foot{from{transform:rotate(-7deg)}to{transform:rotate(8deg)}}
-@keyframes center-dance-body{from{transform:translateX(-3px) rotate(-3deg)}to{transform:translateX(3px) rotate(3deg)}}
-@keyframes center-present-hand{0%,100%{transform:rotate(-65deg)}40%{transform:rotate(-95deg)}65%{transform:rotate(-82deg)}}
-@keyframes center-talk-hand{0%,100%{transform:rotate(0)}35%,55%{transform:rotate(-40deg)}70%{transform:rotate(-12deg)}}
-@keyframes center-dot-pulse{0%,100%{opacity:1}50%{opacity:.45}}
-@media(prefers-reduced-motion:reduce){.center-scene *{animation:none!important;transition:none!important}}
-@media(max-width:700px){.center-scene{border-radius:14px;min-height:220px}.center-scene__season{top:10px;left:10px;font-size:9px;padding:5px 8px}.center-scene__room-label{font-size:10px;padding:5px 8px 5px 5px;gap:4px}.center-scene__room-letter{width:17px;height:17px;font-size:9px}.center-scene__activity-tag{font-size:8px;padding:4px 6px;gap:4px}.center-scene__activity-tag strong{font-size:8px}.center-scene__front-caption{font-size:9px;bottom:9px}}
+/* Center facilities and scene geometry. UI typography belongs to center.css. */
+.center-scene {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 260px;
+  overflow: hidden;
+  background: #e1d8c9;
+}
+.center-scene__background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+.center-scene__light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background 1s;
+}
+.center-scene--evening .center-scene__light {
+  background: #4c4b7952;
+  mix-blend-mode: multiply;
+}
+.center-scene__season {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  background: #f7f1e8;
+  color: #4a4741;
+  font-size: 12px;
+}
+.center-scene__room {
+  position: absolute;
+  top: 28%;
+  height: 41%;
+  pointer-events: none;
+}
+.center-scene__room-label {
+  pointer-events: auto;
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  z-index: 6;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px 8px 9px;
+  border: 1px solid #4a47413b;
+  border-radius: 3px;
+  background: #f7f1e8f0;
+  color: #4a4741;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background .2s;
+}
+.center-scene__room-label:hover { background: #ffffff; }
+.center-scene__room-label:focus-visible { outline: 3px solid #af751b; outline-offset: 3px; }
+.center-scene__room-letter {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 10px;
+}
+.center-scene__room--selected .center-scene__room-label {
+  background: #4a4741;
+  color: #fffaf2;
+  border-color: #4a4741;
+}
+.center-scene__room--locked .center-scene__room-label { color: #706b64; background: #ece4d6ee; }
+.center-scene__room-hit {
+  pointer-events: auto;
+  position: absolute;
+  inset: 16% 0 1%;
+  z-index: 1;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.center-scene__room-hit:hover { background: #fff6d314; border-color: #fff9; }
+.center-scene__room--selected .center-scene__room-hit { border-color: #fff8; }
+.center-scene__equipment { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.center-scene__activity-tag {
+  position: absolute;
+  left: 50%;
+  bottom: -6%;
+  z-index: 5;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid #4a47411f;
+  background: #fffaf2ef;
+  color: #4a4741;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.center-scene__activity-tag strong { color: #224228; font-size: inherit; }
+.center-scene__activity-tag--empty { color: #6e665c; background: #e9e3d8e8; }
+.center-scene__activity-tag--empty strong { color: #6e665c; }
+.center-scene__live-dot { width: 5px; height: 5px; border-radius: 50%; background: #5c6f5d; }
+.center-scene__front-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 6px 11px;
+  color: #4a4741;
+  background: #f7f1e8df;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.center-scene__storage { position: absolute; left: 26%; bottom: 19%; width: 48%; height: 35%; opacity: .92; }
+.center-scene__storage span {
+  position: absolute;
+  width: 45%;
+  height: 43%;
+  background: #bea98b;
+  border: 1px solid #9b8970;
+  box-shadow: inset -7px 0 #aa9577;
+}
+.center-scene__storage span::after { content: ''; position: absolute; left: 45%; top: 0; height: 100%; width: 10%; background: #d0c4a6; }
+.center-scene__storage span:nth-child(1) { left: 0; bottom: 0; }
+.center-scene__storage span:nth-child(2) { left: 47%; bottom: 0; }
+.center-scene__storage span:nth-child(3) { left: 25%; bottom: 44%; }
+.center-scene__fallback { position: absolute; inset: 0; display: flex; gap: 8px; padding: 19% 6% 16%; background: #e5decc; }
+.center-scene__fallback > span { flex: 1; border: 6px solid #c9c7bb; background: #d7b795; }
+.center-scene--reduced * { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .center-scene * { animation: none !important; transition: none !important; }
+}
+@media (max-width: 700px) {
+  .center-scene { min-height: 220px; }
+  .center-scene__season { top: 10px; left: 10px; font-size: 11px; padding: 5px 8px; }
+  .center-scene__room-label { font-size: 11px; padding: 5px 7px; gap: 5px; }
+  .center-scene__room-letter { width: 16px; height: 16px; font-size: 9px; }
+  .center-scene__activity-tag { font-size: 10px; padding: 4px 6px; gap: 4px; }
+  .center-scene__front-caption { font-size: 10px; bottom: 9px; }
+}

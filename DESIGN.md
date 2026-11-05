@@ -1,15 +1,90 @@
-# Center growth — current art direction
+# 센터장님, 다음 주는요? — 현재 디자인 기준
 
-This branch replaces the former card/mission game's Zapier and printed-collage styling.
+## 선택한 DESIGN.md
 
-- Modern Korean 2D life-simulation art: drawn lines, restrained cel shading, warm natural light, believable adult characters.
-- The cutaway center scene is the main surface. Room selection and five weekly blocks stay directly connected to it.
-- Warm green, cream, muted coral, light wood. Avoid a corporate dashboard or neon game template.
-- Generated raster environment and dialogue portraits, separate SVG equipment/actors for the playable prototype, live DOM text and controls.
-- One short contextual character line. Hide detailed rules and financial controls until requested.
-- Text stays separate from images for accessibility. New assets live in public/center.
-- Mobile uses readable type and tap targets; weekly slots wrap instead of shrinking into tiny labels.
+getdesign.md 목록의 **Oura Analysis**를 기반으로 사용합니다.
 
-Detailed plan: docs/center-growth/ART_AND_AUDIO_DRAFT.md.
-Actual generation prompts: docs/center-growth/ASSET_PROVENANCE.md.
-Remaining production art: docs/center-growth/IMPLEMENTATION_STATUS.md.
+- 목록/설명: https://getdesign.md/oura/design-md
+- 원문: https://github.com/VoltAgent/awesome-design-md/blob/main/design-md/oura/DESIGN.md
+- 보관본: `docs/references/DESIGN-oura.md` (내용 수정 없이 보관)
+- 원문 blob SHA: `73fddfabb4fe87d6d180a24f6a794b1fc743b568`
+- 확인일: 2026-11-05
+- 작성자/라이선스: VoltAgent, MIT. `docs/references/LICENSE-getdesign.txt`
+- 이는 getdesign.md의 독립적인 디자인 분석이며 Oura의 공식 가이드나 후원 관계를 뜻하지 않습니다.
+
+이 문서는 위 원문을 한국어 육성·경영 게임에 적용하는 규칙입니다. **아래 게임 전용 조정이 원문의 쇼핑·마케팅 페이지 예시보다 우선합니다.** 이전 Zapier/민트 카드 스타일은 현재 기준이 아닙니다.
+
+## 방향
+
+센터의 계절과 주민의 생활을 기록하는 운영 일지. 배경 그림을 크게 놓고, 읽기 쉬운 일정표와 선택 영역을 하나의 운영판으로 연결합니다. 강한 인상을 내기 위해 장식을 늘리지 않습니다. 센터 장면과 정적 인물 초상, 글자 크기와 판면의 차이로 위계를 만듭니다.
+
+- 반복되는 흰색 둥근 카드, 연두색 그라데이션, 희미한 작은 글씨, 의미 없는 영문 대문자 장식을 없앱니다.
+- 제목은 한글 명조, 조작·수치·대화는 고딕으로 구분합니다.
+- 웹사이트용 거대한 홍보 제목·길게 늘어진 여백·3열 기능 소개는 게임 화면으로 가져오지 않습니다.
+- 한 화면에는 주 실행 행동이 하나 보입니다. 세부 운영 설명은 펼치거나 창을 열었을 때 보여줍니다.
+- 문화/체육/행사는 문자와 아이콘으로도 구분합니다. 색에만 의존하지 않습니다.
+
+## 색상
+
+Oura 원문에서 가져온 정확한 토큰:
+
+| 역할 | 색 |
+|---|---|
+| 기본 종이 바탕 | `#f7f1e8` |
+| 주 글자 / 잉크 | `#1c1b1a` |
+| 보조 글자 / 회갈색 | `#4a4741` |
+| 점토색 | `#6b443d` |
+| 겨자·평가 강조 | `#af751b` |
+| 차분한 올리브 | `#5c6f5d` |
+| 얇은 구분선 | `#e1dcd3` |
+| 주 실행 파랑 | `#2a72de` |
+
+버튼을 모두 파랗게 만들지 않습니다. 주요 실행·확정에 파랑을 사용하고, 그 외 조작은 종이/잉크/윤곽선으로 표현합니다. 문화·체육·행사의 옅은 표면색은 분류를 위한 보조색입니다. 녹색은 전체 화면의 기본색이 아닙니다.
+
+나라장터 조달 화면은 예외적으로 청색 헤더와 문서 구조를 사용합니다. 센터 운영 공간에서 공공조달 업무로 들어왔다는 전환을 표현하기 위한 별도 모드입니다.
+
+## 글자와 형태
+
+- 제목: `Noto Serif KR, Batang, Georgia, serif`. 실제 이용 가능한 폰트로 표시하며 독점 서체 Editorial New를 포함하지 않습니다.
+- 조작/본문: `Pretendard, Noto Sans KR, Malgun Gothic, system-ui, sans-serif`. 독점 AkkuratLL을 포함하지 않습니다.
+- 중요한 조작 글자는 데스크톱 13–15px, 대화 14px 전후, 보조 정보도 모바일에서 식별 가능한 크기로 유지합니다.
+- 명조는 제목과 평가의 큰 숫자처럼 충분한 크기에만 사용합니다.
+- 모서리는 게임용으로 축소합니다. 시간표/목록은 작은 모서리와 구분선, 모달은 부드러운 모서리로 구분합니다.
+- 원본의 9999px 알약/24px 카드/40px 상품 모서리를 모든 UI에 반복하지 않습니다.
+- 투명 유리·네온·다층 그림자·장식용 pill 남발을 금합니다.
+
+## 화면 구성
+
+### 센터 운영판
+배경 그림 → 시간표 → 실행의 관계를 가깝게 둡니다. 선택한 방과 현재 활동은 충분히 대비됩니다. 장면을 독립적인 홍보 배너처럼 만들지 않습니다. 이미지의 가로세로 비율을 유지합니다. 센터 장면에는 주민 캐릭터를 표시하지 않습니다. 시설 물품·활동 라벨·실제 이용 인원과 운영 수치로 상태와 진행을 전달합니다.
+
+### 인물 대화
+정적 인물 초상과 대화가 함께 보이는 게임 대화창으로 표시합니다. 부가 통계 카드처럼 작게 끼워 넣지 않습니다. 한 번에 짧은 한두 문장만 표시합니다. 대화창의 초상은 센터 장면에서 움직이는 주민 캐릭터와 구분하여 유지합니다.
+
+### 나라장터 조달 업무
+단순 상품 카드 팝업 대신 센터에서 이동해 들어오는 업무 화면입니다.
+
+1. 활동에 필요한 기능/품목을 찾습니다.
+2. 구매비·올해 확보할 유지비·설치 소요·가능해지는 활동을 비교합니다.
+3. 설치 장소와 비용이 정리된 조달 요청서를 확인합니다.
+4. 조달 요청 후, 첫 주에 납품된 물품 확인과 설치가 진행됩니다.
+
+실제 나라장터 사이트의 로그인·결제·계약 기능은 제공하지 않습니다. 게임용 화면임을 표시하고, 실제 업체 인증이나 법적 절차 준수 여부를 임의로 보증하지 않습니다. 잘못된 선택도 다음 운영에서 회복할 수 있어야 합니다.
+
+### 연말 평가
+계절의 방문·재정 결과와 연간 평가를 구분합니다. 평가는 점수 3개를 요약하고 경쟁기관의 투자 결과로 이어지게 합니다.
+
+## 장면 연출과 사람 표시
+
+2026-11-05 사용자 요청에 따라 센터 장면의 주민 캐릭터와 사람 애니메이션을 제거합니다. SVG 관절 인형, 비트맵 전신 프레임, 입장·걷기·공예·운동 동작 모두 현재 디자인 범위에 포함하지 않습니다. 기존 스프라이트 기획을 근거로 되살리지 않으며, 사용자 승인 없이 사람 애니메이션을 다시 추가하지 않습니다.
+
+시설 물품, 선택한 방과 활동의 표시, 실제 이용 인원과 수치 변화로 운영 진행을 전달합니다. 대화창의 정적 초상은 유지합니다. 화면 전환과 상태 강조는 짧고 절제되게 처리하며 움직임 줄이기 설정을 존중합니다.
+
+## 구현 원칙
+
+- 화면 스타일: `src/center/center.css`
+- 조달 업무: `src/center/ProcurementDesk.tsx`, `ProcurementDesk.css`
+- 센터 장면/시설/활동 표시: `src/center/CenterScene.tsx`, `CenterScene.css`
+- 원문은 참고 데이터로 보관합니다. 실제 화면에는 이 문서의 토큰과 규칙을 코드로 반영해야 합니다.
+- 디자인 수정으로 구매·저장·결산 규칙을 바꾸지 않습니다.
+- 데스크톱과 390px 모바일에서 장면·일정·조달·평가를 확인합니다.
