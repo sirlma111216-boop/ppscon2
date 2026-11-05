@@ -11,7 +11,7 @@
 | 타입 검사·빌드 | `npm run check`, `npm run build` 통과 |
 | 이미지 | 원본 PNG 13장 보존. 게임은 WebP 파생본 26개만 불러옴 |
 | 음악 5·효과음 18·환경음 4 | **음원 0 / 27. 제작 전.** 재생 연결부만 구현, 실제 소리는 한 번도 확인하지 못함 |
-| GitHub 커밋·푸시, Cloudflare 배포 | **이번 작업에서 하지 않음.** 공개 주소의 현재 내용도 이번에 확인하지 않음 |
+| GitHub 커밋·푸시, Cloudflare 배포 | 2026-11-05 배포. 커밋 `9b6f597`, Cloudflare Pages 검사 성공, [ppscon.pages.dev](https://ppscon.pages.dev/)에서 엔딩까지 진행 확인 |
 | 사람이 직접 한 플레이테스트 | 미실시. 기록지: [PLAYTEST_OBSERVATION.md](PLAYTEST_OBSERVATION.md) |
 | 공모전 제출물(실행 ZIP, 1분 영상, 신청서) | 미작성 |
 
@@ -90,7 +90,6 @@
 - **200% 확대, 브라우저 글자 크기 변경.** 좁은 화면 배치는 확인했지만 확대 상태 자체는 시험하지 않았다.
 - **Chrome·Edge 밖의 브라우저**(Safari, Firefox)와 실제 휴대전화·태블릿 기기.
 - **느린 네트워크·그림 로딩 실패.** 그림이 늦게 와도 글과 버튼은 DOM이라 진행은 되도록 만들었지만, 조건을 걸어 시험하지는 않았다.
-- **배포본.** 이번 변경을 저장소에 올리지 않았으므로 Cloudflare 빌드와 공개 주소에서의 동작은 확인하지 않았다.
 
 ## 알려 둘 점
 
@@ -106,13 +105,21 @@
 
 1. 음원 27개 제작·편집·검청 → [AUDIO_HOOKUP.md](AUDIO_HOOKUP.md)의 순서로 연결 → 소리 검증
 2. 비개발자 5명 관찰 → 막히는 곳 수정
-3. 저장소에 커밋·푸시 → Cloudflare 배포 기록의 커밋과 공개 주소에서 실제 플레이 확인([DEPLOYMENT.md](DEPLOYMENT.md))
-4. 공모전 제출물: 실행 가능한 ZIP(로컬 실행 안내 포함), 약 1분 1080p 시연 영상, 신청서·동의서
+3. 공모전 제출물: 실행 가능한 ZIP(로컬 실행 안내 포함), 약 1분 1080p 시연 영상, 신청서·동의서
    ([CONTEST_AND_CREDITS.md](CONTEST_AND_CREDITS.md)). 접수는 제작자가 직접 한다.
+
+## 배포 기록
+
+- 2026-11-05: 사용자의 지시로 `main`에 커밋 [`9b6f597`](https://github.com/sirlma111216-boop/ppscon/commit/9b6f597c4487b5d4f674284e242b069b11ba845c)을 푸시했다.
+  이 커밋의 GitHub 검사에서 `Cloudflare Pages`와 `build`(GitHub Actions: 타입 검사·테스트·빌드)가 모두 성공으로 끝났다.
+- 공개 주소 https://ppscon.pages.dev/ 가 로컬 빌드와 같은 스크립트 파일(`index-CGahm1TC.js`)을 내보내는 것을 확인했다.
+- 공개 주소를 대상으로 자동 플레이(Chrome 156, 1366×768, 최저비용 조합, 마우스, 연출 건너뛰기)를 돌려 엔딩까지 완료했고
+  콘솔 오류·실패한 요청·가로 넘침이 없었다. 다른 화면 크기와 브라우저는 공개 주소에서 따로 돌리지 않았다(같은 빌드를 로컬에서 확인).
+- 이 문서를 고친 뒤의 커밋도 같은 경로로 자동 배포된다. 최신 배포는 [커밋별 검사](https://github.com/sirlma111216-boop/ppscon/commits/main/)에서 확인한다.
 
 ## 키트 인계 시점의 연결 기록
 
-아래는 개발 인계 키트에 적혀 있던 내용이며 이번 작업에서 다시 확인하지 않았다.
+아래는 개발 인계 키트에 적혀 있던 내용이다.
 
 - GitHub: [sirlma111216-boop/ppscon](https://github.com/sirlma111216-boop/ppscon), production branch `main`.
 - Cloudflare Pages: [ppscon.pages.dev](https://ppscon.pages.dev/). 기존 GitHub 연결에서 `ppscon` 저장소를 선택했다.
