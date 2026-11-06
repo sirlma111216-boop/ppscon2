@@ -1,8 +1,13 @@
 # 밸런스 검증 기록
 
-최신 기준은 **6년·24턴·총 10개 센터·2/4/6년 종합평가**입니다.
+최신 기준은 **6년·24턴·총 10개 센터·2/4/6년 종합평가**입니다. 환경 사업 3종 분리와 장비 보관에 이어 방 전용 수업 11종을 적용했습니다.
 
-- [최신 종합 해석: SIX_YEAR_REVIEW.md](SIX_YEAR_REVIEW.md)
+- [최신 방 전용 수업 11종 검증: 105회 실행·96개 정책/시드 조합](EXCLUSIVE_CLASSES_REVIEW.md)
+- [이전 고급 3종·보관 검증: 72게임 + 당시 최종 엔진 대표 재검](ADVANCED_CLASSES_REVIEW.md)
+
+- [독립 공사·실제 기간 후속 검증: 36게임](CONSTRUCTION_REVIEW.md)
+
+- [경제·평가 종합 해석: 3사업 분리 전 660게임](SIX_YEAR_REVIEW.md)
 - [훈련 324게임](six-year-training.md)
 - [독립 holdout 324게임](six-year-holdout.md)
 - [신중구매 보조실험 12게임](six-year-cautious.md)

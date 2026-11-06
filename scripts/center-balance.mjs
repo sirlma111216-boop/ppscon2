@@ -8,7 +8,7 @@ import * as campus from '../src/center/campusProjects.ts';
 
 export const STRATEGIES = [
   { id:'idle', name:'아무것도 하지 않기', classes:'none' },
-  { id:'community_spam', name:'무료 주민모임 전칸 반복', classes:'community' },
+  { id:'community_spam', name:'무료 생활안전 교실 전칸 반복', classes:'community' },
   { id:'rent_only', name:'대관만 · 정비 포함', rent:true, care:true, classes:'none' },
   { id:'rent_perfect', name:'대관만 · 매턴 완벽 정비', rent:true, care:true, perfect:true, classes:'none' },
   { id:'rent_overload', name:'대관 전부 승인 · 정비 무시', rent:true, overload:true, classes:'none' },
@@ -51,8 +51,8 @@ function maintain(state, perfect=false) {
 }
 function investCampus(state,policy) {
   if(policy.campus===undefined)return state;
-  const id=campus.campusTier(state.player)>0?'facade':'garden';
-  if(campus.getCampusProject(state.player,id)?.stage==='complete')return state;
+  const id=(policy.campusOrder??['garden','facade','plaza']).find(id=>!campus.isCampusProjectBundled(state.player,id)&&campus.getCampusProject(state.player,id)?.stage!=='complete');
+  if(!id)return state;
   if(!campus.getCampusProject(state.player,id))state=campus.postCampusTender(state,id).state;
   if(campus.getCampusProject(state.player,id)?.stage==='announced')state=campus.collectCampusBids(state,id).state;
   const project=campus.getCampusProject(state.player,id);
@@ -153,6 +153,11 @@ export function runBot(policy,seed) {
   let minCash=state.player.cash, liquiditySeasons=0, shortageSeasons=0, overloadSeasons=0;
   let rentalRevenue=0,classRevenue=0,classCost=0,rentalCost=0;
   const years=[],seasons=[],grants=[{year:1,amount:sim.BASE_ANNUAL_BUDGET}], rivalGrants=Object.fromEntries(state.rivals.map(inst=>[inst.id,[{year:1,amount:sim.BASE_ANNUAL_BUDGET}]]));
+  const projectTimings=new Map();
+  const projects=()=>[
+    ...state.player.facilityProjects.map(project=>({key:'facility-'+project.room,project})),
+    ...state.player.campusProjects.map(project=>({key:'campus-'+project.id,project})),
+  ];
   let invariantChecks=0;
   const check=(condition,message)=>{invariantChecks++;if(!condition)throw new Error(`${message}: ${policy.id}/${seed}/${state.year}/${state.season}`);};
   for (let turn=0;turn<sim.MAX_TURNS;turn++) {
@@ -163,10 +168,18 @@ export function runBot(policy,seed) {
     const cashBeforeInvest=state.player.cash,freeBeforeInvest=sim.freeCash(state.player);
     state=invest(state,activePolicy);
     state=investCampus(state,activePolicy);
+    for(const {key,project} of projects())if(project.stage==='construction'&&!projectTimings.has(key)){
+      const bid=project.bids.find(item=>item.id===project.selectedBidId);
+      projectTimings.set(key,{id:key,announcedTurn:(project.announcedYear-1)*4+project.announcedSeason+1,startedTurn:turn+1,weeks:bid.weeks,price:bid.price,upkeep:bid.upkeep,vendor:bid.vendor,expected:facilities.expectedConstructionCompletion(state,project.remainingWeeks),completedTurn:null});
+    }
     const purchaseSpend=money(cashBeforeInvest-state.player.cash),freeAfterInvest=sim.freeCash(state.player);
     state=prepareSeason(state,activePolicy);
     const forecast=policy.auditPreview?sim.previewSeason(state):null;
     state=sim.runSeason(state);
+    for(const {key,project} of projects())if(project.stage==='complete'&&projectTimings.has(key)&&projectTimings.get(key).completedTurn===null){
+      const timing=projectTimings.get(key);timing.completedTurn=turn+1;
+      check(timing.completedTurn===timing.expected.turn,'Actual construction completion matches published timing');
+    }
     check(state.phase==='review'&&sim.validateSave(state),'Invalid review state');
     check(state.history.length===turn+1,'Settlement count');
     const report=state.lastReport;
@@ -201,7 +214,7 @@ export function runBot(policy,seed) {
   check(state.player.evaluations.every(e=>e.measuredSeasons===8&&!e.partial),'Complete evaluation evidence');
   const score=sim.finalScore(state.player);
   const rank=sim.getFinalRank(state),evaluations=structuredClone(state.player.evaluations);
-  return {strategy:policy.id,seed,score,rank,award:sim.getAwardForRank(rank),evaluations,grants,seasons,invariantChecks,
+  return {strategy:policy.id,seed,score,rank,award:sim.getAwardForRank(rank),evaluations,grants,seasons,invariantChecks,projectTimings:[...projectTimings.values()],campusExteriorKey:campus.campusExteriorKey(state.player),
     firstEvaluationRank:evaluations[0].rank,lastEvaluationRank:evaluations.at(-1).rank,rankRecovery:evaluations[0].rank-evaluations.at(-1).rank,
     cash:money(state.player.cash),minCash:money(minCash),publicScore:state.player.publicScore,experience:state.player.experienceScore,
     reputation:state.player.reputation,openRooms:state.player.rooms.filter(r=>r.open).length,campusTier:campus.campusTier(state.player),liquiditySeasons,shortageSeasons,overloadSeasons,
@@ -231,7 +244,7 @@ function main() {
     for(let index=0;index<count;index++) rows.push(runBot(policy,start+index));
     console.log(`${policy.id}: ${count} full games completed`);
   }
-  const summary=summarize(rows,policies),result={label,rules:'six-year-biennial-v1',years:sim.MAX_YEARS,turns:sim.MAX_TURNS,evaluationIntervalYears:sim.EVALUATION_INTERVAL,weights:sim.EVALUATION_COMPONENTS,seedStart:start,seedCount:count,strategies:policies.length,games:rows.length,seasons:rows.length*sim.MAX_TURNS,invariantChecks:rows.reduce((sum,row)=>sum+row.invariantChecks,0),elapsedSeconds:money((Date.now()-started)/1000),summary,runs:rows};
+  const summary=summarize(rows,policies),result={label,rules:'six-year-independent-campus-v2',years:sim.MAX_YEARS,turns:sim.MAX_TURNS,evaluationIntervalYears:sim.EVALUATION_INTERVAL,weights:sim.EVALUATION_COMPONENTS,seedStart:start,seedCount:count,strategies:policies.length,games:rows.length,seasons:rows.length*sim.MAX_TURNS,invariantChecks:rows.reduce((sum,row)=>sum+row.invariantChecks,0),elapsedSeconds:money((Date.now()-started)/1000),summary,runs:rows};
   fs.mkdirSync(output,{recursive:true});
   fs.writeFileSync(path.join(output,`${label}.json`),JSON.stringify(result,null,2)+'\n');
   const columns=Object.keys(summary[0]);

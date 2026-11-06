@@ -63,11 +63,22 @@ svg { vertical-align: middle; }
 
 /* A single operating board rather than separate floating cards. */
 .main-grid { display: grid; grid-template-columns: minmax(0, 1fr) 312px; gap: 24px; align-items: start; border-top: 2px solid var(--stone); padding-top: 18px; }
+.room-navigation { position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; gap:5px; padding:7px 0 11px; background:var(--paper); box-shadow:0 1px 0 var(--line); }
+.center-game .room-navigation button { display:inline-flex; align-items:center; justify-content:center; gap:5px; min-height:34px; margin:0; padding:7px 10px; border:1px solid #c9c2b7; border-radius:2px; background:#eeeae2; color:#514d45; font-size:12px; line-height:1.35; white-space:nowrap; transform:none; }
+.center-game .room-navigation button:hover { border-color:#898277; background:#e8e2d8; }
+.center-game .room-navigation button.is-current { border-color:#625a4e; background:#625a4e; color:#fffdf5; }
+.center-game .room-navigation button:active { transform:none; }
+.room-navigation button small { font-size:10px; opacity:.7; }
+.room-navigation button svg { flex:none; opacity:.8; }
+.center-game:not(.is-exploring) :is(.scene-card,.schedule-panel,.class-requirements,.rental-applications,.room-details){scroll-margin-top:64px}
+@media(max-width:600px){.room-navigation{gap:5px;padding:7px 0 10px}.center-game .room-navigation button{min-height:34px;padding:7px 8px;font-size:11px}.room-navigation button small{font-size:9px}.center-game:not(.is-exploring) :is(.scene-card,.schedule-panel,.class-requirements,.rental-applications,.room-details){scroll-margin-top:140px}}
 .play-column { min-width: 0; }
 .scene-card { overflow: hidden; background: var(--stone); border-radius: 3px; }
 .scene-toolbar { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 14px; color: #f7f1e8; font-size: 11px; }
 .scene-toolbar > span, .scene-toolbar > div { display: flex; align-items: center; gap: 9px; }
 .scene-toolbar .text-button { color: #f7f1e8; min-height: 36px; padding: 0 6px; font-size: 11px; }
+.scene-toolbar.has-activity{flex-wrap:wrap;gap:0 10px}
+.scene-toolbar.has-activity>div{margin-left:auto;flex-wrap:wrap}
 .scene-instruction { color: #d6cbbd; font-size: 11px; }
 .live-dot { width: 5px; height: 5px; background: #ddbe78; border-radius: 50%; }
 .live-dot.active { box-shadow: 0 0 0 4px #ddbe781f; }
@@ -124,8 +135,11 @@ svg { vertical-align: middle; }
 .text-button:disabled { color: #9a9184; }
 
 /* The control rail is organized by ink rules and clear selected states. */
-.decision-column { display: flex; flex-direction: column; gap: 24px; min-width: 0; padding-left: 22px; border-left: 1px solid var(--line); }
+.decision-column { display: block; min-width: 0; padding-left: 22px; border-left: 1px solid var(--line); container-type:inline-size; container-name:class-rail; }
 .room-panel { min-width: 0; }
+.class-panel-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.class-panel-heading h2{font-family:var(--display);font-size:21px;line-height:1.4;font-weight:600;letter-spacing:-.6px}
+.class-panel-heading>span{font-size:11px;color:var(--muted);white-space:nowrap}
 .room-letter { font-family: var(--display); color: var(--gold); font-size: 37px; font-weight: 400; line-height: 1; }
 .room-tabs { display: flex; border-bottom: 1px solid var(--line); gap: 14px; margin-top: 18px; }
 .room-tabs button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 40px; padding: 8px 1px; border-bottom: 2px solid transparent; color: var(--muted); background: transparent; white-space: nowrap; font-size: 12px; }
@@ -186,6 +200,40 @@ svg { vertical-align: middle; }
 .procurement-button:disabled { opacity: .55; }
 .room-details-toggle { justify-content: space-between; width: 100%; padding: 13px 0 7px; color: var(--muted); font-size: 12px; }
 .room-details { padding: 7px 0 0; }
+.equipment-section-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 4px;font-size:12px}
+.equipment-section-heading strong{display:flex;align-items:center;gap:6px}
+.equipment-section-heading>span,.equipment-empty,.equipment-storage-note,.stored-maintenance{font-size:11px;line-height:1.6;color:var(--muted)}
+.equipment-empty,.equipment-storage-note{margin:6px 0}
+.equipment-storage{margin-top:15px;padding-top:7px;border-top:1px solid var(--line)}
+.equipment-storage-note{max-width:100%;overflow-wrap:anywhere}
+.gear-detail .gear-identity{align-items:flex-start}
+.gear-identity strong{min-width:0;font-size:12px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+.gear-identity>span{flex-shrink:0;line-height:1.6}
+.gear-detail .gear-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.gear-detail .gear-actions select{flex:1 1 145px;width:auto;min-width:0;margin:0}
+.gear-actions .secondary-button{display:flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:7px 9px;font-size:11px;white-space:nowrap}
+.stored-maintenance{display:block;margin-top:3px}
+.storage-confirm-summary{display:flex;flex-direction:column;gap:8px;margin:4px 0 18px}
+.storage-confirm-summary>strong{font-size:18px}
+.storage-confirm-summary>span{font-size:12px;line-height:1.6;color:var(--muted)}
+.storage-impact-list{display:grid;gap:10px;padding:0;margin:0 0 22px;list-style:none}
+.storage-impact-list>li{display:grid;gap:4px;border-bottom:1px solid var(--line);padding:0 0 10px}
+.storage-impact-list span,.storage-impact-list small{font-size:12px;color:var(--muted)}
+.storage-impact-list b{font-size:14px;font-weight:600;overflow-wrap:anywhere}
+.premium-class-summary{padding:8px 0;margin:4px 0 8px;border-bottom:1px solid var(--line)}
+.premium-class-summary>div{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;font-size:11px;line-height:1.7}
+.premium-class-summary>div>b{color:#795440}
+.premium-class-summary>div strong{font-size:12px}
+.premium-class-summary>small{display:block;margin-top:4px;font-size:10px;line-height:1.6;color:var(--muted)}
+.class-card-name .class-premium-mark{font-size:9px;font-weight:500;color:#795440}
+.migration-notice-panel{margin:0 0 22px;padding:0 0 18px;border-bottom:1px solid var(--line)}
+.migration-notice-panel h3{margin:0 0 8px;font-size:17px;font-weight:600}
+.migration-notice-panel p,.migration-notice-panel li,.save-issue-note{font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.migration-notice-panel p{margin:0 0 10px;color:var(--muted)}
+.migration-notice-panel ul{margin:0 0 14px;padding-left:18px}
+.migration-notice-panel li+li{margin-top:6px}
+.migration-notice-panel .secondary-button{padding:8px 14px;font-size:12px}
+.save-issue-note{margin:0 0 18px;padding:10px 12px;border-left:2px solid var(--clay);background:#f0e9dd;color:var(--stone)}
 .gear-detail { padding: 12px 0; border-bottom: 1px solid var(--line); }
 .gear-detail > div { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; }
 .gear-detail > div > span:last-child { color: var(--muted); font-size: 11px; }
@@ -201,11 +249,12 @@ svg { vertical-align: middle; }
 .small-actions button:hover:not(:disabled) { background: #e9dece; }
 .small-actions button:disabled { opacity: .5; }
 
-/* The portrait breaks the edge of a dialogue strip. */
-.character-dialogue { position: relative; isolation: isolate; min-height: 180px; margin-top: 10px; padding: 25px 15px 22px 119px; background: #4a3932; color: #fffdf8; border-radius: 3px; }
+/* Portrait and speech own separate columns; neither can overlap or escape. */
+.character-dialogue { position:relative; isolation:isolate; display:grid; grid-template-columns:clamp(110px,40%,145px) minmax(0,1fr); align-items:end; gap:10px; min-width:0; min-height:190px; margin-top:10px; padding:10px 12px 0 0; overflow:hidden; background:#4a3932; color:#fffdf8; border-radius:3px; }
 .character-dialogue::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 3px; background: #bc924c; }
-.character-dialogue > img { position: absolute; bottom: 0; left: -21px; width: 168px; height: 198px; object-fit: contain; object-position: bottom; pointer-events: none; }
-.dialogue-copy { position: relative; z-index: 1; }
+.dialogue-portrait { position:relative; display:block; align-self:end; width:100%; height:185px; min-width:0; overflow:hidden; }
+.dialogue-portrait > img { position:absolute; top:0; left:50%; display:block; width:200%; height:auto; max-width:none; max-height:none; transform:translateX(-50%); pointer-events:none; }
+.dialogue-copy { position:relative; z-index:1; min-width:0; padding:3px 0 19px; overflow-wrap:anywhere; }
 .dialogue-copy > span { display: block; font-size: 15px; font-weight: 600; line-height: 1.45; }
 .dialogue-copy small { display: block; margin-top: 4px; font-size: 10px; font-weight: 400; color: #d6bfaa; }
 .dialogue-copy p { margin-top: 14px; font-size: 13px; line-height: 1.8; word-break: keep-all; color: #f8eee2; }
@@ -231,6 +280,10 @@ svg { vertical-align: middle; }
 .secondary-button:hover { background: #e9dece; }
 .run-button { flex-shrink: 0; min-width: 232px; min-height: 56px; border-radius: 5px; }
 .run-button small { display: none; }
+.actionbar-actions{display:flex;align-items:stretch;flex-shrink:0;gap:8px;margin-left:auto}
+.action-bar .actionbar-back{min-height:48px;padding:10px 14px;border-color:#a89e8f;color:#f7f1e8;white-space:nowrap}
+.action-bar .actionbar-back:hover{background:#494239;color:#fff}
+.actionbar-back-short{display:none}
 .build-note { text-align: center; color: #847a6c; font-size: 10px; line-height: 1.6; padding-top: 10px; }
 .toast { position: fixed; z-index: 100; bottom: 100px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); padding: 15px 22px; border: 1px solid #947f60; border-radius: 5px; background: #3f3429; color: #fffdf8; font-size: 13px; line-height: 1.6; box-shadow: 0 6px 22px #2b241e29; }
 
@@ -238,7 +291,7 @@ svg { vertical-align: middle; }
 .modal-backdrop { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; padding: 28px; background: #24211bd4; backdrop-filter: blur(3px); animation: backdrop-in 160ms ease; }
 .game-modal { width: min(100%, 570px); max-height: 92dvh; overflow: auto; overscroll-behavior: contain; padding: 28px; border-top: 4px solid var(--clay); border-radius: 6px; background: var(--paper); box-shadow: 0 28px 100px #0005; animation: panel-in 180ms ease; }
 .game-modal.wide { width: min(100%, 920px); }
-.modal-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid var(--line); }
+.modal-heading { position:sticky; top:0; z-index:6; display:flex; align-items:center; justify-content:space-between; gap:14px; padding-bottom:18px; margin-bottom:22px; border-bottom:1px solid var(--line); background:var(--paper); }
 .modal-heading h2 { font-family: var(--display); font-size: 28px; font-weight: 600; letter-spacing: -1px; line-height: 1.4; }
 .modal-heading .icon-button { flex-shrink: 0; border: 1px solid #c7bcaa; }
 .pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 0; color: var(--clay); font-size: 11px; font-weight: 600; }
@@ -388,8 +441,7 @@ svg { vertical-align: middle; }
   .slot-content small { font-size: 10px; }
   .scene-footer > span:first-child { display: none; }
   .scene-footer { justify-content: flex-end; }
-  .character-dialogue { padding-left: 107px; }
-  .character-dialogue > img { left: -26px; width: 162px; }
+  .character-dialogue { grid-template-columns:110px minmax(0,1fr); gap:10px; }
   .dialogue-copy p { font-size: 12px; }
   .forecast > span { font-size: 11px; }
   .action-bar { gap: 16px; }
@@ -403,9 +455,8 @@ svg { vertical-align: middle; }
   .center-identity { font-size: 12px; }
   .game-layout { padding: 22px 22px 12px; }
   .main-grid { grid-template-columns: minmax(0, 1fr); gap: 23px; }
-  .decision-column { display: grid; grid-template-columns: 1.2fr .8fr; align-items: start; gap: 24px; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--line); }
-  .character-dialogue { margin-top: 36px; min-height: 210px; }
-  .character-dialogue > img { width: 172px; height: 220px; left: -26px; }
+  .decision-column { display:block; padding:20px 0 0; border-left:0; border-top:1px solid var(--line); }
+  .character-dialogue { margin-top:16px; min-height:190px; grid-template-columns:clamp(110px,40%,145px) minmax(0,1fr); }
   .activity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .scene-footer > span:first-child { display: inline-flex; }
   .scene-footer { justify-content: space-between; }
@@ -488,7 +539,7 @@ svg { vertical-align: middle; }
   .schedule-bottom > span { flex: 1; line-height: 1.7; align-items: flex-start; padding-top: 4px; }
   .schedule-bottom > span svg { margin-top: 2px; flex-shrink: 0; }
   .schedule-bottom .text-button { font-size: 11px; white-space: nowrap; }
-  .decision-column { display: flex; padding-top: 19px; gap: 20px; }
+  .decision-column { padding-top:19px; }
   .room-panel { width: 100%; }
   .room-letter { font-size: 34px; }
   .room-tabs { margin-top: 13px; gap: 8px; }
@@ -503,8 +554,7 @@ svg { vertical-align: middle; }
   .procurement-button > span > span { font-size: 15px; }
   .procurement-button small { font-size: 12px; }
   .room-details-toggle { min-height: 42px; font-size: 12px; }
-  .character-dialogue { min-height: 163px; margin-top: 21px; padding: 22px 19px 20px 144px; }
-  .character-dialogue > img { height: 196px; width: 181px; left: -12px; }
+  .character-dialogue { min-height:190px; margin-top:18px; padding:10px 14px 0 0; grid-template-columns:clamp(110px,40%,145px) minmax(0,1fr); gap:12px; }
   .dialogue-copy > span { font-size: 16px; }
   .dialogue-copy p { font-size: 13px; margin-top: 12px; line-height: 1.75; }
   .dialogue-copy small { font-size: 11px; }
@@ -515,6 +565,12 @@ svg { vertical-align: middle; }
   .rival-button > svg:last-child, .rival-button small { display: none; }
   .run-button { min-width: 0; min-height: 48px; padding: 10px 13px; font-size: 13px; gap: 7px; }
   .run-button > svg { width: 17px; }
+  .planning-action-bar .rival-button{flex:0 0 30px;justify-content:center;padding:0;min-width:0}
+  .planning-action-bar .rival-button>span{display:none}
+  .planning-action-bar .actionbar-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);flex:1;min-width:0;gap:7px}
+  .planning-action-bar .actionbar-actions>button{width:100%;min-width:0;min-height:46px;padding:9px 7px;font-size:12px;gap:4px}
+  .planning-action-bar .actionbar-back-full{display:none}
+  .planning-action-bar .actionbar-back-short{display:inline}
   .build-note { font-size: 10px; }
   .modal-backdrop { padding: 12px; }
   .game-modal { padding: 20px 16px; max-height: 94dvh; }
@@ -574,18 +630,14 @@ svg { vertical-align: middle; }
 }
 
 /* Exterior first; a room's controls appear only after the player enters it. */
-.main-grid.is-exterior,.main-grid.is-rental-room{grid-template-columns:minmax(0,1fr)}
+.main-grid.is-exterior{grid-template-columns:minmax(0,1fr)}
 .main-grid.is-exterior{padding-top:0;border-top:0}
 .main-grid.is-exterior .scene-toolbar{background:#514638}
-.main-grid.is-rental-room .rental-review{margin-top:22px}
-.main-grid.is-rental-room .rental-room-list{display:none}
-.main-grid.is-rental-room .rental-intro-state{display:none}
-.main-grid.is-rental-room .rental-intro{padding-bottom:14px}
 .room-change-link{margin-top:8px;font-size:11px;color:var(--muted)}
 .activity-chip.class-card{display:block;padding:0;min-height:0;overflow:hidden;border:1px solid #cdbfac;border-radius:3px;background:#fffaf0;box-shadow:none}
 .activity-chip.class-card.locked{border-style:solid;color:var(--stone)}
 .activity-chip.class-card.chosen{border-color:var(--clay);box-shadow:0 0 0 1px var(--clay)}
-.class-card .class-card-art{position:relative;display:block;aspect-ratio:3/2;overflow:hidden;background:#e9ddc6;color:#aa9577}
+.class-card .class-card-art{position:relative;display:block;aspect-ratio:3/2;max-height:114px;overflow:hidden;background:#e9ddc6;color:#aa9577}
 .class-card-art>img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;transition:filter 150ms}
 .class-card-art>svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
 .activity-chip.class-card:disabled{opacity:1}
@@ -599,8 +651,8 @@ svg { vertical-align: middle; }
 .rival-profile .rival-building{position:relative;display:block;min-height:0;padding:0;aspect-ratio:16/9;overflow:hidden;background:#e9dfd1}
 .rival-building>img{display:block;width:100%;height:100%;object-fit:cover}
 .rival-profile .rival-building>span{position:absolute;inset:auto 0 0;margin:0;padding:22px 14px 12px;background:linear-gradient(transparent,#302a21c4);color:#fff9ed;text-align:left;font-size:15px}
-@media(max-width:870px) and (min-width:601px){.is-room-view .decision-column{grid-template-columns:minmax(0,1fr) 220px}.is-room-view .activity-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:600px){.activity-chip.class-card{padding:0;min-height:0}.class-card .class-card-name{font-size:13px;padding:9px 11px}.main-grid.is-rental-room .rental-review{margin-top:18px}.main-grid.is-rental-room .rental-intro h2{font-size:21px}.main-grid.is-exterior .scene-toolbar{min-height:39px}.main-grid.is-exterior .scene-instruction{font-size:10px}.main-grid.is-rental-room .rental-room-heading>div>p{display:none}.is-room-view .scene-footer{flex-wrap:wrap}}
+@media(min-width:601px){@container class-rail (min-width:360px){.activity-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}}
+@media(max-width:600px){.activity-chip.class-card{padding:0;min-height:0}.class-card .class-card-name{font-size:13px;padding:9px 11px}.main-grid.is-exterior .scene-toolbar{min-height:39px}.main-grid.is-exterior .scene-instruction{font-size:10px}.is-room-view .scene-footer{flex-wrap:wrap}}
 
 .class-replacement-summary{margin:20px 0;padding:17px 18px;background:#eee5d8;border-top:1px solid #b9a58b;border-bottom:1px solid #d4c3ab}
 .class-replacement-summary>span{font-size:12px;color:#83705b}
@@ -609,9 +661,99 @@ svg { vertical-align: middle; }
 .class-replacement-summary small{display:block;font-size:11px;font-weight:400;color:#80715c}
 .class-replacement-summary svg{flex-shrink:0;color:#a28b6c}
 .class-replacement-note{font-size:13px;line-height:1.8;color:var(--muted)}
+.empty-schedule-summary strong{display:block;margin-bottom:10px;font-size:20px;font-weight:600;line-height:1.5;word-break:keep-all}
+.empty-schedule-summary>span{display:block;font-size:13px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
+.empty-schedule-rooms{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 18px}
+.empty-schedule-rooms>span{padding:8px 10px;background:#eee6d9;color:var(--stone);font-size:12px;line-height:1.5;word-break:keep-all}
+@media(max-width:600px){.empty-schedule-summary strong{font-size:18px}.empty-schedule-summary~.review-actions{display:flex;flex-wrap:wrap;gap:9px}.empty-schedule-summary~.review-actions>button{flex:1 1 140px;min-width:0;white-space:normal}}
 @media(max-width:600px){.class-replacement-summary{padding:14px}.class-replacement-summary strong{font-size:14px}.class-replacement-summary>div{gap:10px}}
 
-/* Keep all room entrances above the action bar on short desktop displays. */
+/* Room workspaces keep the picture above their own planning information. */
+.main-grid.is-rental-room{grid-template-columns:minmax(260px,.37fr) minmax(0,.63fr);gap:24px}
+.main-grid.is-room-view{grid-template-columns:minmax(0,.55fr) minmax(330px,.45fr);grid-template-areas:"play decisions" "dialogue decisions";row-gap:18px}
+.main-grid.is-room-view.is-short-catalog{grid-template-areas:"play decisions" "play dialogue"}
+.main-grid.is-room-view .play-column{grid-area:play}
+.main-grid.is-room-view .decision-column{grid-area:decisions}
+.main-grid.is-room-view .room-dialogue{grid-area:dialogue;margin-top:0}
+.main-grid:is(.is-rental-room,.is-room-view) .scene-instruction{display:none}
+.main-grid:is(.is-rental-room,.is-room-view) .scene-footer>span:first-child{display:none}
+.main-grid:is(.is-rental-room,.is-room-view) .scene-footer{justify-content:flex-start;flex-wrap:wrap}
+.main-grid.is-room-view .schedule-panel{min-width:0;padding-top:15px}
+.main-grid.is-room-view .schedule-panel .section-heading{align-items:flex-start;flex-wrap:wrap;gap:8px}
+.main-grid.is-room-view .schedule-panel .section-heading h2{font-size:21px}
+.main-grid.is-room-view .schedule-slots{margin-top:12px}
+.main-grid.is-room-view .schedule-bottom{flex-wrap:wrap;gap:5px 12px}
+.main-grid.is-room-view .decision-column{padding-left:20px}
+.main-grid.is-room-view .procurement-button{min-height:47px;margin-top:10px;padding:10px 12px}
+.main-grid.is-room-view .procurement-button small{margin-top:2px;font-size:10px}
+.main-grid.is-room-view .activity-heading{margin:12px 0 8px}
+.main-grid.is-room-view .demand-peek{min-height:0;margin-top:4px;padding:9px 0;font-size:12px}
+.schedule-slot.is-selected-time{outline:2px solid var(--blue);outline-offset:-2px;background:#edf3fd}
+.schedule-slot.is-selected-time .slot-day{background:#dce7fb;color:#224e91}
+.slot-selection-prompt{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px 10px;margin:10px 0 0;padding:9px 11px;border-left:3px solid var(--blue);background:#e8effb;color:#274b7d;font-size:12px}
+.slot-selection-prompt .text-button{min-height:26px;padding:3px 0;color:#274b7d;font-size:11px}
+@media(min-width:901px){
+  .center-game:not(.is-exploring) .topbar{min-height:48px;padding-top:5px;padding-bottom:5px}
+  .center-game:not(.is-exploring) .brand{font-size:10px;line-height:1.25;gap:8px}
+  .center-game:not(.is-exploring) .brand strong{font-size:16px}
+  .center-game:not(.is-exploring) .brand-symbol{width:30px;height:30px}
+  .center-game:not(.is-exploring) .brand-symbol svg{width:20px}
+  .center-game:not(.is-exploring) .top-actions .icon-button{width:32px;height:32px}
+  .center-game:not(.is-exploring) .game-layout{padding-top:8px}
+  .center-game:not(.is-exploring) .page-heading{justify-content:space-between;padding-bottom:6px;gap:20px}
+  .center-game:not(.is-exploring) .page-heading>div:first-child{display:none}
+  .center-game:not(.is-exploring) .page-heading .season-badge,
+  .center-game:not(.is-exploring) .page-heading .budget-badge{min-height:34px;padding:0;border:0;gap:9px}
+  .center-game:not(.is-exploring) .page-heading .season-badge small,
+  .center-game:not(.is-exploring) .page-heading .budget-badge small{margin-bottom:2px;font-size:10px}
+  .center-game:not(.is-exploring) .page-heading .season-badge strong{font-size:20px}
+  .center-game:not(.is-exploring) .page-heading .budget-badge strong{font-size:23px}
+  .center-game:not(.is-exploring) .planning-steps{padding-bottom:6px;gap:12px}
+  .center-game:not(.is-exploring) .planning-steps>.text-button{min-height:26px;padding:3px 0}
+  .center-game:not(.is-exploring) .room-navigation{padding:4px 0 6px}
+  .center-game:not(.is-exploring) .room-navigation button{min-height:30px;padding:5px 9px}
+  .main-grid:is(.is-rental-room,.is-room-view){padding-top:10px}
+  .main-grid:is(.is-rental-room,.is-room-view) .scene-toolbar{min-height:30px;font-size:10px;padding-inline:10px}
+  .main-grid:is(.is-rental-room,.is-room-view) .scene-footer{min-height:26px;padding:5px 10px}
+  .main-grid.is-room-view .schedule-panel{padding-top:10px}
+  .main-grid.is-room-view .schedule-panel .section-heading .small-overline{display:none}
+  .main-grid.is-room-view .schedule-panel .section-heading h2{margin-top:0;font-size:20px}
+  .main-grid.is-room-view .schedule-hint{font-size:11px}
+  .main-grid.is-room-view .schedule-slots{margin-top:8px}
+  .main-grid.is-room-view .slot-day{padding-block:6px}
+  .main-grid.is-room-view .slot-content{min-height:100px;gap:5px;padding-top:10px;padding-bottom:10px}
+  .main-grid.is-room-view .rental-slot-content{padding-bottom:27px}
+  .main-grid.is-room-view .rental-slot-content .slot-icon,
+  .main-grid.is-room-view .rental-slot-content .rental-slot-label{display:none}
+  .main-grid.is-room-view .schedule-bottom{padding-top:6px}
+}
+@media(max-width:1100px) and (min-width:901px){
+  .main-grid.is-rental-room{grid-template-columns:minmax(250px,.35fr) minmax(0,.65fr);gap:18px}
+  .main-grid.is-room-view{grid-template-columns:minmax(0,.55fr) minmax(330px,.45fr);gap:18px}
+}
+@media(max-width:900px){
+  .main-grid.is-rental-room,.main-grid.is-room-view{grid-template-columns:minmax(0,1fr);gap:18px}
+  .main-grid.is-room-view,.main-grid.is-room-view.is-short-catalog{grid-template-areas:"play" "decisions" "dialogue"}
+  .main-grid.is-room-view .decision-column{padding-left:0}
+}
+@media(max-width:600px){
+  .center-game:not(.is-exploring) .game-layout{padding-top:12px}
+  .center-game:not(.is-exploring) .page-heading{display:flex;align-items:center;gap:16px;padding-bottom:12px}
+  .center-game:not(.is-exploring) .page-heading>div:first-child{display:none}
+  .center-game:not(.is-exploring) .page-heading .season-badge,
+  .center-game:not(.is-exploring) .page-heading .budget-badge{flex:1;min-height:42px;margin:0;padding:0;border:0}
+  .center-game:not(.is-exploring) .page-heading .season-badge strong{font-size:21px}
+  .center-game:not(.is-exploring) .page-heading .budget-badge strong{font-size:24px}
+  .center-game:not(.is-exploring) .planning-steps{padding-bottom:10px}
+  .main-grid.is-rental-room,.main-grid.is-room-view{padding-top:10px;gap:15px}
+  .main-grid.is-rental-room .scene-footer,.main-grid.is-room-view .scene-footer{display:none}
+  .main-grid.is-rental-room .scene-toolbar,.main-grid.is-room-view .scene-toolbar{min-height:30px}
+  .main-grid.is-room-view .schedule-panel{padding-top:12px}
+  .main-grid.is-room-view .schedule-panel .section-heading h2{font-size:20px}
+  .main-grid.is-room-view .schedule-slots{margin-top:10px}
+}
+
+/* Keep every exterior entrance in view; the overview follows below the picture. */
 .main-grid.is-exterior .scene-card{container-type:inline-size}
 @media(min-width:871px){
   .center-game.is-exploring .topbar{min-height:62px;padding-top:8px;padding-bottom:8px}

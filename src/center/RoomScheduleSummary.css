@@ -1,0 +1,47 @@
+.room-schedule-summary{min-width:0;margin-top:14px;padding:13px 0 0;border-top:1px solid var(--line)}
+.room-summary-heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:5px 12px;margin-bottom:8px}
+.room-summary-heading h2{font-size:14px;font-weight:600;line-height:1.4}
+.room-summary-heading p{font-size:11px;color:var(--muted)}
+.room-summary-heading b{font-size:16px;color:var(--stone);font-weight:600}
+.room-summary-heading small{font-size:10px;margin-left:5px}
+.room-summary-legend{display:flex;flex-wrap:wrap;gap:5px 12px;margin-bottom:8px;color:var(--stone);font-size:10px}
+.room-summary-legend>span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.room-summary-slot{display:block;box-sizing:border-box;flex:1;height:8px;border:1px solid transparent;border-radius:1px}
+.room-summary-slot.is-rental{background:#617552;border-color:#4c6341}
+.room-summary-slot.is-class{background:#466b8c;border-color:#466b8c;box-shadow:inset 0 2px #bdd0df}
+.room-summary-slot.is-empty{background:transparent;border-color:#a99e8e}
+.room-summary-slot.is-closed{border-color:#b7b0a6;background:repeating-linear-gradient(135deg,#d0cbc3 0 2px,#eee8df 2px 4px)}
+.room-summary-legend .room-summary-slot{flex:0 0 11px;width:11px}
+.room-summary-rooms{display:grid;gap:3px}
+.center-game .room-summary-row{display:flex;align-items:center;gap:9px;min-width:0;width:100%;min-height:22px;margin:0;padding:3px 5px;border:0;border-radius:1px;background:transparent;color:var(--stone);text-align:left;transform:none}
+.center-game button.room-summary-row:hover{background:#ebe3d6}
+.center-game .room-summary-row.is-selected{background:#e8dfd0}
+.room-summary-name{flex:0 0 94px;font-size:11px;line-height:1.35;white-space:nowrap}
+.room-summary-bar{display:flex;flex:1;min-width:0;gap:4px}
+.room-summary-finance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 0;padding-top:9px;border-top:1px solid var(--line)}
+.room-summary-finance>div{min-width:0}
+.room-summary-finance dt{font-size:10px;color:var(--muted)}
+.room-summary-finance dd{margin:4px 0 0;font-size:15px;font-variant-numeric:tabular-nums;color:var(--clay)}
+.room-summary-finance small{margin-left:4px;font-size:10px;color:var(--muted);white-space:nowrap}
+.room-schedule-summary--overview{width:100%;margin:18px auto 0}
+.room-schedule-summary--overview .room-summary-rooms{grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.room-schedule-summary--overview .room-summary-row{display:block;padding:5px}
+.room-schedule-summary--overview .room-summary-name{display:block;margin-bottom:6px}
+.room-schedule-summary--overview .room-summary-bar{width:100%}
+.room-schedule-summary--overview .room-summary-finance{display:flex;flex-wrap:wrap;gap:14px 30px;padding-top:10px}
+.room-schedule-summary--overview .room-summary-finance>div{display:flex;align-items:baseline;gap:7px}
+.room-schedule-summary--overview .room-summary-finance dd{margin:0}
+@media(max-width:900px){.room-schedule-summary--overview .room-summary-rooms{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){
+  .room-schedule-summary{margin-top:11px;padding-top:10px}
+  .room-summary-heading h2{font-size:13px}
+  .room-summary-name{font-size:10px;flex-basis:88px}
+  .room-summary-rooms{gap:0}
+  .center-game .room-summary-row{min-height:21px;padding:3px 4px}
+  .room-summary-finance{gap:6px;margin-top:8px;padding-top:7px}
+  .room-summary-finance dd{font-size:14px}
+  .room-schedule-summary--overview .room-summary-rooms{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px}
+  .room-schedule-summary--overview .room-summary-finance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .room-schedule-summary--overview .room-summary-finance>div{display:block}
+  .room-schedule-summary--overview .room-summary-finance dd{margin-top:4px}
+}

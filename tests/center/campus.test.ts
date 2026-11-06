@@ -45,23 +45,24 @@ function complete(state:GameState,id:CampusProjectId):GameState {
   return state
 }
 
-test('campus projects require a completed garden before any facade tender',()=>{
+test('campus projects are independent choices while each still requires its own tender and contract',()=>{
   const initial=funded(),before=JSON.stringify(initial)
   assert.equal(campusTier(initial.player),0)
   assert.deepEqual(campusBenefits(initial.player),{experience:0,rental:0})
-  const locked=postCampusTender(initial,'facade')
-  assert.ok(locked.error)
-  assert.equal(locked.state,initial)
+  const facadeFirst=postCampusTender(initial,'facade')
+  assert.equal(facadeFirst.error,undefined)
+  assert.equal(getCampusProject(facadeFirst.state.player,'facade')?.stage,'announced')
+  assert.equal(postCampusTender(initial,'plaza').error,undefined)
   assert.equal(JSON.stringify(initial),before)
   assert.ok(collectCampusBids(initial,'garden').error)
   assert.ok(awardCampusContract(initial,'garden','missing').error)
   const announced=postCampusTender(initial,'garden').state
   assert.ok(postCampusTender(announced,'garden').error)
-  assert.ok(postCampusTender(announced,'facade').error)
+  assert.equal(postCampusTender(announced,'facade').error,undefined)
   const compared=collectCampusBids(announced,'garden').state
-  assert.ok(postCampusTender(compared,'facade').error)
+  assert.equal(postCampusTender(compared,'facade').error,undefined)
   const working=awardCampusContract(compared,'garden',getCampusProject(compared.player,'garden')!.bids[0].id).state
-  assert.ok(postCampusTender(working,'facade').error)
+  assert.equal(postCampusTender(working,'facade').error,undefined)
   const review=operate(working)
   assert.ok(postCampusTender(review,'facade').error,'review phase cannot publish a tender')
   const completed=nextSeason(review)
@@ -86,9 +87,14 @@ test('campus bids have stable prices, duration and quality and cannot be rerolle
   assert.ok(again.error);assert.equal(again.state,first)
   const afterGarden=complete(contract(funded()),'garden')
   const facade=getCampusProject(bids(afterGarden,'facade').player,'facade')!
-  assert.deepEqual(facade.bids.map(b=>b.price),[4500,6000,7500])
+  assert.deepEqual(facade.bids.map(b=>b.price),[3000,4000,5000])
   assert.deepEqual(facade.bids.map(b=>b.weeks),[9,18,31])
-  assert.deepEqual(facade.bids.map(b=>b.upkeep),[28,24,20])
+  assert.deepEqual(facade.bids.map(b=>b.upkeep),[18,16,14])
+  const plaza=getCampusProject(bids(funded(),'plaza').player,'plaza')!
+  assert.deepEqual(plaza.bids.map(b=>b.price),[1500,2000,2500])
+  assert.deepEqual(plaza.bids.map(b=>b.upkeep),[10,8,6])
+  assert.deepEqual(plaza.bids.map((bid,i)=>bid.price+facade.bids[i].price),[4500,6000,7500])
+  assert.deepEqual(plaza.bids.map((bid,i)=>bid.upkeep+facade.bids[i].upkeep),[28,24,20])
 })
 
 test('campus contracts protect current-year upkeep, reject insufficient money and charge once',()=>{
@@ -145,7 +151,7 @@ for(const [tier,weeks] of [[0,9],[1,18],[2,31]]){
   })
 }
 
-test('garden and facade award reputation exactly once and outside the class-growth cap',()=>{
+test('independent campus projects award reputation exactly once and outside the class-growth cap',()=>{
   let state=contract(funded(),'garden',0)
   const garden=getCampusProject(state.player,'garden')!,gardenBid=garden.bids[0]
   const gardenGain=Math.round(CAMPUS_SCOPES[0].reputation*gardenBid.finalQuality/100)
@@ -154,10 +160,11 @@ test('garden and facade award reputation exactly once and outside the class-grow
   assert.equal(state.player.reputation,30+gardenGain)
   state=operate(nextSeason(state))
   assert.equal(state.lastReport!.reputationChange,0)
-  state=contract(nextSeason(state),'facade',2)
+  state=contract(contract(nextSeason(state),'facade',2),'plaza',2)
   const facadeBid=getCampusProject(state.player,'facade')!.bids[2]
-  const expected=Math.round(CAMPUS_SCOPES[1].reputation*facadeBid.finalQuality/100)
-  assert.ok(expected>8,'a premium facade reward must not be clipped to the class cap')
+  const plazaBid=getCampusProject(state.player,'plaza')!.bids[2]
+  const expected=Math.round(CAMPUS_SCOPES[1].reputation*facadeBid.finalQuality/100)+Math.round(CAMPUS_SCOPES[2].reputation*plazaBid.finalQuality/100)
+  assert.ok(expected>8,'simultaneous investments must not be clipped to the class cap')
   const started=state.player.reputation
   state=complete(state,'facade')
   assert.equal(state.player.reputation,started+expected)
@@ -215,7 +222,9 @@ test('pre-campus v2 saves migrate without changing money, history, rental snapsh
   state=awardFacilityContract(state,'C',getFacilityProject(state.player,'C')!.bids[2].id).state
   state=nextSeason(operate(state))
   state=setProgram(finishRentalReview(state),'A',0,'P01')
-  state=moveEquipment(state,state.player.inventory[0].instanceId,'E').state
+  const moved=moveEquipment(state,state.player.inventory[0].instanceId,'E',{allowClearPlan:true})
+  assert.equal(moved.error,undefined)
+  state=moved.state
   state=reopenRentalReview(state)
   const request=state.player.rentalRequests.find(r=>r.room!=='A')!
   state=decideRental(state,request.id,'accepted').state
@@ -238,12 +247,12 @@ test('pre-campus v2 saves migrate without changing money, history, rental snapsh
 })
 
 test('rivals use the same campus contract costs and preserve their operating buffer',()=>{
-  for(const [id,tier] of [['neulpum',0],['daon',1],['byeolbit',2]] as const){
+  for(const [id,tier,projectId] of [['neulpum',0,'plaza'],['daon',1,'garden'],['byeolbit',2,'facade']] as const){
     const base=createGame(41),rival=structuredClone(base.rivals.find(inst=>inst.id===id)!)
     rival.cash=10000
     const calendar={seed:base.seed,year:3,season:1}
     const shell={...base,...calendar,player:structuredClone(rival)}
-    const expected=contract(shell,'garden',tier).player
+    const expected=contract(shell,projectId,tier).player
     planRivalCampus(rival,calendar)
     assert.deepEqual(rival,expected)
     assert.ok(rival.cash-rival.reserved>=350)
@@ -251,11 +260,11 @@ test('rivals use the same campus contract costs and preserve their operating buf
     planRivalCampus(rival,calendar)
     assert.deepEqual(rival,snapshot,'AI cannot pay for a project twice')
     const poor=structuredClone(base.rivals.find(inst=>inst.id===id)!)
-    const selected=getCampusProject(expected,'garden')!.bids[tier]
+    const selected=getCampusProject(expected,projectId)!.bids[tier]
     poor.cash=poor.reserved+selected.price+selected.upkeep*3+349
     const cash=poor.cash,reserve=poor.reserved
     planRivalCampus(poor,calendar)
-    assert.equal(getCampusProject(poor,'garden')?.stage,'bidding')
+    assert.equal(getCampusProject(poor,projectId)?.stage,'bidding')
     assert.equal(poor.cash,cash);assert.equal(poor.reserved,reserve)
     const early=structuredClone(base.rivals.find(inst=>inst.id===id)!)
     early.cash=10000
@@ -264,7 +273,7 @@ test('rivals use the same campus contract costs and preserve their operating buf
   }
 })
 
-test('save validation rejects malformed campus stages, duplicate projects, bad bids and broken prerequisites',()=>{
+test('save validation rejects malformed campus stages, duplicate projects, bad bids and mismatched scopes',()=>{
   const valid=contract(funded())
   assert.ok(validateCampusProjects(valid.player))
   const cases:((inst:Institution)=>void)[]=[

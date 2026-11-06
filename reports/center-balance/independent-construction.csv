@@ -1,0 +1,4 @@
+﻿strategy,name,runs,meanScore,minScore,maxScore,meanRank,winRate,top3Rate,meanFirstEvaluationRank,meanLastEvaluationRank,meanRankRecovery,meanCash,meanPublic,meanReputation,meanCampusTier,shortageRate,meanShortageSeasons,meanOverloadSeasons
+"cheap_mix","저가 확장 + 혼합 운영",12,87.71,87.29,88.05,3,0,100,4.08,3,1.08,16310.89,90.15,100,0,0,0,3.83
+"balanced_mix","중간 확장 + 혼합 운영",12,88.7,88.2,89.06,3,0,100,3,3,0,16974.47,90.18,100,0,91.67,1.42,4.17
+"luxury_mix","고급 확장 + 혼합 운영",12,88.49,88.18,88.76,3,0,100,3,3,0,17488.36,90.13,100,0,66.67,0.83,2.92

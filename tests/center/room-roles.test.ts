@@ -43,7 +43,7 @@ test('room roles distinguish multipurpose halls, sports, craft, learning and mee
   assert.equal(canRunProgram(createGame().player,'D','P06'),false)
 })
 
-test('both multipurpose halls support every class after its own required installation',()=>{
+test('both multipurpose halls support every general class after its own required installation',()=>{
   const configurations:{offers:string[];programs:ProgramId[]}[]=[
     {offers:['E01','E02'],programs:['P01','P02','P03','P04','P06']},
     {offers:['E02','E04'],programs:['P03','P04','P09','P06']},

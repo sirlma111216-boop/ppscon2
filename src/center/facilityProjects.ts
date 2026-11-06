@@ -10,6 +10,13 @@ export interface FacilityProject {
   announcedYear:number; announcedSeason:number
 }
 export interface FacilityScope { room:RoomId; title:string; brief:string; budget:number; baseUpkeep:number }
+export function constructionTurns(weeks:number):number { return Math.ceil(Math.max(0,weeks)/13) }
+export function expectedConstructionCompletion(calendar:Pick<GameState,'year'|'season'|'phase'>,remainingWeeks:number):{year:number;season:number;week:number;turn:number;turns:number;withinGame:boolean}|null {
+  if(!Number.isFinite(remainingWeeks)||remainingWeeks<=0)return null
+  const start=(calendar.year-1)*4+calendar.season+(calendar.phase==='planning'?0:1)
+  const completed=start+Math.floor((remainingWeeks-1)/13),year=Math.floor(completed/4)+1
+  return {year,season:completed%4,week:(remainingWeeks-1)%13+1,turn:completed+1,turns:constructionTurns(remainingWeeks),withinGame:year<=6}
+}
 export const FACILITY_SCOPES:FacilityScope[] = [
   {room:'C',title:'대강당 시설 조성',brief:'객석·흡음·무대 기반과 안전 동선을 갖춘 큰 행사 공간',budget:540,baseUpkeep:6},
   {room:'D',title:'소강당 2 시설 조성',brief:'가변 좌석과 마감 품질을 갖춘 고급 강연·발표 공간',budget:360,baseUpkeep:4},

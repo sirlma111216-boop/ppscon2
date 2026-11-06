@@ -1,0 +1,8 @@
+{
+  "id": "P06",
+  "name": "생활안전 교실",
+  "source": "C:/Users/admin/.codex/generated_images/01a1a51c-5d95-7181-a9da-bb27514b5ec1/exec-edcdb63c-47a1-4093-ba9e-34cc273e96de.png",
+  "prompt": "Create a replacement illustrated class-card scene, same hand-painted Korean community-center game art medium as the reference, but change the SUBJECT COMPLETELY to a structured FREE DAILY-LIFE SAFETY CLASS taught by an instructor. One friendly adult Korean female instructor stands at the head of a classroom table demonstrating a small flashlight and an emergency go-bag; four adult residents of mixed ages, including one gray-haired woman and one older man, sit listening and actively learning. A simple diagram board with pictograms of safe exit routes, water bottle and flashlight is visible behind her, no readable written text. A small open preparedness kit on the table, not cups of tea. Clear teacher/student roles, a genuine class rather than an informal social meeting. No disasters, injuries, fire, medical procedures, official uniforms or logos. Natural anatomy, composed lively group scene, warm room daylight, richer teal/navy/ochre accents with readable contrast and less pale cream wash. Composition must work at a 150px card thumbnail. Landscape 3:2, no text in image, no border, no watermark.",
+  "output": "public/center/classes-v3/P06.webp",
+  "method": "built-in imagegen; sharp resize WebP"
+}

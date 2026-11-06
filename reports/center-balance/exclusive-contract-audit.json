@@ -1,0 +1,185 @@
+{
+  "sourceHash": "bb1a3d9fa1e0a57794b7bc3ecf38e4c63daaea8663c716d92eadc4c27df169d0",
+  "programs": [
+    {
+      "id": "P11",
+      "room": "B",
+      "capacity": 10,
+      "weeklyLimit": 2,
+      "required": [
+        "mat",
+        "reformer"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 18
+    },
+    {
+      "id": "P12",
+      "room": "E",
+      "capacity": 12,
+      "weeklyLimit": 2,
+      "required": [
+        "craft",
+        "kiln"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 21
+    },
+    {
+      "id": "P13",
+      "room": "F",
+      "capacity": 12,
+      "weeklyLimit": 2,
+      "required": [
+        "digitalPro",
+        "video"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 21
+    },
+    {
+      "id": "P14",
+      "room": "C",
+      "capacity": 24,
+      "weeklyLimit": 2,
+      "required": [
+        "stage",
+        "audio"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 43
+    },
+    {
+      "id": "P15",
+      "room": "G",
+      "capacity": 10,
+      "weeklyLimit": 2,
+      "required": [
+        "screen",
+        "recording"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 19
+    },
+    {
+      "id": "P16",
+      "room": "B",
+      "capacity": 12,
+      "weeklyLimit": 2,
+      "required": [
+        "cycle",
+        "audio"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 22
+    },
+    {
+      "id": "P17",
+      "room": "C",
+      "capacity": 24,
+      "weeklyLimit": 2,
+      "required": [
+        "orchestra",
+        "audio"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 45
+    },
+    {
+      "id": "P18",
+      "room": "C",
+      "capacity": 16,
+      "weeklyLimit": 2,
+      "required": [
+        "stage",
+        "lighting"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 27
+    },
+    {
+      "id": "P19",
+      "room": "E",
+      "capacity": 12,
+      "weeklyLimit": 2,
+      "required": [
+        "craft",
+        "wood"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 22
+    },
+    {
+      "id": "P20",
+      "room": "G",
+      "capacity": 10,
+      "weeklyLimit": 2,
+      "required": [
+        "screen",
+        "interpret"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 18
+    },
+    {
+      "id": "P21",
+      "room": "G",
+      "capacity": 10,
+      "weeklyLimit": 2,
+      "required": [
+        "digital",
+        "pitch"
+      ],
+      "demandGroups": 2,
+      "demandPeople": 18
+    }
+  ],
+  "preserved": [
+    {
+      "id": "P11",
+      "room": "A",
+      "year": 1,
+      "season": 2,
+      "cash": 735.01,
+      "history": 2,
+      "inventory": 2,
+      "assetsFundsHistoryProgressPreserved": true,
+      "invalidFutureClassCleared": true,
+      "notices": [
+        "우리 센터 · 소강당 1 평일 오전: 필라테스 편성을 비웠어요. 이제 생활체육실 전용 수업이에요. 기존 운영 기록과 자금은 유지했어요.",
+        "우리 센터 · 소강당 1의 필라테스 리포머 세트을 비용 없이 보관했어요. 개체·상태·유지비는 유지하며 생활체육실에 재설치할 수 있어요."
+      ]
+    },
+    {
+      "id": "P12",
+      "room": "A",
+      "year": 1,
+      "season": 1,
+      "cash": 613.92,
+      "history": 1,
+      "inventory": 2,
+      "assetsFundsHistoryProgressPreserved": true,
+      "invalidFutureClassCleared": true,
+      "notices": [
+        "우리 센터 · 소강당 1 평일 오전: 전문 도예 편성을 비웠어요. 이제 공예실 전용 수업이에요. 기존 운영 기록과 자금은 유지했어요.",
+        "우리 센터 · 소강당 1의 안전 도예 가마 세트을 비용 없이 보관했어요. 개체·상태·유지비는 유지하며 공예실에 재설치할 수 있어요."
+      ]
+    },
+    {
+      "id": "P13",
+      "room": "G",
+      "year": 1,
+      "season": 3,
+      "cash": 813.41,
+      "history": 3,
+      "inventory": 2,
+      "assetsFundsHistoryProgressPreserved": true,
+      "invalidFutureClassCleared": true,
+      "notices": [
+        "우리 센터 · 프리미엄회의실 평일 오전: 영상 제작 편성을 비웠어요. 이제 배움실 전용 수업이에요. 기존 운영 기록과 자금은 유지했어요.",
+        "우리 센터 · 프리미엄회의실의 영상 제작 세트을 비용 없이 보관했어요. 개체·상태·유지비는 유지하며 배움실에 재설치할 수 있어요."
+      ]
+    }
+  ],
+  "sourceUnchanged": true
+}

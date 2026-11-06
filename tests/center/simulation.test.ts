@@ -110,7 +110,7 @@ test('identical sets in different rooms have separate installation, wear and ide
   const unused=completed.player.inventory.find(e=>e.instanceId===second.instanceId)!
   assert.ok(used.condition<unused.condition)
   assert.equal(unused.condition,installed.player.inventory.find(e=>e.instanceId===second.instanceId)!.condition)
-  const moved=moveEquipment(nextSeason(completed),first.instanceId,'F')
+  const moved=moveEquipment(nextSeason(completed),first.instanceId,'F',{allowClearPlan:true})
   assert.equal(moved.error,undefined)
   assert.equal(moved.state.player.inventory.find(e=>e.instanceId===second.instanceId)!.room,'E')
   assert.equal(canRunProgram(moved.state.player,'E','P01'),true)
@@ -171,7 +171,8 @@ test('moving a set preserves identity and locks both rooms until reinstallation'
   state=setProgram(state,'A',0,'P01')
   const equipment=state.player.inventory.find(e=>e.id==='E01')!
   const before=JSON.stringify(state)
-  const result=moveEquipment(state,equipment.instanceId,'E')
+  assert.ok(moveEquipment(state,equipment.instanceId,'E').error,'dependent classes require explicit cancellation')
+  const result=moveEquipment(state,equipment.instanceId,'E',{allowClearPlan:true})
   assert.equal(result.error,undefined)
   assert.equal(JSON.stringify(state),before)
   assert.equal(result.state.player.cash,state.player.cash-8)
@@ -181,7 +182,7 @@ test('moving a set preserves identity and locks both rooms until reinstallation'
   assert.equal(moved.room,'E')
   assert.equal(moved.condition,equipment.condition)
   assert.equal(moved.ready,false)
-  assert.equal(result.state.player.plan.A[0],'P01')
+  assert.equal(result.state.player.plan.A[0],null)
   assert.equal(canRunProgram(result.state.player,'A','P01'),false)
   assert.equal(canRunProgram(result.state.player,'E','P01'),false)
   assert.ok(result.state.player.pendingTasks.some(t=>t.equipment===equipment.instanceId&&t.room==='E'))

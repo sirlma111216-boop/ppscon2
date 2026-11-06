@@ -3,6 +3,8 @@ import Icon from './Icon'
 import ProcurementHeader from './ProcurementHeader'
 import { MAX_YEARS, OFFERS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, SEASONS, buyEquipment, canRunProgram, freeCash, getProgramRequirements, isRentalProgram, roomSupportsOffer } from './simulation'
 import type { GameState, Offer, Program, RoomId } from './simulation'
+import type { Notify } from './ToastFeedback'
+import { getRoomEquipmentUsage } from './equipmentUsage'
 import './ProcurementDesk.css'
 
 interface ProcurementDeskProps {
@@ -12,18 +14,22 @@ interface ProcurementDeskProps {
   onBuy: (id: string) => void
   onClose: () => void
   initialFilter: string
+  onNotify?: Notify
+  onManageEquipment?: () => void
 }
 
 const CATEGORIES = [
   { id: 'all', label: '전체 물품', icon: 'box', families: [] },
-  { id: 'culture', label: '문화 · 교육', icon: 'brush', families: ['craft', 'digital'] },
-  { id: 'sport', label: '생활체육', icon: 'sport', families: ['mat', 'flex'] },
-  { id: 'event', label: '공연 · 발표', icon: 'music', families: ['audio', 'screen', 'stage'] },
+  { id: 'culture', label: '문화 · 교육', icon: 'brush', families: ['craft', 'digital', 'kiln', 'video', 'wood', 'recording', 'interpret', 'pitch'] },
+  { id: 'sport', label: '생활체육', icon: 'sport', families: ['mat', 'flex', 'reformer', 'cycle'] },
+  { id: 'event', label: '공연 · 발표', icon: 'music', families: ['audio', 'screen', 'stage', 'video', 'orchestra', 'lighting'] },
   { id: 'operation', label: '센터 운영', icon: 'home', families: ['energy', 'quiet', 'guide'] },
 ] as const
 const CAPABILITIES: Record<string, string> = {
   craft: '공예 도구', mat: '매트', flex: '이동식 가구', audio: '음향', screen: '영상 장비',
-  digital: '교육용 컴퓨터', stage: '무대', hall: '대강당', energy: '절전', quiet: '공간 분리', guide: '예약 안내',
+  digital: '교육용 컴퓨터', digitalPro: '고성능 디지털 장비', kiln: '도예 가마', reformer: '필라테스 기구', video: '영상 제작 장비',
+  recording: '녹화·발표 코칭 장비', cycle: '실내 사이클', orchestra: '합주 악기', lighting: '무대 조명', wood: '목공 작업대·집진 설비', interpret: '통역·토론 장비', pitch: '창업 발표 장비',
+  stage: '무대', hall: '대강당', energy: '절전', quiet: '공간 분리', guide: '예약 안내',
 }
 const money = (value: number) => value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
 const OPERATING_EFFECTS: Record<string, string> = {
@@ -77,6 +83,54 @@ function ProductDrawing({ family }: { family: string }) {
         <path d="m28 41 14-4v16l-14 4Zm26-7 14-4v16l-14 4Z" fill="#a8b8b0" /><path d="m28 56 15-4 9 6-15 5Zm26-7 15-4 9 6-15 5Z" fill="#a8b8b0" />
         <path d="M95 20v33m-8 5 8-5 8 3m-8-36 8-3" strokeWidth="3" />
       </>}
+      {family === 'kiln' && <>
+        <path d="m30 25 55-9 24 15v50l-56 12-23-15Z" fill="#aeb8ba" />
+        <path d="m30 25 23 16 56-10M53 41v52" /><path d="m60 48 38-8v36l-38 8Z" fill="#738388" />
+        <path d="m65 52 27-6v24l-27 7Z" fill="#445960" /><path d="m91 52 2 13" stroke="#e7e2d3" strokeWidth="3" />
+        <path d="m29 24 54-10 25 14-55 12Z" fill="#d9ddda" /><path d="M78 13V8h13v7" />
+        <path d="m35 79 1 10m65-7v9" strokeWidth="4" /><circle cx="42" cy="43" r="3" fill="#b78b50" />
+      </>}
+      {family === 'reformer' && <>
+        <path d="m15 70 72-24 36 17-72 25Z" fill="#b99a75" /><path d="M15 70v9l36 18V88m0 9 72-25v-9" fill="#9b7a57" />
+        <path d="m35 65 45-15 26 12-46 17Z" fill="#455a64" /><path d="m25 64-9-25 18-6 10 24m60 1 7-30 12-4" strokeWidth="3" />
+        <path d="m87 47 21-14m-31 11 22-14" stroke="#e1d8ba" /><path d="m20 79 2 12m32 6v5m64-26v11" strokeWidth="4" />
+      </>}
+      {(family === 'video' || family === 'recording') && <>
+        <path d="m23 30 36-7 18 12-38 8Z" fill="#617886" /><path d="M23 30v26l16 12V43m0 25 38-10V35" fill="#344d61" />
+        <path d="m76 39 17-4v19l-17 4Z" fill="#243b4b" /><path d="M51 65v17m0 0-22 18m22-18 19 16m-19-16 1 19" strokeWidth="3" />
+        <path d="m99 17 22 11-8 27-22-11Z" fill="#eee8cf" /><path d="M105 52v37m-13 8 13-8 15 8" strokeWidth="3" />
+        <path d="m30 21 13-3 7 8" strokeWidth="4" />
+      </>}
+      {family === 'cycle' && <>
+        <circle cx="42" cy="71" r="22" fill="#72898e" /><circle cx="42" cy="71" r="14" fill="#d5ddd8" />
+        <path d="m42 71 27-23 24 30H42l10-38m17 8 8-22 19 2M43 36h25M29 96h33m21-15 18 12" strokeWidth="5" />
+        <circle cx="68" cy="73" r="6" fill="#b18465" /><path d="m68 73 8 9 8-1" strokeWidth="3" />
+      </>}
+      {family === 'orchestra' && <>
+        <path d="M48 35c-21-4-27 20-12 27-19 14-7 32 11 30 20-2 25-22 10-32 17-12 10-30-9-25Z" fill="#bc8356" />
+        <path d="m46 16 5 64m-10-61 11-1m-15 61 18-1" strokeWidth="3" /><path d="M39 53q-7 5-1 11m18-14q7 5 0 12" />
+        <path d="m84 21 30 6v35l-30-6Z" fill="#c0d0cf" /><path d="M100 61v26m-15 9 15-9 15 9M72 18 65 94" strokeWidth="3" />
+      </>}
+      {family === 'lighting' && <>
+        <path d="m28 25 37-9 25 22-38 10Z" fill="#607981" /><path d="M28 25v28l24 22V48m0 27 38-11V38" fill="#344f5f" />
+        <ellipse cx="70" cy="55" rx="13" ry="16" transform="rotate(28 70 55)" fill="#e5c880" /><path d="m25 46-7 8 29 31 17-7m-17 7v9m-18 7 18-7 23 6" strokeWidth="3" />
+        <path d="m92 51 31-13v52L91 68" fill="#e3d9a6" opacity=".4" stroke="none" />
+      </>}
+      {family === 'wood' && <>
+        <path d="m14 48 62-12 38 20-63 15Z" fill="#c8a277" /><path d="M20 54v35m31-18v28m55-40v26" strokeWidth="5" />
+        <path d="m25 47 29-5 20 10-30 6Z" fill="#e5c99b" /><path d="m43 38 17-5 13 8-17 5Z" fill="#627e7f" />
+        <rect x="99" y="66" width="22" height="30" rx="5" fill="#9eb0ac" /><path d="M111 65V48q0-9-10-9H87" strokeWidth="5" />
+      </>}
+      {family === 'interpret' && <>
+        <path d="M28 59V41a28 28 0 0 1 56 0v18" strokeWidth="7" /><rect x="23" y="47" width="15" height="24" rx="6" fill="#799398" /><rect x="75" y="47" width="15" height="24" rx="6" fill="#799398" />
+        <path d="M83 68q0 12-18 12" strokeWidth="4" /><ellipse cx="60" cy="80" rx="7" ry="4" fill="#3a5467" />
+        <path d="m84 91 29-7 12 8-28 7Z" fill="#c5d0c5" /><path d="M102 86V58l-8-7" strokeWidth="3" /><circle cx="93" cy="50" r="4" fill="#b2806d" />
+      </>}
+      {family === 'pitch' && <>
+        <path d="m18 24 81-7 17 12-81 8Z" fill="#dbe3dc" /><path d="M35 37v40l81-8V29" fill="#b6cdca" /><path d="M28 32v49l7-4" />
+        <path d="m48 64 15-12 14 4 23-18" stroke="#51757b" strokeWidth="4" /><path d="m75 75 1 17m-19 8 19-8 19 6" strokeWidth="3" />
+        <path d="m15 81 18-3 10 9-18 4Z" fill="#b68a62" />
+      </>}
       {family === 'energy' && <>
         <path d="m30 22 67-4 13 12-69 5Z" fill="#e9e9d8" /><path d="m41 35 69-5v13l-69 6Z" fill="#c3d3c4" />
         <path d="m47 40 57-4" stroke="#faf5c6" strokeWidth="4" /><path d="m30 22 11 13v14L30 35Z" fill="#a8b7ac" />
@@ -96,7 +150,7 @@ function ProductDrawing({ family }: { family: string }) {
   </svg>
 }
 
-export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClose, initialFilter }: ProcurementDeskProps) {
+export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClose, initialFilter, onNotify, onManageEquipment }: ProcurementDeskProps) {
   const initialOffer = OFFERS.find((offer) => initialFilter !== 'all' && offer.id === initialFilter)
   const [category, setCategory] = useState('all')
   const [familyFilter, setFamilyFilter] = useState<string | null>(initialOffer?.family || null)
@@ -106,6 +160,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
   const detail = useRef<HTMLElement>(null)
   const selected = OFFERS.find((offer) => offer.id === selectedId)
   const selectedRoom = ROOM_DEFINITIONS.find((item) => item.id === room)!
+  const equipmentUsage = getRoomEquipmentUsage(game.player, room)
   const selectedCompatible = selected ? roomSupportsOffer(room, selected.id) : true
   const available = freeCash(game.player)
   const seasonsLeft = 4 - game.season
@@ -129,7 +184,8 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
   }
 
   function submit() {
-    if (!selected || validation?.error || submitting.current) return
+    if (!selected || submitting.current) return
+    if (validation?.error) { onNotify?.(validation.error,'error'); return }
     submitting.current = true
     onBuy(selected.id)
   }
@@ -164,7 +220,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
         <div className="pps-catalog-top"><h3>{familyFilter ? '같은 기능 상품 비교' : chosenCategory.label}<span>{offers.length}건</span></h3><span className="pps-result-room">설치 대상 · {ROOM_NAMES[room]}</span></div>
         {familyFilter && <button className="pps-filter-reset" onClick={() => setFamilyFilter(null)}>전체 물품 보기 <Icon name="close" size={12} /></button>}
         <div className="pps-catalog-list">{offers.map((offer) => {
-          const owned = game.player.inventory.some((equipment) => (equipment.room === room || equipment.room === null) && OFFERS.find((item) => item.id === equipment.id)?.family === offer.family)
+          const owned = game.player.inventory.some((equipment) => !equipment.stored && (equipment.room === room || equipment.room === null) && OFFERS.find((item) => item.id === equipment.id)?.family === offer.family)
           const compatible = roomSupportsOffer(room, offer.id)
           const connections = PROGRAMS.filter((program) => program.requires.some((capability) => offer.capabilities.includes(capability)))
           return <button className={`pps-product ${selectedId === offer.id ? 'is-selected' : ''} ${owned ? 'is-owned' : ''} ${!compatible ? 'is-incompatible' : ''}`} key={offer.id} aria-pressed={selectedId === offer.id} onClick={() => chooseOffer(offer)}>
@@ -184,9 +240,16 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
           <div className="pps-request-body">
           <div className="pps-request-title"><span>납품요구서</span><Icon name="calendar" size={20} /></div>
           <h3>{selected.name}</h3>
+          {selected.exclusiveRoom && <p className="pps-room-spec">{ROOM_NAMES[selected.exclusiveRoom]} 전용 설비</p>}
           {alternatives.length > 1 && <div className="pps-comparison"><span>같은 기능 비교</span><div>{alternatives.map((offer) => <button key={offer.id} className={offer.id === selectedId ? 'is-selected' : ''} onClick={() => setSelectedId(offer.id)}><strong>{offer.name.replace(' 공예 세트', '').replace(' 음향 세트', '')}</strong><span>구매 {offer.price} · 유지 {offer.maintenance}</span><b>{offer.price + offer.maintenance * termSeasons}<small>점</small></b></button>)}</div><small>{MAX_YEARS}년 차까지 구매 + 정기 유지비 · 정비비 별도</small></div>}
           <label className="pps-room-select">납품·설치 장소<select value={room} onChange={(event) => onRoomChange(event.target.value as RoomId)}>{game.player.rooms.filter((item) => item.open).map((item) => <option key={item.id} value={item.id}>{ROOM_NAMES[item.id]}</option>)}</select></label>
-          <p className="pps-room-spec">{selectedRoom.area}㎡ · 정원 {selectedRoom.capacity}명 · 활동 장비 {selectedRoom.equipmentSlots}자리</p>
+          <div className="pps-room-spec"><span>{selectedRoom.area}㎡ · 정원 {selectedRoom.capacity}명</span><strong>활동 장비 {equipmentUsage.used}/{equipmentUsage.capacity}자리</strong><small>보조 {equipmentUsage.auxiliary.length}개 · 센터 공용 {equipmentUsage.common.length}개는 자리 별도</small></div>
+          {equipmentUsage.full && <div className="pps-equipment-capacity">
+            <strong>활동 장비 자리를 모두 사용하고 있어요</strong>
+            <ul aria-label={`${ROOM_NAMES[room]}의 활동 장비`}>{equipmentUsage.activity.map(item => <li key={item.instanceId}>{item.name}{!item.ready && <small>설치 준비 중</small>}</li>)}</ul>
+            <p>장비를 보관하거나 다른 방으로 옮기면 자리가 생겨요. 보관한 장비는 다시 설치할 수 있어요.</p>
+            {onManageEquipment && <button type="button" onClick={onManageEquipment}>설치 장비 관리 <Icon name="arrow" size={13} /></button>}
+          </div>}
           {!selectedCompatible && <p className="pps-room-incompatible pps-room-incompatible-detail"><Icon name="lock" size={14} />이 공간에 설치 불가 · 설치 장소를 바꿔 주세요.</p>}
           <div className="pps-unlocks"><span>{requestedPrograms.length ? '물품으로 가능한 클래스 · 대관' : '운영에 생기는 변화'}</span>{requestedPrograms.length ? <div>{requestedPrograms.map((program) => {
             const afterPurchase = validation && !validation.error ? validation.state.player : game.player

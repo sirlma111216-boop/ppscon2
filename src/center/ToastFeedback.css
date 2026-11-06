@@ -1,0 +1,55 @@
+.action-feedback {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: max(104px, calc(env(safe-area-inset-bottom) + 88px));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: max-content;
+  max-width: min(620px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 16px 12px 16px 18px;
+  color: #242826;
+  background: #fffdf7;
+  border: 1px solid #a3ada5;
+  border-left: 4px solid #56735b;
+  border-radius: 5px;
+  box-shadow: 0 8px 30px #161e1a38;
+  animation: action-feedback-appear 150ms ease-out;
+}
+.action-feedback--error { border-color: #c0988b; border-left-color: #9b4938; }
+.action-feedback--info { border-left-color: #516e83; }
+.center-game:has(.modal-backdrop) .action-feedback { top: max(12px, env(safe-area-inset-top)); bottom: auto; pointer-events: none; }
+.center-game:has(.modal-backdrop) .action-feedback-close { pointer-events: auto; }
+.action-feedback-message { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.action-feedback-symbol { display: flex; flex: 0 0 auto; color: #42654a; }
+.action-feedback--error .action-feedback-symbol { color: #963f32; }
+.action-feedback--info .action-feedback-symbol { color: #496b83; }
+.action-feedback-message p { margin: 0; font-size: 14px; line-height: 1.65; overflow-wrap: anywhere; }
+.action-feedback-message strong { font-weight: 700; }
+button.action-feedback-close {
+  display: grid;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  min-height: 0;
+  place-items: center;
+  padding: 0;
+  color: #525851;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  transform: none;
+}
+button.action-feedback-close:hover { background: #e9ece6; color: #202720; }
+button.action-feedback-close:active { transform: none; }
+button.action-feedback-close:focus-visible { outline: 2px solid #2a72de; outline-offset: 2px; }
+@keyframes action-feedback-appear { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 600px) {
+  .action-feedback { bottom: max(104px, calc(env(safe-area-inset-bottom) + 88px)); gap: 8px; padding: 12px 8px 12px 13px; }
+  .action-feedback-message { gap: 8px; }
+  .action-feedback-message p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .action-feedback { animation: none; } }

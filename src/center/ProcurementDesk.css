@@ -214,7 +214,28 @@
   .pps-request-note { font-size: 11px; }
   .pps-footer { align-items: flex-start; flex-direction: column; gap: 5px; padding: 13px 17px; font-size: 11px; }
 }
-.pps-room-spec { margin: -5px 0 15px; color: #526573; font-size: 12px; line-height: 1.6; }
+.pps-room-spec { display: grid; gap: 3px; margin: 9px 0 15px; min-width: 0; color: #526573; font-size: 12px; line-height: 1.6; }
+.pps-room-spec strong { color: #294e70; font-size: 12px; font-weight: 650; }
+.pps-room-spec small { font-size: 11px; white-space: normal; overflow-wrap: anywhere; }
+.pps-equipment-capacity { margin: -4px 0 15px; padding: 10px 11px; border-left: 3px solid #9b8060; background: #f3efe8; color: #69533d; font-size: 11px; line-height: 1.65; overflow-wrap: anywhere; }
+.pps-equipment-capacity > strong { display: block; font-size: 12px; }
+.pps-equipment-capacity ul { margin: 6px 0; padding-left: 15px; }
+.pps-equipment-capacity li { margin: 2px 0; }
+.pps-equipment-capacity li small { display: inline-block; margin-left: 5px; font-size: 10px; }
+.pps-equipment-capacity p { margin: 6px 0; }
+.pps-equipment-capacity button { display: inline-flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 7px; max-width: 100%; margin-top: 3px; padding: 7px 9px; border: 1px solid #ad9880; border-radius: 3px; color: #594631; background: #fffdf8; font-size: 12px; white-space: normal; }
+.pps-equipment-capacity button:hover { background: #f9f3e9; }
+/* Narrow three-pane layouts must wrap product details instead of overlapping. */
+.pps-product { white-space: normal; }
+.pps-product-code { flex-wrap: wrap; gap: 3px 7px; }
+.pps-product-info, .pps-product-info > strong, .pps-product-connections > span { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.pps-product-connections b, .pps-product-connections em { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+.pps-request, .pps-request-body, .pps-request-actions { min-width: 0; }
+.pps-room-select { flex-wrap: wrap; }
+.pps-room-select select { min-width: 0; max-width: 100%; }
+.pps-comparison button { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+.pps-costs dt { min-width: 0; overflow-wrap: anywhere; }
+.pps-costs dd { flex: 0 0 auto; }
 /* Desktop keeps the request action visible while each document pane scrolls. */
 @media (min-width: 761px) {
   .game-modal.procurement-modal { display: flex; flex-direction: column; height: min(860px, calc(100dvh - 40px)); max-height: none; overflow: hidden; }

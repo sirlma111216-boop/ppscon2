@@ -1,10 +1,10 @@
 import { advanceFacilityProjects, facilityUpkeep, getFacilityRentMultiplier, planRivalFacility, validateFacilityProjects } from './facilityProjects.ts'
 import type { FacilityProject } from './facilityProjects.ts'
-import {advanceCampusProjects,campusBenefits,campusUpkeep,planRivalCampus,validateCampusProjects} from './campusProjects.ts'
+import {advanceCampusProjects,campusBenefits,campusUpkeep,migrateCampusProjects,planRivalCampus,validateCampusProjects} from './campusProjects.ts'
 import type {CampusProject} from './campusProjects.ts'
 /** Pure, deterministic center simulation. Money never changes during animation. */
 export type RoomId = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
-export type ProgramId = 'P01' | 'P02' | 'P03' | 'P04' | 'P05' | 'P06' | 'P07' | 'P08' | 'P09' | 'P10'
+export type ProgramId = 'P01' | 'P02' | 'P03' | 'P04' | 'P05' | 'P06' | 'P07' | 'P08' | 'P09' | 'P10' | 'P11' | 'P12' | 'P13' | 'P14' | 'P15' | 'P16' | 'P17' | 'P18' | 'P19' | 'P20' | 'P21'
 export type Expertise = 'culture' | 'sport' | 'event'
 export type Plan = Record<RoomId, (ProgramId | null)[]>
 export interface Program {
@@ -12,10 +12,11 @@ export interface Program {
   capacity: number; support: number; income: number; cost: number
   requires: string[]; mode: string; kind: Expertise | 'community'
   difficulty: '입문' | '중급' | '고급'; requirementLabel: string; minArea: number
+  weeklyLimit?: number; reputationMultiplier?: number; specialty?: '수익' | '명성' | '균형'; exclusiveRoom?:RoomId
 }
 export interface Offer {
   id: string; name: string; price: number; maintenance: number; installSlots: number
-  description: string; capabilities: string[]; family: string; icon: string
+  description: string; capabilities: string[]; family: string; icon: string; exclusiveRoom?:RoomId
 }
 export const SEASONS = ['봄', '여름', '가을', '겨울'] as const
 export const MAX_YEARS = 6
@@ -41,11 +42,22 @@ export const PROGRAMS: Program[] = [
   { id:'P03', difficulty:'입문',requirementLabel:'생활체육 매트 세트',minArea:60, name:'요가 강좌', shortName:'요가', icon:'◡', color:'#d48173', capacity:18, support:1, income:14, cost:11, requires:['mat'], mode:'floor', kind:'sport' },
   { id:'P04', difficulty:'입문',requirementLabel:'생활체육 매트 세트',minArea:60, name:'주민 스트레칭', shortName:'스트레칭', icon:'☀', color:'#b3a277', capacity:18, support:1, income:0, cost:4, requires:['mat'], mode:'floor', kind:'sport' },
   { id:'P05', difficulty:'입문',requirementLabel:'기본 공간',minArea:0, name:'공간 대관', shortName:'공간 대관', icon:'⌂', color:'#8697a9', capacity:120, support:1, income:12, cost:2, requires:[], mode:'nook', kind:'community' },
-  { id:'P06', difficulty:'입문',requirementLabel:'기본 가구',minArea:0, name:'주민 모임', shortName:'주민 모임', icon:'♡', color:'#b495a9', capacity:10, support:1, income:0, cost:1, requires:[], mode:'nook', kind:'community' },
+  { id:'P06', difficulty:'입문',requirementLabel:'기본 가구 · 강사 진행',minArea:0, name:'생활안전 교실', shortName:'생활안전', icon:'♡', color:'#b495a9', capacity:10, support:1, income:0, cost:1, requires:[], mode:'nook', kind:'community' },
   { id:'P07', difficulty:'고급',requirementLabel:'디지털 교육 + 영상·발표 세트',minArea:40, name:'디지털 강좌', shortName:'디지털', icon:'▣', color:'#759eb1', capacity:18, support:1, income:20, cost:17, requires:['digital','screen'], mode:'table', kind:'culture' },
   { id:'P08', difficulty:'고급',requirementLabel:'대강당 + 음향 + 이동무대',minArea:200, name:'공연 대관', shortName:'공연', icon:'♫', color:'#9e8abe', capacity:120, support:2, income:36, cost:6, requires:['audio','stage','hall'], mode:'stage', kind:'event' },
   { id:'P09', difficulty:'중급',requirementLabel:'음향 + 생활체육 매트 세트',minArea:80, name:'댄스 강좌', shortName:'댄스', icon:'♪', color:'#d58393', capacity:20, support:1, income:18, cost:15, requires:['audio','mat'], mode:'floor', kind:'sport' },
   { id:'P10', difficulty:'중급',requirementLabel:'영상·발표 세트',minArea:0, name:'장비 포함 발표 대관', shortName:'발표 대관', icon:'▤', color:'#8f9b72', capacity:120, support:1, income:16, cost:3, requires:['screen'], mode:'seats', kind:'event' },
+  { id:'P11', difficulty:'고급',requirementLabel:'생활체육 매트 + 필라테스 리포머',minArea:60, name:'기구 필라테스', shortName:'필라테스', icon:'◡', color:'#789488', capacity:10, support:1, income:48, cost:28, requires:['mat','reformer'], mode:'floor', kind:'sport', weeklyLimit:2, reputationMultiplier:.8, specialty:'수익', exclusiveRoom:'B' },
+  { id:'P12', difficulty:'고급',requirementLabel:'공예 세트 + 안전 도예 가마',minArea:30, name:'전문 도예 공방', shortName:'전문 도예', icon:'✂', color:'#a77961', capacity:12, support:1, income:42, cost:28, requires:['craft','kiln'], mode:'table', kind:'culture', weeklyLimit:2, reputationMultiplier:1.8, specialty:'명성', exclusiveRoom:'E' },
+  { id:'P13', difficulty:'고급',requirementLabel:'고성능 디지털 + 영상 제작 세트',minArea:40, name:'주민 영상 제작', shortName:'영상 제작', icon:'▣', color:'#7b89a1', capacity:12, support:1, income:48, cost:31, requires:['digitalPro','video'], mode:'table', kind:'culture', weeklyLimit:2, reputationMultiplier:1.25, specialty:'균형', exclusiveRoom:'F' },
+  { id:'P14', difficulty:'고급',requirementLabel:'이동무대 + 음향 세트',minArea:200, name:'뮤지컬 워크숍', shortName:'뮤지컬', icon:'♫', color:'#9a7390', capacity:24, support:2, income:54, cost:36, requires:['stage','audio'], mode:'stage', kind:'event', weeklyLimit:2, reputationMultiplier:1.6, specialty:'명성', exclusiveRoom:'C' },
+  { id:'P15', difficulty:'중급',requirementLabel:'영상·발표 + 녹화 코칭 세트',minArea:30, name:'스피치·발표 클리닉', shortName:'스피치', icon:'▤', color:'#7c95a0', capacity:10, support:1, income:40, cost:27, requires:['screen','recording'], mode:'seats', kind:'culture', weeklyLimit:2, reputationMultiplier:1.3, specialty:'균형', exclusiveRoom:'G' },
+  { id:'P16', difficulty:'중급',requirementLabel:'실내 사이클 + 음향 세트',minArea:80, name:'실내 사이클 교실', shortName:'실내 사이클', icon:'◡', color:'#7d9a77', capacity:12, support:1, income:44, cost:29, requires:['cycle','audio'], mode:'floor', kind:'sport', weeklyLimit:2, reputationMultiplier:.9, specialty:'수익', exclusiveRoom:'B' },
+  { id:'P17', difficulty:'고급',requirementLabel:'합주 악기 + 음향 세트',minArea:200, name:'주민 오케스트라', shortName:'오케스트라', icon:'♫', color:'#a48b65', capacity:24, support:2, income:56, cost:39, requires:['orchestra','audio'], mode:'stage', kind:'event', weeklyLimit:2, reputationMultiplier:1.9, specialty:'명성', exclusiveRoom:'C' },
+  { id:'P18', difficulty:'중급',requirementLabel:'이동무대 + 무대 조명 세트',minArea:200, name:'무대기술 교실', shortName:'무대기술', icon:'☼', color:'#857fa1', capacity:16, support:1, income:44, cost:29, requires:['stage','lighting'], mode:'stage', kind:'event', weeklyLimit:2, reputationMultiplier:1.35, specialty:'균형', exclusiveRoom:'C' },
+  { id:'P19', difficulty:'중급',requirementLabel:'공예 세트 + 목공 작업 세트',minArea:30, name:'생활 목공 교실', shortName:'목공', icon:'✂', color:'#a38358', capacity:12, support:1, income:36, cost:23, requires:['craft','wood'], mode:'table', kind:'culture', weeklyLimit:2, reputationMultiplier:1.35, specialty:'균형', exclusiveRoom:'E' },
+  { id:'P20', difficulty:'중급',requirementLabel:'영상·발표 + 외국어 토론 세트',minArea:30, name:'외국어 토론 클럽', shortName:'외국어 토론', icon:'▤', color:'#78958c', capacity:10, support:1, income:34, cost:22, requires:['screen','interpret'], mode:'seats', kind:'culture', weeklyLimit:2, reputationMultiplier:1.1, specialty:'균형', exclusiveRoom:'G' },
+  { id:'P21', difficulty:'고급',requirementLabel:'디지털 교육 + 피칭 코칭 세트',minArea:30, name:'창업 피칭 스튜디오', shortName:'창업 피칭', icon:'▣', color:'#a28069', capacity:10, support:1, income:46, cost:30, requires:['digital','pitch'], mode:'table', kind:'culture', weeklyLimit:2, reputationMultiplier:1.2, specialty:'수익', exclusiveRoom:'G' },
 ]
 export const OFFERS: Offer[] = [
   { id:'E01', name:'기본 공예 세트', price:90, maintenance:2, installSlots:1, description:'테이블과 작업 도구로 공예 교실을 열어요.', capabilities:['craft'], family:'craft', icon:'✂' },
@@ -56,10 +68,21 @@ export const OFFERS: Offer[] = [
   { id:'E04B', name:'저전력 음향 세트', price:145, maintenance:2, installSlots:2, description:'장기간 사용할 때 유지비를 아낄 수 있어요.', capabilities:['audio'], family:'audio', icon:'♫' },
   { id:'E05', name:'영상·발표 세트', price:90, maintenance:2, installSlots:1, description:'스크린을 갖춘 발표 대관을 받을 수 있어요.', capabilities:['screen'], family:'screen', icon:'▤' },
   { id:'E06', name:'디지털 교육 세트', price:180, maintenance:5, installSlots:2, description:'컴퓨터 교육을 위한 새로운 교실을 만들어요.', capabilities:['digital'], family:'digital', icon:'▣' },
+  { id:'E06B', name:'고성능 디지털 교육 세트', price:420, maintenance:5, installSlots:2, description:'기존 컴퓨터 교육과 영상 편집을 함께 준비해요. 영상 제작 세트와 조합해요.', capabilities:['digital','digitalPro'], family:'digital', icon:'▣' },
   { id:'E07', name:'이동무대·좌석 세트', price:160, maintenance:4, installSlots:2, description:'대강당에서 음향과 함께 공연을 준비해요.', capabilities:['stage'], family:'stage', icon:'▰' },
   { id:'E08', name:'절전 설비', price:110, maintenance:1, installSlots:1, description:'센터 기본운영비를 계절마다 12점 줄여요.', capabilities:['energy'], family:'energy', icon:'☼' },
   { id:'E09', name:'이동식 공간 분리 설비', price:140, maintenance:2, installSlots:1, description:'옆방의 음악 때문에 생기는 불편을 줄여요.', capabilities:['quiet'], family:'quiet', icon:'▥' },
   { id:'E10', name:'예약·안내 도구', price:100, maintenance:3, installSlots:1, description:'반복 대관 접수를 줄이거나 처음 온 주민을 안내해요.', capabilities:['guide'], family:'guide', icon:'⌘' },
+  { id:'E11', name:'필라테스 리포머 세트', price:720, maintenance:4, installSlots:2, description:'생활체육실에서 매트와 함께 기구 필라테스를 열어요.', capabilities:['reformer'], family:'reformer', icon:'◡', exclusiveRoom:'B' },
+  { id:'E12', name:'안전 도예 가마 세트', price:560, maintenance:3, installSlots:2, description:'공예실에서 공예 도구와 함께 작품을 굽는 전문 도예 공방을 준비해요.', capabilities:['kiln'], family:'kiln', icon:'✂', exclusiveRoom:'E' },
+  { id:'E13', name:'영상 제작 세트', price:360, maintenance:3, installSlots:2, description:'배움실의 촬영·녹음·발표 장비예요. 고성능 디지털과 영상 제작을 열어요.', capabilities:['video','screen'], family:'video', icon:'▣', exclusiveRoom:'F' },
+  { id:'E14', name:'녹화 코칭 세트', price:340, maintenance:3, installSlots:2, description:'발표 모습을 녹화해 말하기와 전달력을 연습해요.', capabilities:['recording'], family:'recording', icon:'▣', exclusiveRoom:'G' },
+  { id:'E15', name:'실내 사이클 세트', price:380, maintenance:3, installSlots:2, description:'음악과 함께 실내 사이클 수업을 운영해요.', capabilities:['cycle'], family:'cycle', icon:'◡', exclusiveRoom:'B' },
+  { id:'E16', name:'합주 악기 세트', price:480, maintenance:4, installSlots:2, description:'주민 오케스트라를 위한 공용 연습 악기를 준비해요.', capabilities:['orchestra'], family:'orchestra', icon:'♫', exclusiveRoom:'C' },
+  { id:'E17', name:'무대 조명 세트', price:300, maintenance:3, installSlots:2, description:'무대에서 조명과 공연 진행 기술을 실습해요.', capabilities:['lighting'], family:'lighting', icon:'☼', exclusiveRoom:'C' },
+  { id:'E18', name:'목공 작업 세트', price:320, maintenance:3, installSlots:2, description:'공예실의 작업대와 안전 도구로 생활 목공을 배워요.', capabilities:['wood'], family:'wood', icon:'✂', exclusiveRoom:'E' },
+  { id:'E19', name:'외국어 토론 세트', price:260, maintenance:2, installSlots:1, description:'회의실의 듣기·녹음 장비와 자료로 외국어 토론을 도와요.', capabilities:['interpret'], family:'interpret', icon:'▤', exclusiveRoom:'G' },
+  { id:'E20', name:'피칭 코칭 세트', price:460, maintenance:3, installSlots:2, description:'컴퓨터와 함께 발표·사업 제안 수업을 준비해요.', capabilities:['pitch'], family:'pitch', icon:'▣', exclusiveRoom:'G' },
 ]
 
 const PROGRAM = Object.fromEntries(PROGRAMS.map(p => [p.id,p])) as Record<ProgramId,Program>
@@ -67,12 +90,12 @@ const OFFER = Object.fromEntries(OFFERS.map(p => [p.id,p])) as Record<string,Off
 const ROOM = Object.fromEntries(ROOM_DEFINITIONS.map(r => [r.id,r])) as Record<RoomId,RoomDefinition>
 const ROOM_CLASSES:Record<RoomId,ProgramId[]>={
   A:['P01','P02','P03','P04','P06','P07','P09'],
-  B:['P03','P04','P06','P09'],
-  C:['P03','P04','P06','P09'],
+  B:['P03','P04','P06','P09','P11','P16'],
+  C:['P03','P04','P06','P09','P14','P17','P18'],
   D:['P01','P02','P03','P04','P06','P07','P09'],
-  E:['P01','P02','P06'],
-  F:['P01','P02','P06','P07'],
-  G:['P06','P07'],
+  E:['P01','P02','P06','P12','P19'],
+  F:['P01','P02','P06','P07','P13'],
+  G:['P06','P07','P15','P20','P21'],
 }
 const COMMON_FAMILIES = ['energy','guide']
 export const PREPARATION_SUPPORT = [5,5,5,4,4] as const
@@ -82,7 +105,7 @@ const copy = <T>(value:T):T => structuredClone(value)
 const hash = (text:string):number => { let h=2166136261; for(const c of text){h^=c.charCodeAt(0);h=Math.imul(h,16777619)} return h>>>0 }
 
 export interface Room { id:RoomId; open:boolean; equipment:string[]; mode:string; management:number; facilityQuality:number; facilityUpkeep:number }
-export interface Equipment { id:string; instanceId:string; room:RoomId|null; condition:number; ready:boolean }
+export interface Equipment { id:string; instanceId:string; room:RoomId|null; condition:number; ready:boolean; stored?:boolean }
 export interface Task { kind:'install'|'maintain'|'train'|'open'; room:RoomId; remaining:number; equipment?:string; expertise?:Expertise }
 interface RawStats { publicServed:number; publicRequested:number; experienceSum:number; experienceWeight:number; use:number; weeks:number }
 export interface EvaluationStats extends RawStats { revenue:number; cost:number; grants:number; seasons:number; reputationSum:number }
@@ -127,6 +150,7 @@ export interface SeasonReport {
 }
 export interface GameState {
   version:2; seed:number; year:number; season:number; phase:'planning'|'review'|'ending'
+  specialtyRulesVersion?:1; migrationNotices?:string[]
   planningStage:'rentals'|'classes'; player:Institution; rivals:Institution[]
   lastReport:SeasonReport|null; history:SeasonReport[]
 }
@@ -139,7 +163,7 @@ const emptyEvaluationStats = (grants=0):EvaluationStats => ({...emptyStats(),rev
 const emptyPlan = ():Plan => Object.fromEntries(ROOM_IDS.map(id=>[id,[null,null,null,null,null]])) as Plan
 const roomOf = (inst:Institution,id:RoomId):Room|undefined => inst.rooms.find(r=>r.id===id)
 const maintenanceCost = (inst:Institution):number => inst.inventory.reduce((sum,e)=>sum+OFFER[e.id].maintenance,0)
-const hasFamily = (inst:Institution,family:string,room?:RoomId):boolean => inst.inventory.some(e=>OFFER[e.id]?.family===family&&(room===undefined||e.room===room)&&e.ready&&e.condition>=20)
+const hasFamily = (inst:Institution,family:string,room?:RoomId):boolean => inst.inventory.some(e=>!e.stored&&OFFER[e.id]?.family===family&&(room===undefined||e.room===room)&&e.ready&&e.condition>=20)
 const actualBaseCost = (inst:Institution):number => 80-(hasFamily(inst,'energy')?12:0)
 export function getLevel(xp:number):number { return [0,20,60,120,200].filter(n=>xp>=n).length-1 }
 export function freeCash(inst:Institution):number { return round(Math.max(0,inst.cash-inst.reserved)) }
@@ -147,6 +171,7 @@ export function isRentalProgram(id:ProgramId|string):boolean { return ['P05','P0
 /** Room purpose only; opening, equipment installation and floor area are separate checks. */
 export function roomSupportsProgram(room:RoomId,program:ProgramId):boolean {
   if(!ROOM[room]||!PROGRAM[program])return false
+  if(PROGRAM[program].exclusiveRoom&&PROGRAM[program].exclusiveRoom!==room)return false
   if(program==='P05'||program==='P10')return true
   if(program==='P08')return room==='C'
   return ROOM_CLASSES[room].includes(program)
@@ -155,6 +180,7 @@ export function roomSupportsProgram(room:RoomId,program:ProgramId):boolean {
 export function roomSupportsOffer(room:RoomId,offerId:string):boolean {
   const offer=OFFER[offerId]
   if(!ROOM[room]||!offer)return false
+  if(offer.exclusiveRoom&&offer.exclusiveRoom!==room)return false
   if([...COMMON_FAMILIES,'quiet','flex'].includes(offer.family))return true
   return PROGRAMS.some(program=>roomSupportsProgram(room,program.id)&&offer.capabilities.some(capability=>program.requires.includes(capability)))
 }
@@ -170,7 +196,7 @@ export function getProgramRequirements(inst:Institution,room:RoomId,program:Prog
   const roomCompatible=roomSupportsProgram(room,program)
   const spaceReady=Boolean(target?.open)&&Boolean(ROOM[room])&&ROOM[room].area>=p.minArea&&(!p.requires.includes('hall')||room==='C')
   for(const family of p.requires.filter(f=>f!=='hall')){
-    const gear=inst.inventory.filter(e=>e.room===room&&OFFER[e.id]?.capabilities.includes(family))
+    const gear=inst.inventory.filter(e=>!e.stored&&e.room===room&&OFFER[e.id]?.capabilities.includes(family))
     if(!gear.length)missingFamilies.push(family)
     else if(!gear.some(e=>e.ready))pendingFamilies.push(family)
     else if(!gear.some(e=>e.ready&&e.condition>=20))wornFamilies.push(family)
@@ -178,6 +204,15 @@ export function getProgramRequirements(inst:Institution,room:RoomId,program:Prog
   return {ready:roomCompatible&&spaceReady&&!missingFamilies.length&&!pendingFamilies.length&&!wornFamilies.length,roomCompatible,missingFamilies,pendingFamilies,wornFamilies,spaceRequired:p.minArea,spaceReady}
 }
 export function canRunProgram(inst:Institution,room:RoomId,program:ProgramId):boolean { return getProgramRequirements(inst,room,program).ready }
+export function getProgramWeeklyCount(inst:Institution,program:ProgramId):number { return ROOM_IDS.reduce((sum,room)=>sum+inst.plan[room].filter(id=>id===program).length,0) }
+export function getProgramPlacementError(inst:Institution,room:RoomId,slot:number,program:ProgramId):string|undefined {
+  if(!ROOM_IDS.includes(room)||!Number.isInteger(slot)||slot<0||slot>=BLOCKS.length)return '편성할 공간과 시간을 확인해 주세요.'
+  if(!PROGRAM[program]||isRentalProgram(program))return '편성할 클래스를 골라 주세요.'
+  if(getRentalAt(inst,room,slot))return '승인한 대관을 취소한 뒤 편성할 수 있어요.'
+  if(!canRunProgram(inst,room,program))return '이 방의 용도·면적과 필수 설비 설치·정비를 확인해 주세요.'
+  const limit=PROGRAM[program].weeklyLimit
+  if(limit&&getProgramWeeklyCount(inst,program)-(inst.plan[room][slot]===program?1:0)>=limit)return `${PROGRAM[program].shortName}는 센터 전체에서 주 ${limit}회까지 편성해요.`
+}
 export function getRentalAt(inst:Institution,room:RoomId,slot:number):RentalRequest|undefined { return inst.rentalRequests.find(r=>r.room===room&&r.slot===slot&&r.status==='accepted') }
 
 function initialInstitution(id:string,name:string,archetype:string):Institution {
@@ -214,7 +249,7 @@ function generateRentals(inst:Institution,state:Calendar):RentalRequest[] {
 }
 export function createGame(seed=20261105):GameState {
   const definitions=[['boram','보람','주민 서비스'],['rhythm','리듬','공연 수입'],['tantan','탄탄','생활체육'],['baeum','배움','문화 교육'],['saebom','새봄','새로운 시도'],['neulpum','늘품','정비와 절약'],['pureun','푸른','에너지 효율'],['byeolbit','별빛','공간 확장'],['daon','다온','균형 성장']]
-  const state:GameState={version:2,seed,year:1,season:0,phase:'planning',planningStage:'rentals',player:initialInstitution('player','우리 센터','나만의 운영'),rivals:definitions.map(([id,name,kind])=>initialInstitution(id,name+'센터',kind)),lastReport:null,history:[]}
+  const state:GameState={version:2,specialtyRulesVersion:1,seed,year:1,season:0,phase:'planning',planningStage:'rentals',player:initialInstitution('player','우리 센터','나만의 운영'),rivals:definitions.map(([id,name,kind])=>initialInstitution(id,name+'센터',kind)),lastReport:null,history:[]}
   for(const inst of [state.player,...state.rivals])inst.rentalRequests=generateRentals(inst,state)
   return state
 }
@@ -261,7 +296,7 @@ export function reopenRentalReview(state:GameState):GameState {
 }
 export function setProgram(state:GameState,room:RoomId,slot:number,program:ProgramId|null):GameState {
   if(state.phase!=='planning'||!ROOM_IDS.includes(room)||!Number.isInteger(slot)||slot<0||slot>4||getRentalAt(state.player,room,slot))return state
-  if(program!==null&&(state.planningStage!=='classes'||isRentalProgram(program)||!canRunProgram(state.player,room,program)))return state
+  if(program!==null&&(state.planningStage!=='classes'||getProgramPlacementError(state.player,room,slot,program)))return state
   const next=copy(state);next.player.plan[room][slot]=program;return next
 }
 function buyFor(inst:Institution,offerId:string,room:RoomId,season:number):string|undefined {
@@ -269,7 +304,7 @@ function buyFor(inst:Institution,offerId:string,room:RoomId,season:number):strin
   if(!offer)return '물품을 찾을 수 없어요.'
   if(!target?.open)return '먼저 사용할 공간을 확인해 주세요.'
   const common=COMMON_FAMILIES.includes(offer.family),location=common?null:room
-  if(inst.inventory.some(e=>e.room===location&&OFFER[e.id].family===offer.family))return common?'센터 공용 설비를 이미 보유하고 있어요.':'이 방에는 같은 물품군이 이미 있어요.'
+  if(inst.inventory.some(e=>!e.stored&&e.room===location&&OFFER[e.id].family===offer.family))return common?'센터 공용 설비를 이미 보유하고 있어요.':'이 방에는 같은 물품군이 이미 있어요.'
   if(offer.family==='stage'&&room!=='C')return '이 무대는 대강당에 설치할 수 있어요.'
   if(!roomSupportsOffer(room,offerId))return `${ROOM_NAMES[room]}의 용도에 맞는 수업 장비를 골라 주세요.`
   if(!common&&!['flex','quiet'].includes(offer.family)&&inst.inventory.filter(e=>e.room===room&&!['flex','quiet'].includes(OFFER[e.id].family)).length>=ROOM[room].equipmentSlots)return '이 방의 장비 자리가 모두 찼어요.'
@@ -290,10 +325,11 @@ function equipmentOf(inst:Institution,id:string):Equipment|undefined {
   const exact=inst.inventory.find(e=>e.instanceId===id);if(exact)return exact
   const offers=inst.inventory.filter(e=>e.id===id);return offers.length===1?offers[0]:undefined
 }
-export function moveEquipment(state:GameState,equipmentId:string,targetRoom:RoomId):MutationResult {
+export function moveEquipment(state:GameState,equipmentId:string,targetRoom:RoomId,options:{allowClearPlan?:boolean}={}):MutationResult {
   if(state.phase!=='planning')return {state,error:'계획 화면에서 장비를 옮길 수 있어요.'}
   const equipment=equipmentOf(state.player,equipmentId)
   if(!equipment)return {state,error:'옮길 장비를 개별 선택해 주세요.'}
+  if(equipment.stored)return {state,error:'보관 장비는 재설치를 선택해 주세요.'}
   if(equipment.room===null)return {state,error:'센터 공용 설비는 방 사이로 옮기지 않아요.'}
   if(!equipment.ready)return {state,error:'설치·이전 작업이 끝난 뒤 옮길 수 있어요.'}
   if(equipment.room===targetRoom)return {state,error:'이미 이 방에 있는 장비예요.'}
@@ -303,11 +339,62 @@ export function moveEquipment(state:GameState,equipmentId:string,targetRoom:Room
   if(!roomSupportsOffer(targetRoom,equipment.id))return {state,error:`${ROOM_NAMES[targetRoom]}에서는 이 장비를 사용하는 수업을 운영하지 않아요.`}
   if(state.player.inventory.some(e=>e.room===targetRoom&&OFFER[e.id].family===offer.family))return {state,error:'옮길 방에 같은 물품군이 있어요.'}
   if(!['flex','quiet'].includes(offer.family)&&state.player.inventory.filter(e=>e.room===targetRoom&&!['flex','quiet'].includes(OFFER[e.id].family)).length>=ROOM[targetRoom].equipmentSlots)return {state,error:'옮길 방의 장비 자리가 모두 찼어요.'}
+  const impact=getStorageImpact(state.player,equipment.instanceId)
+  if(impact.rentalIds.length)return {state,error:'이 장비가 필요한 승인 대관을 먼저 취소해 주세요.'}
+  if(impact.slots.length&&options.allowClearPlan!==true)return {state,error:`이 장비가 필요한 클래스 ${impact.slots.length}칸을 비우는지 확인해 주세요.`}
   if(freeCash(state.player)<8)return {state,error:'장비 이전에 8점이 필요해요.'}
   const next=copy(state),moved=equipmentOf(next.player,equipment.instanceId)!
+  for(const slot of impact.slots)next.player.plan[moved.room!][slot]=null
   roomOf(next.player,moved.room!)!.equipment=roomOf(next.player,moved.room!)!.equipment.filter(id=>id!==moved.id)
   moved.room=targetRoom;moved.ready=false;roomOf(next.player,targetRoom)!.equipment.push(moved.id)
   next.player.cash=round(next.player.cash-8);next.player.evaluationStats.cost+=8;next.player.pendingTasks.push({kind:'install',room:targetRoom,remaining:1,equipment:moved.instanceId})
+  return {state:next}
+}
+export interface StorageImpact { room:RoomId|null; programs:ProgramId[]; slots:number[]; rentalIds:string[] }
+/** The caller can show precisely which classes would be cleared before confirming. */
+export function getStorageImpact(inst:Institution,equipmentId:string):StorageImpact {
+  const equipment=equipmentOf(inst,equipmentId)
+  if(!equipment||equipment.stored||equipment.room===null)return {room:null,programs:[],slots:[],rentalIds:[]}
+  const room=equipment.room,capabilities=OFFER[equipment.id].capabilities
+  const without=copy(inst);without.inventory=without.inventory.filter(item=>item.instanceId!==equipment.instanceId)
+  const affected=(program:ProgramId)=>PROGRAM[program].requires.some(cap=>capabilities.includes(cap))&&!canRunProgram(without,room,program)
+  const slots=inst.plan[room].flatMap((program,slot)=>program&&!isRentalProgram(program)&&affected(program)?[slot]:[])
+  return {room,slots,programs:[...new Set(slots.map(slot=>inst.plan[room][slot]!))],rentalIds:inst.rentalRequests.filter(request=>request.room===room&&request.status==='accepted'&&affected(request.program)).map(request=>request.id)}
+}
+export function storeEquipment(state:GameState,equipmentId:string,options:{allowClearPlan?:boolean}={}):MutationResult {
+  if(state.phase!=='planning')return {state,error:'계획 화면에서 장비를 보관할 수 있어요.'}
+  const equipment=equipmentOf(state.player,equipmentId)
+  if(!equipment)return {state,error:'보관할 장비를 개별 선택해 주세요.'}
+  if(equipment.stored)return {state,error:'이미 보관 중인 장비예요.'}
+  if(equipment.room===null)return {state,error:'센터 공용 설비는 보관하지 않아요.'}
+  if(!equipment.ready)return {state,error:'설치·이전 작업이 끝난 뒤 보관할 수 있어요.'}
+  const impact=getStorageImpact(state.player,equipment.instanceId)
+  if(impact.rentalIds.length)return {state,error:'이 장비가 필요한 승인 대관을 먼저 취소해 주세요.'}
+  if(impact.slots.length&&options.allowClearPlan!==true)return {state,error:`이 장비가 필요한 클래스 ${impact.slots.length}칸을 비우는지 확인해 주세요.`}
+  if(freeCash(state.player)<8)return {state,error:'장비 보관에 8점이 필요해요.'}
+  const next=copy(state),stored=equipmentOf(next.player,equipment.instanceId)!,room=stored.room!
+  roomOf(next.player,room)!.equipment=roomOf(next.player,room)!.equipment.filter(id=>id!==stored.id)
+  for(const slot of impact.slots)next.player.plan[room][slot]=null
+  stored.room=null;stored.ready=false;stored.stored=true
+  // Ownership and its maintenance obligation remain; storing cannot release reserve.
+  next.player.cash=round(next.player.cash-8);next.player.evaluationStats.cost=round(next.player.evaluationStats.cost+8)
+  return {state:next}
+}
+export function reinstallEquipment(state:GameState,equipmentId:string,targetRoom:RoomId):MutationResult {
+  if(state.phase!=='planning')return {state,error:'계획 화면에서 보관 장비를 재설치할 수 있어요.'}
+  const equipment=equipmentOf(state.player,equipmentId)
+  if(!equipment?.stored)return {state,error:'재설치할 보관 장비를 개별 선택해 주세요.'}
+  if(!roomOf(state.player,targetRoom)?.open)return {state,error:'재설치할 열린 공간을 확인해 주세요.'}
+  const offer=OFFER[equipment.id]
+  if(!roomSupportsOffer(targetRoom,equipment.id))return {state,error:`${ROOM_NAMES[targetRoom]}의 용도에 맞는 장비가 아니에요.`}
+  if(state.player.inventory.some(item=>!item.stored&&item.room===targetRoom&&OFFER[item.id].family===offer.family))return {state,error:'재설치할 방에 같은 물품군이 있어요.'}
+  if(!['flex','quiet'].includes(offer.family)&&state.player.inventory.filter(item=>!item.stored&&item.room===targetRoom&&!['flex','quiet'].includes(OFFER[item.id].family)).length>=ROOM[targetRoom].equipmentSlots)return {state,error:'재설치할 방의 장비 자리가 모두 찼어요.'}
+  if(freeCash(state.player)<8)return {state,error:'장비 재설치에 8점이 필요해요.'}
+  const next=copy(state),installed=equipmentOf(next.player,equipment.instanceId)!
+  delete installed.stored;installed.room=targetRoom;installed.ready=false
+  roomOf(next.player,targetRoom)!.equipment.push(installed.id)
+  next.player.cash=round(next.player.cash-8);next.player.evaluationStats.cost=round(next.player.evaluationStats.cost+8)
+  next.player.pendingTasks.push({kind:'install',room:targetRoom,remaining:offer.installSlots,equipment:installed.instanceId})
   return {state:next}
 }
 export function openHall(state:GameState):MutationResult { return {state,error:'시설 입찰과 공사를 거쳐 공간을 열어 주세요.'} }
@@ -357,14 +444,34 @@ export function getDemand(state:Calendar):DemandGroup[] {
     {id:'yoga-b',title:'퇴근 후 운동 모임',programs:['P03','P04'],people:n('yb',7),slots:[1,2,4],maxFee:.8,public:false,returning:.8},
     {id:'yoga-budget',title:'알뜰 요가 신청',programs:['P03','P04'],people:5,slots:[1,4],maxFee:.7,public:true,returning:.5},
     {id:'yoga-c',title:'주민 스트레칭',programs:['P03','P04'],people:n('yc',8),slots:[0,2,3],maxFee:0,public:true,returning:.3},
-    {id:'meeting-a',title:'동네 독서 모임',programs:['P06'],people:6,slots:[0,1,3],maxFee:0,public:true,returning:.9},
-    {id:'meeting-b',title:'주말 주민 모임',programs:['P06'],people:5,slots:[2,3,4],maxFee:0,public:true,returning:.8},
-    {id:'meeting-c',title:'주민 자치 모임',programs:['P06'],people:6,slots:[1,2,4],maxFee:0,public:true,returning:.8},
+    {id:'meeting-a',title:'가정 안전 배우기',programs:['P06'],people:6,slots:[0,1,3],maxFee:0,public:true,returning:.9},
+    {id:'meeting-b',title:'주말 생활안전 교실',programs:['P06'],people:5,slots:[2,3,4],maxFee:0,public:true,returning:.8},
+    {id:'meeting-c',title:'일상 사고 예방 교실',programs:['P06'],people:6,slots:[1,2,4],maxFee:0,public:true,returning:.8},
     {id:'dance-a',title:'저녁 댄스 모임',programs:['P09'],people:n('da',10),slots:[2,3,4],maxFee:1.2,public:true,returning:.6},
     {id:'dance-b',title:'주말 댄스 동아리',programs:['P09'],people:n('dbudget',8),slots:[3,4],maxFee:.95,public:false,returning:.6},
     {id:'digital-a',title:'생활 디지털 교실',programs:['P07'],people:n('di',10),slots:[0,1,4],maxFee:1.5,public:true,returning:.5},
     {id:'digital-budget',title:'알뜰 디지털 신청',programs:['P07'],people:5,slots:[1,4],maxFee:1.05,public:true,returning:.5},
+    {id:'pilates-a',title:'기구 필라테스 오전반',programs:['P11'],people:n('pa',8),slots:[0,1,3],maxFee:5.6,public:false,returning:.85},
+    {id:'pilates-b',title:'기구 필라테스 직장인반',programs:['P11'],people:n('pb',8),slots:[2,4],maxFee:4.9,public:false,returning:.8},
+    {id:'pottery-a',title:'작품 도예 기초반',programs:['P12'],people:n('pot-a',10),slots:[0,1,3],maxFee:4.1,public:false,returning:.75},
+    {id:'pottery-b',title:'주말 도예 작품반',programs:['P12'],people:n('pot-b',9),slots:[2,3,4],maxFee:3.8,public:false,returning:.75},
+    {id:'video-a',title:'마을 영상 제작반',programs:['P13'],people:n('vi-a',10),slots:[1,2,3],maxFee:4.7,public:false,returning:.7},
+    {id:'video-b',title:'주말 영상 편집반',programs:['P13'],people:n('vi-b',9),slots:[0,4],maxFee:4.1,public:false,returning:.7},
   ]
+  const specialtyDemand:{program:ProgramId;title:string;people:[number,number];slots:[number[],number[]];fees:[number,number]}[]=[
+    {program:'P14',title:'뮤지컬 워크숍',people:[22,20],slots:[[1,2],[3,4]],fees:[2.7,2.35]},
+    {program:'P15',title:'스피치·발표',people:[8,8],slots:[[0,2],[3,4]],fees:[4.7,4.1]},
+    {program:'P16',title:'실내 사이클',people:[10,10],slots:[[0,1],[2,4]],fees:[4.3,3.8]},
+    {program:'P17',title:'주민 오케스트라',people:[22,20],slots:[[0,1],[3,4]],fees:[2.8,2.4]},
+    {program:'P18',title:'무대기술',people:[14,12],slots:[[1,3],[2,4]],fees:[3.3,2.85]},
+    {program:'P19',title:'생활 목공',people:[10,9],slots:[[1,3],[0,4]],fees:[3.55,3.1]},
+    {program:'P20',title:'외국어 토론',people:[8,8],slots:[[1,2],[3,4]],fees:[4,3.5]},
+    {program:'P21',title:'창업 피칭',people:[8,8],slots:[[2,3],[0,4]],fees:[5.4,4.75]},
+  ]
+  for(const entry of specialtyDemand)for(const index of [0,1] as const){
+    const id=`${entry.program.toLowerCase()}-${index}`
+    groups.push({id,title:`${entry.title} ${index?'주말':'정기'}반`,programs:[entry.program],people:n(id,entry.people[index]),slots:entry.slots[index],maxFee:entry.fees[index],public:false,returning:.75})
+  }
   if(state.year>=2)groups.push({id:'digital-b',title:'퇴근 후 디지털 교실',programs:['P07'],people:n('db',8),slots:[1,2,3],maxFee:1.2,public:false,returning:.7})
   if(state.season===1)groups.push({id:'summer-yoga',title:'여름 건강 교실',programs:['P03','P04'],people:10,slots:[1,2,4],maxFee:.95,public:true,returning:.5})
   if(state.season===3)groups.push({id:'winter-craft',title:'겨울 선물 만들기',programs:['P01','P02'],people:10,slots:[1,3,4],maxFee:1.2,public:true,returning:.4})
@@ -378,7 +485,7 @@ function finishTask(inst:Institution,task:Task):void {
   const room=roomOf(inst,task.room)!
   if(task.kind==='install'){
     const equipment=inst.inventory.find(e=>e.instanceId===task.equipment)
-    if(!equipment)return
+    if(!equipment||equipment.stored)return
     equipment.ready=true
     const family=OFFER[equipment.id].family
     if(['craft','digital'].includes(family))room.mode='table'
@@ -406,11 +513,14 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
   const investmentReputation=advanceCampusProjects(inst)
   const stats=emptyStats();stats.weeks=1;stats.publicRequested=demand.filter(g=>g.public).reduce((n,g)=>n+g.people,0)
   const result:WeekOutcome={stats,activity:[],revenue:0,cost:0,visits:0,publicVisits:0,rentalRevenue:0,classRevenue:0,rentalCost:0,classCost:0,investmentReputation}
-  const sessions:Session[]=[]
+  const sessions:Session[]=[],scheduledCounts=new Map<ProgramId,number>()
   for(let slot=0;slot<5;slot++)for(const room of inst.rooms){
     const id=inst.plan[room.id][slot];if(!room.open||!id)continue
     const rental=getRentalAt(inst,room.id,slot)
     if(isRentalProgram(id)&&!rental)continue
+    const limit=PROGRAM[id].weeklyLimit,count=scheduledCounts.get(id)??0
+    if(limit&&count>=limit){warnings.add(`${PROGRAM[id].shortName}는 센터 전체에서 주 ${limit}회까지만 운영해요.`);continue}
+    scheduledCounts.set(id,count+1)
     sessions.push({room:room.id,slot,program:PROGRAM[id],capacity:roomCapacity(room.id,id),rental,bookings:[],attended:0,canceled:0,experience:0})
   }
   const eligible=(g:DemandGroup,s:Session)=>!s.rental&&g.programs.includes(s.program.id)&&g.slots.includes(s.slot)&&feeFor(inst,s.program)<=g.maxFee+.0001&&canRunProgram(inst,s.room,s.program.id)
@@ -475,8 +585,8 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
     const active=sessions.filter(s=>s.slot===slot&&s.attended>0)
     const adjacent:Record<RoomId,RoomId[]>={A:['B','D'],B:['A','C'],C:['B'],D:['A','E'],E:['D','F'],F:['E','G'],G:['F']}
     for(const session of active){
-      if(!['P01','P02','P07'].includes(session.program.id)||hasFamily(inst,'quiet',session.room))continue
-      if(active.some(other=>adjacent[session.room].includes(other.room)&&['P08','P09'].includes(other.program.id))){
+      if(!['P01','P02','P07','P12','P13','P15','P20','P21'].includes(session.program.id)||hasFamily(inst,'quiet',session.room))continue
+      if(active.some(other=>adjacent[session.room].includes(other.room)&&['P08','P09','P14','P16','P17','P19'].includes(other.program.id))){
         session.experience-=10;stats.experienceSum-=session.attended*10
         const activity=result.activity.find(a=>a.room===session.room&&a.slot===slot);if(activity)activity.experience=session.experience
         warnings.add('이웃 공간의 음악과 조용한 클래스 시간을 나누어 보세요.')
@@ -484,7 +594,7 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
     }
     // Reputation uses the final experience after noise and all quality adjustments.
     for(const session of active)if(!session.rental&&session.program.kind!=='community')
-      inst.reputation=clamp(inst.reputation+session.attended*.015*session.experience/100)
+      inst.reputation=clamp(inst.reputation+session.attended*.015*session.experience/100*(session.program.reputationMultiplier??1))
   }
   const mean=stats.experienceWeight?stats.experienceSum/stats.experienceWeight:70
   if(stats.experienceWeight)inst.trust=clamp(inst.trust+clamp((mean-70)/30,-.7,.7))
@@ -568,6 +678,24 @@ function resolveInstitution(inst:Institution,state:Calendar):SeasonReport {
     highlights:[visits?`이번 계절 ${visits}번의 방문이 있었어요.`:'이번 계절에는 시설을 준비하며 쉬었어요.',`대관 수입 ${round(rentalRevenue)}점 · 클래스 수입 ${round(classRevenue)}점`],warnings:[...warnings],activity,weekly,beforeCash,afterCash:inst.cash,annual:state.season===3,rentalRevenue:round(rentalRevenue),classRevenue:round(classRevenue),rentalCost:round(rentalCost),classCost:round(classCost),reputationChange:round(inst.reputation-reputationStart),breakdownAvailable:true}
 }
 
+function planRivalSpecialty(inst:Institution,state:Calendar):void {
+  if(state.year<2)return
+  const choices:Record<string,{room:RoomId;offers:string[]}>={tantan:{room:'B',offers:['E02','E11']},baeum:{room:'E',offers:['E01','E12']},saebom:{room:'F',offers:['E06B','E13']},rhythm:{room:'C',offers:['E04','E07']},byeolbit:{room:'C',offers:['E07','E17']},neulpum:{room:'G',offers:['E05','E19']}}
+  const choice=choices[inst.id];if(!choice||!roomOf(inst,choice.room)?.open)return
+  const local=inst.inventory.filter(item=>!item.stored&&item.room===choice.room&&!['flex','quiet'].includes(OFFER[item.id].family))
+  const satisfies=(item:Equipment,id:string)=>OFFER[item.id].family===OFFER[id].family&&(id!=='E06B'||OFFER[item.id].capabilities.includes('digitalPro'))
+  const missing=choice.offers.filter(id=>!local.some(item=>satisfies(item,id)))
+  if(!missing.length)return
+  const remove=local.filter(item=>!choice.offers.some(id=>satisfies(item,id)))
+  if(remove.some(item=>!item.ready))return
+  const total=remove.length*8+missing.reduce((sum,id)=>sum+OFFER[id].price+OFFER[id].maintenance*(4-state.season),0)
+  if(freeCash(inst)<total+220)return
+  // Use the same storage costs, installation delay and capital reserve as the player.
+  let shell={...state,version:2,phase:'planning',planningStage:'classes',player:inst,rivals:[],lastReport:null,history:[]} as GameState
+  for(const item of remove){const result=storeEquipment(shell,item.instanceId);if(result.error)return;shell=result.state}
+  for(const id of missing){const result=buyEquipment(shell,id,choice.room);if(result.error)return;shell=result.state}
+  Object.assign(inst,shell.player)
+}
 function chooseRivalPlan(inst:Institution,state:Calendar):void {
   planRivalFacility(inst,state)
   planRivalCampus(inst,state)
@@ -587,13 +715,14 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
   // The player can buy several sets in one planning phase. These two institutions
   // also do so, paying the ordinary prices and maintenance reserve before use.
   for(let purchase=0;purchase<(adaptive?2:1);purchase++){
-    const next=(intentions[inst.id]??[]).find(item=>!inst.inventory.some(e=>(e.room===item.room||e.room===null)&&OFFER[e.id].family===OFFER[item.id].family))
+    const next=(intentions[inst.id]??[]).find(item=>!inst.inventory.some(e=>!e.stored&&(e.room===item.room||e.room===null)&&OFFER[item.id].capabilities.every(capability=>OFFER[e.id].capabilities.includes(capability))))
     if(!next)break
     const offer=OFFER[next.id],buffer=adaptive?(inst.id==='daon'?140:180):0
     if(freeCash(inst)<offer.price+offer.maintenance*(4-state.season)+buffer)break
     if(buyFor(inst,next.id,next.room,state.season))break
   }
   inst.plan=emptyPlan();for(const request of inst.rentalRequests)request.status='pending'
+  planRivalSpecialty(inst,state)
   if(adaptive){
     // Daon prioritizes accessible classes; Saebom tries more paid sport/digital
     // sessions. Both plan from the same published demand and rental requests.
@@ -602,7 +731,7 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
     const demand=getDemand(state),remaining=new Map(demand.map(group=>[group.id,group.people]))
     const support:number[]=[...PREPARATION_SUPPORT]
     const roomOrder:RoomId[]=inst.id==='daon'?['A','B','F','E','D','G','C']:['E','A','F','B','D','G','C']
-    const order:ProgramId[]=inst.id==='daon'?['P02','P04','P07','P09','P01','P03','P06']:['P09','P07','P03','P01','P04','P02','P06']
+    const order:ProgramId[]=inst.id==='daon'?['P02','P04','P07','P09','P01','P03','P06']:['P13','P09','P07','P03','P01','P04','P02','P06']
     const alternatives=new Map<string,number>()
     for(const request of inst.rentalRequests){
       const key=`${request.room}:${request.slot}`
@@ -617,7 +746,7 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
       let best:{room:RoomId;slot:number;id:ProgramId;utility:number;net:number;served:string[]}|undefined
       for(const {room,id} of candidates)for(let slot=0;slot<5;slot++){
         const p=PROGRAM[id]
-        if(inst.plan[room][slot]||support[slot]<p.support)continue
+        if(inst.plan[room][slot]||support[slot]<p.support||getProgramPlacementError(inst,room,slot,id))continue
         let seats=roomCapacity(room,id),attendees=0,utility=0
         const served:string[]=[],fee=feeFor(inst,p)
         for(const group of demand){
@@ -656,12 +785,12 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
   const publicFirst=inst.id==='boram',rentalFirst=['rhythm','neulpum','pureun'].includes(inst.id)
   const demand=getDemand(state),assigned=new Set<string>()
   const allocateClasses=()=>{
-    const order:ProgramId[]=publicFirst?['P02','P04','P07','P01','P03','P09','P06']:inst.id==='tantan'?['P03','P09','P04','P01','P06']:['P01','P07','P03','P09','P02','P04','P06']
+    const order:ProgramId[]=publicFirst?['P02','P04','P07','P01','P03','P09','P06']:inst.id==='tantan'?['P11','P16','P03','P09','P04','P01','P06']:['P12','P13','P14','P15','P17','P18','P19','P20','P21','P01','P07','P03','P09','P02','P04','P06']
     for(let slot=0;slot<5;slot++){
       let support=PREPARATION_SUPPORT[slot]-inst.rentalRequests.filter(r=>r.status==='accepted'&&r.slot===slot).reduce((n,r)=>n+PROGRAM[r.program].support,0)
       for(const room of inst.rooms.filter(r=>r.open)){
         if(inst.plan[room.id][slot])continue
-        const candidates=order.filter(id=>canRunProgram(inst,room.id,id)&&PROGRAM[id].support<=support).map(id=>({id,group:demand.find(g=>!assigned.has(g.id)&&g.programs.includes(id)&&g.slots.includes(slot)&&feeFor(inst,PROGRAM[id])<=g.maxFee)})).filter(item=>item.group)
+        const candidates=order.filter(id=>!getProgramPlacementError(inst,room.id,slot,id)&&PROGRAM[id].support<=support).map(id=>({id,group:demand.find(g=>!assigned.has(g.id)&&g.programs.includes(id)&&g.slots.includes(slot)&&feeFor(inst,PROGRAM[id])<=g.maxFee)})).filter(item=>item.group)
         const choice=candidates[0];if(!choice)continue
         inst.plan[room.id][slot]=choice.id;assigned.add(choice.group!.id);support-=PROGRAM[choice.id].support
       }
@@ -764,11 +893,15 @@ function validInstitution(value:unknown,legacy=false):boolean {
   const expected:RoomId[]=legacy?['A','B','C']:ROOM_IDS
   if(!Array.isArray(value.rooms)||value.rooms.length!==expected.length||!value.rooms.every(room=>object(room)&&expected.includes(room.id as RoomId)&&typeof room.open==='boolean'&&typeof room.mode==='string'&&strings(room.equipment)&&room.equipment.every(id=>Object.hasOwn(OFFER,id))&&(legacy||numberIn(room.management,0,100)&&numberIn(room.facilityQuality,0,100)&&numberIn(room.facilityUpkeep))))return false
   if(new Set(value.rooms.map(room=>(room as Data).id)).size!==expected.length||!object(value.plan)||!expected.every(id=>Array.isArray((value.plan as Data)[id])&&((value.plan as Data)[id] as unknown[]).length===5&&((value.plan as Data)[id] as unknown[]).every(p=>p===null||programId(p))))return false
-  if(!Array.isArray(value.inventory)||!value.inventory.every(equipment=>object(equipment)&&typeof equipment.id==='string'&&Object.hasOwn(OFFER,equipment.id)&&(equipment.room===null||expected.includes(equipment.room as RoomId))&&numberIn(equipment.condition,0,100)&&typeof equipment.ready==='boolean'&&(legacy||typeof equipment.instanceId==='string'&&equipment.instanceId.length>0)))return false
+  if(!Array.isArray(value.inventory)||!value.inventory.every(equipment=>object(equipment)&&typeof equipment.id==='string'&&Object.hasOwn(OFFER,equipment.id)&&(equipment.room===null||expected.includes(equipment.room as RoomId))&&numberIn(equipment.condition,0,100)&&typeof equipment.ready==='boolean'&&(equipment.stored===undefined||typeof equipment.stored==='boolean')&&(legacy||typeof equipment.instanceId==='string'&&equipment.instanceId.length>0)))return false
   const inventory=value.inventory as unknown as Equipment[]
   if(!legacy&&new Set(inventory.map(e=>e.instanceId)).size!==inventory.length)return false
   const families=new Set<string>()
   for(const equipment of inventory){
+    if(equipment.stored){
+      if(legacy||equipment.room!==null||equipment.ready||COMMON_FAMILIES.includes(OFFER[equipment.id].family))return false
+      continue
+    }
     const key=`${equipment.room}:${OFFER[equipment.id].family}`
     if(families.has(key))return false
     families.add(key)
@@ -782,10 +915,11 @@ function validInstitution(value:unknown,legacy=false):boolean {
   }
   if(!Array.isArray(value.pendingTasks)||!value.pendingTasks.every(task=>{
     if(!object(task)||!['install','maintain','train','open'].includes(task.kind as string)||!expected.includes(task.room as RoomId)||!integerIn(task.remaining,1,5))return false
-    if(task.kind==='install')return inventory.some(e=>(legacy?e.id:e.instanceId)===task.equipment&&(e.room===task.room||e.room===null)&&!e.ready)
+    if(task.kind==='install')return inventory.some(e=>!e.stored&&(legacy?e.id:e.instanceId)===task.equipment&&(e.room===task.room||e.room===null)&&!e.ready)
     return task.kind!=='train'||['culture','sport','event'].includes(task.expertise as string)
   }))return false
   if(legacy)return true
+  for(const program of PROGRAMS)if(program.weeklyLimit&&ROOM_IDS.reduce((sum,room)=>sum+(value.plan as Plan)[room].filter(id=>id===program.id).length,0)>program.weeklyLimit)return false
   if(![846,864,882,900,918,936,954].includes(value.annualBudget as number)||!Array.isArray(value.evaluations)||value.evaluations.length>3||!value.evaluations.every(validEvaluation))return false
   const evaluationYears=value.evaluations.map(entry=>entry.year)
   if(evaluationYears.some((year,index)=>index>0&&year<=evaluationYears[index-1]))return false
@@ -810,7 +944,10 @@ function validInstitution(value:unknown,legacy=false):boolean {
 export function validateSave(value:unknown):value is GameState {
   try {
     if(!object(value)||value.version!==2||!integerIn(value.seed,0,Number.MAX_SAFE_INTEGER)||!integerIn(value.year,1,MAX_YEARS)||!integerIn(value.season,0,3)||!['planning','review','ending'].includes(value.phase as string)||!['rentals','classes'].includes(value.planningStage as string))return false
+    if(value.specialtyRulesVersion!==undefined&&value.specialtyRulesVersion!==1)return false
+    if(value.migrationNotices!==undefined&&(!Array.isArray(value.migrationNotices)||value.migrationNotices.length>1000||!value.migrationNotices.every(message=>typeof message==='string'&&message.length<=500)))return false
     if(!validInstitution(value.player)||!Array.isArray(value.rivals)||value.rivals.length!==9||!value.rivals.every(rival=>validInstitution(rival)))return false
+    if(value.specialtyRulesVersion===1&&[value.player,...value.rivals].some(institution=>ROOM_IDS.some(room=>(institution as Institution).plan[room].some(id=>id&&PROGRAM[id].exclusiveRoom&&PROGRAM[id].exclusiveRoom!==room))))return false
     const ids=[(value.player as Institution).id,...(value.rivals as Institution[]).map(r=>r.id)]
     if(new Set(ids).size!==10||ids.includes('onnuri'))return false
     if(!Array.isArray(value.history)||value.history.length>MAX_TURNS||!value.history.every(report=>validReport(report)))return false
@@ -821,12 +958,45 @@ export function validateSave(value:unknown):value is GameState {
     return true
   }catch{return false}
 }
+/** One-time compatibility change: preserve capital and history, explain only future-plan changes. */
+function migrateSpecialtyRules(state:GameState):void {
+  if(state.specialtyRulesVersion===1)return
+  const notices:string[]=[]
+  for(const inst of [state.player,...state.rivals]){
+    const label=inst.id==='player'?'우리 센터':inst.name.slice(0,40)
+    for(const room of ROOM_IDS)for(let slot=0;slot<BLOCKS.length;slot++){
+      const id=inst.plan[room][slot],program=id?PROGRAM[id]:undefined
+      if(program?.exclusiveRoom&&program.exclusiveRoom!==room){
+        inst.plan[room][slot]=null
+        notices.push(`${label} · ${ROOM_NAMES[room]} ${BLOCKS[slot]}: ${program.shortName} 편성을 비웠어요. 이제 ${ROOM_NAMES[program.exclusiveRoom]} 전용 수업이에요. 기존 운영 기록과 자금은 유지했어요.`)
+      }
+    }
+    for(const equipment of inst.inventory){
+      const offer=OFFER[equipment.id],room=equipment.room
+      if(equipment.stored||room===null||!offer.exclusiveRoom||offer.exclusiveRoom===room)continue
+      // Video gear also supplies a screen. Do not break an ordinary class or signed rental.
+      const neededByGeneralPlan=inst.plan[room].some(id=>id&&!PROGRAM[id].exclusiveRoom&&PROGRAM[id].requires.some(capability=>offer.capabilities.includes(capability)))
+      const neededByRental=inst.rentalRequests.some(request=>request.status==='accepted'&&request.room===room&&PROGRAM[request.program].requires.some(capability=>offer.capabilities.includes(capability)))
+      if(neededByGeneralPlan||neededByRental){
+        notices.push(`${label} · ${ROOM_NAMES[room]}의 ${offer.name}: 기존 일반 수업·승인 대관에 필요한 기능이 있어 설치 상태로 보존했어요. 새 구매·재설치는 ${ROOM_NAMES[offer.exclusiveRoom]}에서 할 수 있어요.`)
+        continue
+      }
+      roomOf(inst,room)!.equipment=roomOf(inst,room)!.equipment.filter(id=>id!==equipment.id)
+      inst.pendingTasks=inst.pendingTasks.filter(task=>task.kind!=='install'||task.equipment!==equipment.instanceId)
+      equipment.room=null;equipment.ready=false;equipment.stored=true
+      notices.push(`${label} · ${ROOM_NAMES[room]}의 ${offer.name}을 비용 없이 보관했어요. 개체·상태·유지비는 유지하며 ${ROOM_NAMES[offer.exclusiveRoom]}에 재설치할 수 있어요.`)
+    }
+  }
+  state.specialtyRulesVersion=1
+  if(notices.length)state.migrationNotices=[...new Set([...(state.migrationNotices??[]),...notices])].slice(-1000)
+}
 /** Upgrade saves without replaying, repricing or reranking their recorded history. */
 export function migrateSave(value:unknown):GameState|null {
   if(validateSave(value)){
     const next=copy(value)
     // Some already-upgraded saves retain an eleven-center historical ranking.
     for(const report of [...next.history,...(next.lastReport?[next.lastReport]:[])])if(report.participants===undefined)report.participants=Math.max(next.rivals.length+1,report.rank)
+    migrateSpecialtyRules(next)
     return next
   }
   try {
@@ -839,6 +1009,7 @@ export function migrateSave(value:unknown):GameState|null {
       }
       for(const inst of [upgraded.player as Data,...upgraded.rivals as Data[]]){
         if(inst.campusProjects===undefined)inst.campusProjects=[]
+        migrateCampusProjects(inst as unknown as Institution)
         // Recorded annual scores remain historical; missing two-year evidence is
         // never reconstructed from old scores or from today's cash balance.
         if(inst.annualBudget===undefined&&inst.evaluations===undefined&&inst.evaluationStats===undefined){inst.annualBudget=BASE_ANNUAL_BUDGET;inst.evaluations=[];inst.evaluationStats=emptyEvaluationStats()}
@@ -846,6 +1017,8 @@ export function migrateSave(value:unknown):GameState|null {
       if(upgraded.phase==='ending'&&upgraded.year===5&&upgraded.season===3)upgraded.phase='review'
       const reports=[...(Array.isArray(upgraded.history)?upgraded.history:[]),...(object(upgraded.lastReport)?[upgraded.lastReport]:[])]
       for(const report of reports)if(object(report)&&report.participants===undefined)report.participants=Math.max(oldParticipants,typeof report.rank==='number'?report.rank:0)
+      if(!validateSave(upgraded))return null
+      migrateSpecialtyRules(upgraded)
       return validateSave(upgraded)?upgraded:null
     }
     if(!object(value)||value.version!==1||!integerIn(value.seed,0,Number.MAX_SAFE_INTEGER)||!integerIn(value.year,1,5)||!integerIn(value.season,0,3)||!['planning','review','ending'].includes(value.phase as string))return null
@@ -872,6 +1045,8 @@ export function migrateSave(value:unknown):GameState|null {
     next.history=next.history.map(upgradeReport)
     next.lastReport=next.lastReport?upgradeReport(next.lastReport):null
     if(next.phase==='ending'&&next.year===5&&next.season===3)next.phase='review'
+    if(!validateSave(next))return null
+    migrateSpecialtyRules(next)
     return validateSave(next)?next:null
   }catch{return null}
 }
