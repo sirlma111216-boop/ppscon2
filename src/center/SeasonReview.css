@@ -1,0 +1,43 @@
+.evaluation-award{display:flex;align-items:center;gap:20px;padding:23px 25px;background:#e9e2d5;border-bottom:3px solid #97876c;color:#453e33}
+.final-award-summary{padding:23px 26px;margin-bottom:22px;border:1px solid #bca16b;background:#efe1bf;color:#5b4320}
+.final-award-heading{display:flex;align-items:center;gap:11px;font-size:13px;font-weight:600;color:#856023}
+.final-award-result{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:15px}
+.final-award-result h3{font-family:var(--display);font-size:34px;line-height:1.4;margin:0 0 9px;font-weight:600}
+.final-award-result span{font-size:12px}.final-award-result span>b{font-size:17px}
+.final-award-result>strong{font-size:43px;font-weight:500;font-variant-numeric:tabular-nums}.final-award-result>strong>small{font-size:12px;margin-left:5px;font-weight:400}
+.final-award-summary>p{margin:17px 0 0;padding-top:12px;border-top:1px solid #a88a4944;font-size:11px;color:#80683e}
+.evaluation-partial{display:block;font-size:10px;color:#927044;margin-top:7px}
+.evaluation-award-emblem{display:grid;place-items:center;flex:0 0 72px;height:72px;border:1px solid #aa9878;border-radius:50%;color:#7b6743}
+.evaluation-award--gold{background:#f1e2b6;border-color:#b18a2b;color:#51401e}.evaluation-award--gold .evaluation-award-emblem{color:#9d6b11;border-color:#bc9441}
+.evaluation-award--silver{background:#e0e5e8;border-color:#748494;color:#3b4a56}.evaluation-award--silver .evaluation-award-emblem{color:#64798d;border-color:#96a5b0}
+.evaluation-award--bronze{background:#efdbcd;border-color:#ab7350;color:#634532}.evaluation-award--bronze .evaluation-award-emblem{color:#9b6544;border-color:#b98b6d}
+.evaluation-award h3{font-family:var(--display);font-size:31px;line-height:1.5;font-weight:600;margin:4px 0 6px}
+.evaluation-rank{font-size:12px;color:var(--muted)}.evaluation-rank b{font-size:18px;margin-right:4px;color:var(--ink)}
+.evaluation-total{margin-left:auto;text-align:center;min-width:110px;padding-left:20px;border-left:1px solid #aa98784d}
+.evaluation-total>span,.evaluation-total>small{display:block;font-size:11px;color:var(--muted)}.evaluation-total>strong{display:block;font-size:43px;font-weight:500;line-height:1.4;font-variant-numeric:tabular-nums}
+.evaluation-components{display:grid;grid-template-columns:1fr 1fr;gap:24px 28px;padding:25px 4px}
+.evaluation-components>div{display:grid;grid-template-columns:1fr 38px;column-gap:10px;row-gap:9px}
+.evaluation-components>div>span{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--stone)}
+.evaluation-components>div>span>small{font-size:10px;font-weight:400;color:var(--muted)}
+.evaluation-components>div>b{grid-column:2;grid-row:1/3;align-self:end;text-align:right;font-size:19px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--ink)}
+.evaluation-meter{height:8px;background:#dfd6c9;overflow:hidden}.evaluation-meter>i{display:block;height:100%;background:#a26a45}
+.evaluation-components>div:nth-child(2) .evaluation-meter>i{background:#a28633}.evaluation-components>div:nth-child(3) .evaluation-meter>i{background:#648394}.evaluation-components>div:nth-child(4) .evaluation-meter>i{background:#69836a}
+.evaluation-budget{display:flex;align-items:center;gap:17px;padding:17px 19px;background:#e9e5dc;border:1px solid #c8beae;color:#6a5f4c}
+.evaluation-budget>div>span{font-size:11px;display:block}.evaluation-budget strong{display:block;font-size:27px;font-weight:500;margin-top:4px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.evaluation-budget strong>small{font-size:11px;color:var(--muted);margin-left:6px;font-weight:400}.evaluation-budget>b{margin-left:auto;font-size:27px;font-weight:500}
+.evaluation-budget.is-increased{border-color:#aab9a0;background:#e7eee1;color:#4d6e4a}.evaluation-budget.is-reduced{border-color:#c4a699;background:#f0e1d8;color:#995c42}
+.review-explanation{margin-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.review-explanation>summary{cursor:pointer;padding:12px 0;color:var(--stone);font-size:12px}.review-explanation>div{padding:0 4px 13px}
+.review-explanation p{display:flex;flex-direction:column;gap:5px;line-height:1.7;margin:9px 0}.review-explanation strong{font-size:12px;font-weight:600;color:var(--stone)}.review-explanation>div>small{display:block;font-size:10px;margin-top:12px}
+.review-explanation .review-business{margin:0;padding:14px 0}.review-explanation .review-business>div:first-child{padding-left:0}.review-explanation .review-business>div:last-child{padding-right:0}
+.review-operating-details .review-finance{margin:15px 0 0}.season-review .review-actions{margin-top:18px}.review-history-note{color:#927044}
+@media(max-width:600px){
+  .final-award-summary{padding:18px 15px}.final-award-heading{font-size:11px}.final-award-heading>svg{width:25px}.final-award-result h3{font-size:28px}.final-award-result>strong{font-size:32px}
+  .evaluation-award{padding:17px 13px;gap:12px;flex-wrap:wrap}.evaluation-award-emblem{flex-basis:46px;height:46px}.evaluation-award-emblem>svg{width:29px;height:29px}
+  .evaluation-award h3{font-size:25px;margin:4px 0}.evaluation-award .eyebrow{font-size:9px}.evaluation-rank{font-size:10px}.evaluation-rank b{font-size:15px}
+  .evaluation-total{padding-left:10px;min-width:66px}.evaluation-total>strong{font-size:31px}.evaluation-total>span,.evaluation-total>small{font-size:9px}
+  .evaluation-components{padding:20px 1px;gap:20px 18px}.evaluation-components>div{column-gap:6px;grid-template-columns:1fr 27px}.evaluation-components>div>span{font-size:12px;gap:5px}.evaluation-components>div>span>small{font-size:9px}.evaluation-components>div>b{font-size:15px}
+  .evaluation-budget{padding:13px;gap:10px}.evaluation-budget>svg{width:21px}.evaluation-budget>div>span{font-size:10px}.evaluation-budget strong{font-size:25px}.evaluation-budget>b{font-size:23px}
+  .season-review .review-actions{flex-wrap:wrap}.season-review .review-actions>button{font-size:12px;flex:1;white-space:nowrap;padding-inline:10px}
+}
+@media(max-width:360px){.evaluation-award-emblem{display:none}.evaluation-components{grid-template-columns:1fr}.evaluation-award h3{font-size:23px}}

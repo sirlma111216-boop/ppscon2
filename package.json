@@ -1,7 +1,7 @@
 {
   "name": "ppscon",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "센터장님, 다음 주는요? — 문화체육센터 육성·경영 시뮬레이션",
   "engines": {
@@ -16,7 +16,8 @@
     "preview": "vite preview",
     "assets": "node scripts/build-assets.mjs",
     "e2e": "node scripts/e2e-playthrough.mjs",
-    "test:center": "node --test \"tests/center/*.test.ts\""
+    "test:center": "node --test \"tests/center/*.test.ts\"",
+    "balance:center": "node scripts/center-balance.mjs"
   },
   "dependencies": {
     "react": "19.3.1",

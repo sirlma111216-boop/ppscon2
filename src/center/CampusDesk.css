@@ -1,0 +1,8 @@
+.campus-options{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+.campus-options button{padding:0;border:1px solid #b8c9d0;background:#fff;text-align:left;overflow:hidden;color:#254353}
+.campus-options button.selected{outline:2px solid #215a7b;outline-offset:2px}
+.campus-options img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.campus-options span{display:grid;gap:7px;padding:15px}.campus-options small{color:#678392;font-size:11px}.campus-options strong{font-size:16px}
+.campus-effects{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:20px 0;border-block:1px solid #d8e2e7;margin-top:20px}
+.campus-effects span{display:grid;gap:8px;color:#5a7482;font-size:12px}.campus-effects b{font-size:24px;color:#254353}
+@media(max-width:560px){.campus-options{gap:10px}.campus-options span{padding:10px}.campus-options strong{font-size:13px}.campus-effects b{font-size:20px}}

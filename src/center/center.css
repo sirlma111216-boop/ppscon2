@@ -145,6 +145,39 @@ svg { vertical-align: middle; }
 .activity-chip.chosen { border-color: var(--clay); background: #ece0d1; color: #51332c; box-shadow: inset 3px 0 var(--clay); }
 .activity-chip:disabled { opacity: .65; }
 .activity-chip.locked { border-style: dashed; color: #8b8174; }
+.activity-chip.class-card { display: block; min-height: 93px; padding: 10px 9px; }
+.class-card .class-card-name { display: flex; align-items: center; gap: 5px; color: var(--stone); font-size: 12px; }
+.class-card-name b { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; }
+.difficulty-badge { display: inline-block; padding: 2px 4px; border: 1px solid #b5ac9d; color: var(--muted); font-size: 9px; font-weight: 500; font-style: normal; white-space: nowrap; }
+.difficulty-중급 { color: #81612b; border-color: #c5ac7f; }
+.difficulty-고급 { color: #77506b; border-color: #b59bac; }
+.class-card small.class-card-equipment { margin-top: 8px; overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.class-card .class-card-state { display: flex; align-items: center; gap: 4px; margin-top: 7px; color: #776857; font-size: 10px; font-weight: 500; }
+.class-card .class-card-state.is-ready { color: #4e6953; }
+.activity-chip.class-card.chosen .class-card-name { color: var(--clay); }
+.class-requirements { margin-top: 14px; padding: 12px 0 0; border-top: 1px solid var(--stone); }
+.class-requirements-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--ink); font-size: 12px; }
+.class-requirements-heading > span { color: var(--muted); font-size: 10px; }
+.class-equipment-list { display: grid; gap: 8px; margin: 11px 0; padding: 0; list-style: none; }
+.class-equipment-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--stone); font-size: 11px; }
+.class-equipment-list li > span { display: inline-flex; align-items: center; gap: 6px; }
+.class-equipment-list b { color: #8a6747; font-size: 10px; font-weight: 500; }
+.class-equipment-list .is-ready b, .class-equipment-list .is-ready svg { color: var(--olive); }
+.class-requirement-action { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 36px; margin-top: 10px; padding: 8px 10px; border: 1px solid #aa9a83; background: #e9dfcf; color: var(--clay); font-size: 12px; font-weight: 600; }
+.class-requirement-action > svg:last-child { margin-left: auto; }
+.class-requirement-action:hover:not(:disabled) { background: #ded0ba; }
+.class-requirement-action:disabled { opacity: .55; }
+.class-install-note, .class-space-warning, .class-ready-note { margin-top: 10px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+.class-install-note > svg, .class-space-warning > svg, .class-ready-note > svg { margin-right: 5px; }
+.class-space-warning { color: #8b503a; }
+.class-ready-note > span { display: block; margin-top: 2px; padding-left: 18px; color: var(--olive); }
+.class-rental-tradeoff { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+.class-rental-tradeoff > span { color: var(--muted); font-size: 10px; }
+.class-rental-tradeoff .text-button { font-size: 10px; min-height: 28px; }
+.room-facility-entry { margin-top: 12px; padding: 12px; border: 1px solid #c9b68f; background: #eee3cf; }
+.room-facility-entry > span { display: flex; align-items: center; gap: 6px; color: #6c5738; font-size: 11px; }
+.room-facility-entry .class-requirement-action { background: transparent; }
+.class-space-warning > .text-button { display: flex; width: 100%; justify-content: flex-start; font-size: 11px; }
 .procurement-button { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 20px; padding: 16px 13px; border: 1px solid var(--stone); border-radius: 3px; color: #fffdf8; background: var(--stone); text-align: left; }
 .procurement-button > span { display: flex; align-items: center; gap: 11px; }
 .procurement-button > span > span { font-size: 14px; font-weight: 650; }
@@ -300,6 +333,42 @@ svg { vertical-align: middle; }
 @keyframes panel-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
 .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+
+/* A turn is reviewed in order: bookings, classes, then the operating result. */
+.planning-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; padding: 0 0 21px; color: var(--muted); }
+.planning-steps > span { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+.planning-steps > span b { font-size: 11px; font-weight: 500; color: #9b8e7a; }
+.planning-steps > span.is-current { color: var(--clay); font-weight: 650; }
+.planning-steps > span.is-current b { color: var(--clay); border-bottom: 2px solid var(--gold); padding-bottom: 3px; }
+.planning-steps > span.is-done { color: #77745c; }
+.planning-steps > .text-button { margin-left: auto; font-size: 12px; }
+.room-overview { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px 12px; padding: 11px 0; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.room-overview b { color: #687050; font-weight: 600; }
+.room-expertise { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 10px; font-size: 11px; color: var(--muted); margin: 14px 0 9px; }
+.room-expertise > span { flex-basis: 100%; font-size: 10px; }
+.room-expertise b { font-weight: 500; color: var(--stone); }
+.room-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; border-bottom: 0; margin-top: 13px; }
+.room-tabs button { justify-content: flex-start; min-height: 49px; text-align: left; padding: 7px 4px; border-bottom: 1px solid var(--line); white-space: normal; }
+.room-tabs button.selected { border-bottom: 2px solid var(--clay); background: #e8ddcb; }
+.room-tabs button small { display: block; font-size: 10px; font-weight: 400; color: var(--muted); margin-top: 4px; }
+.schedule-slot.kind-rental { background: #e8ecdf; position: relative; }
+.kind-rental .slot-day { background: #dee4d1; color: #5c6848; }
+.rental-slot-content { cursor: default; color: #576747; padding-bottom: 31px; }
+.rental-slot-content strong { line-height: 1.5; word-break: keep-all; }
+.rental-slot-content .slot-icon { color: #737f59; }
+.rental-slot-label { font-size: 10px; color: #7c8869; }
+.cancel-rental-slot { position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%); padding: 3px 6px; font-size: 10px; color: #697553; background: none; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.cancel-rental-slot:active:not(:disabled) { transform: translateX(-50%); }
+.welcome-turn-steps { display: grid; gap: 10px; margin-top: 23px; }
+.welcome-turn-steps > span { display: flex; align-items: center; gap: 11px; font-size: 13px; color: var(--stone); }
+.welcome-turn-steps b { font-size: 11px; font-weight: 500; color: var(--gold); }
+.review-business { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 13px 0 20px; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.review-business > div { padding: 0 20px; border-right: 1px solid var(--line); }
+.review-business > div:last-child { border-right: 0; }
+.review-business > div > span { font-size: 12px; color: var(--muted); }
+.review-business strong { display: block; margin-top: 9px; font-size: 28px; color: var(--clay); font-weight: 400; font-variant-numeric: tabular-nums; }
+.review-business strong small { font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+.review-business p { font-size: 11px; color: var(--muted); margin-top: 8px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
@@ -328,6 +397,8 @@ svg { vertical-align: middle; }
 }
 
 @media (max-width: 900px) {
+  .rental-action-bar { flex-wrap: wrap; }
+  .rental-action-bar .forecast { display: block; flex: 1 0 100%; order: -1; padding: 1px 0 10px; border-bottom: 1px solid #514a3f; }
   .topbar { min-height: 68px; padding: 10px 22px; }
   .center-identity { font-size: 12px; }
   .game-layout { padding: 22px 22px 12px; }
@@ -350,6 +421,22 @@ svg { vertical-align: middle; }
 
 /* Mobile wraps the time sheet rather than shrinking its text. */
 @media (max-width: 600px) {
+  .planning-steps { gap: 8px; padding-bottom: 17px; }
+  .planning-steps > span { font-size: 11px; gap: 4px; }
+  .planning-steps > span b { font-size: 10px; }
+  .planning-steps > svg { width: 10px; }
+  .planning-steps > .text-button { flex-basis: 100%; justify-content: flex-end; padding: 5px 0 0; margin-left: 0; font-size: 11px; }
+  .room-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .room-tabs button small { font-size: 10px; }
+  .rental-slot-content strong { font-size: 12px; }
+  .rental-slot-content small { font-size: 10px; }
+  .rental-slot-content { padding-bottom: 33px; }
+  .rental-action-bar .forecast > span { font-size: 11px; }
+  .rental-action-bar .forecast small { font-size: 10px; }
+  .rental-action-bar .run-button { padding: 10px; font-size: 12px; gap: 5px; }
+  .review-business > div { padding: 0 9px; }
+  .review-business strong { font-size: 23px; }
+  .review-business > div > span, .review-business p { font-size: 10px; }
   .topbar { min-height: 68px; padding: 10px 16px; gap: 8px; }
   .brand { font-size: 10px; gap: 8px; }
   .brand strong { font-size: 16px; }
@@ -484,4 +571,57 @@ svg { vertical-align: middle; }
   .setup-overlay strong { font-size: 18px; }
   .setup-overlay > span:last-of-type { font-size: 10px; }
   .toast { bottom: 88px; padding: 12px 15px; font-size: 12px; }
+}
+
+/* Exterior first; a room's controls appear only after the player enters it. */
+.main-grid.is-exterior,.main-grid.is-rental-room{grid-template-columns:minmax(0,1fr)}
+.main-grid.is-exterior{padding-top:0;border-top:0}
+.main-grid.is-exterior .scene-toolbar{background:#514638}
+.main-grid.is-rental-room .rental-review{margin-top:22px}
+.main-grid.is-rental-room .rental-room-list{display:none}
+.main-grid.is-rental-room .rental-intro-state{display:none}
+.main-grid.is-rental-room .rental-intro{padding-bottom:14px}
+.room-change-link{margin-top:8px;font-size:11px;color:var(--muted)}
+.activity-chip.class-card{display:block;padding:0;min-height:0;overflow:hidden;border:1px solid #cdbfac;border-radius:3px;background:#fffaf0;box-shadow:none}
+.activity-chip.class-card.locked{border-style:solid;color:var(--stone)}
+.activity-chip.class-card.chosen{border-color:var(--clay);box-shadow:0 0 0 1px var(--clay)}
+.class-card .class-card-art{position:relative;display:block;aspect-ratio:3/2;overflow:hidden;background:#e9ddc6;color:#aa9577}
+.class-card-art>img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;transition:filter 150ms}
+.class-card-art>svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.activity-chip.class-card:disabled{opacity:1}
+.class-card .class-card-name{position:relative;display:flex;align-items:center;gap:6px;min-height:35px;padding:8px 10px;font-size:12px;color:#5c4937;background:#fffaf0}
+.class-card .class-card-name b{font-weight:600}
+.class-card-name>.class-card-selected{display:grid;place-items:center;width:16px;height:16px;color:#fff8ee;background:var(--clay);border-radius:50%}
+.class-card.chosen .class-card-name{background:#e9ddc9}
+.class-requirements-heading>.difficulty-badge{margin-right:auto}
+.class-requirement-summary{font-size:11px;color:var(--muted);line-height:1.7;margin-top:8px}
+.room-purpose{font-size:11px;line-height:1.65;color:var(--muted);margin:0 0 12px}
+.rival-profile .rival-building{position:relative;display:block;min-height:0;padding:0;aspect-ratio:16/9;overflow:hidden;background:#e9dfd1}
+.rival-building>img{display:block;width:100%;height:100%;object-fit:cover}
+.rival-profile .rival-building>span{position:absolute;inset:auto 0 0;margin:0;padding:22px 14px 12px;background:linear-gradient(transparent,#302a21c4);color:#fff9ed;text-align:left;font-size:15px}
+@media(max-width:870px) and (min-width:601px){.is-room-view .decision-column{grid-template-columns:minmax(0,1fr) 220px}.is-room-view .activity-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.activity-chip.class-card{padding:0;min-height:0}.class-card .class-card-name{font-size:13px;padding:9px 11px}.main-grid.is-rental-room .rental-review{margin-top:18px}.main-grid.is-rental-room .rental-intro h2{font-size:21px}.main-grid.is-exterior .scene-toolbar{min-height:39px}.main-grid.is-exterior .scene-instruction{font-size:10px}.main-grid.is-rental-room .rental-room-heading>div>p{display:none}.is-room-view .scene-footer{flex-wrap:wrap}}
+
+.class-replacement-summary{margin:20px 0;padding:17px 18px;background:#eee5d8;border-top:1px solid #b9a58b;border-bottom:1px solid #d4c3ab}
+.class-replacement-summary>span{font-size:12px;color:#83705b}
+.class-replacement-summary>div{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:15px}
+.class-replacement-summary strong{font-size:16px;line-height:1.6;font-weight:600;color:#5b4432}
+.class-replacement-summary small{display:block;font-size:11px;font-weight:400;color:#80715c}
+.class-replacement-summary svg{flex-shrink:0;color:#a28b6c}
+.class-replacement-note{font-size:13px;line-height:1.8;color:var(--muted)}
+@media(max-width:600px){.class-replacement-summary{padding:14px}.class-replacement-summary strong{font-size:14px}.class-replacement-summary>div{gap:10px}}
+
+/* Keep all room entrances above the action bar on short desktop displays. */
+.main-grid.is-exterior .scene-card{container-type:inline-size}
+@media(min-width:871px){
+  .center-game.is-exploring .topbar{min-height:62px;padding-top:8px;padding-bottom:8px}
+  .center-game.is-exploring .game-layout{padding-top:14px}
+  .center-game.is-exploring .page-heading{padding-bottom:12px;gap:20px}
+  .center-game.is-exploring .page-heading .eyebrow{display:none}
+  .center-game.is-exploring .page-heading h1{margin-top:0;font-size:27px}
+  .center-game.is-exploring .budget-badge strong{font-size:27px}
+  .center-game.is-exploring .planning-steps{padding-bottom:12px}
+  .center-game.is-exploring .main-grid.is-exterior .scene-card{width:min(100%,888px,calc((100dvh - 340px)*1.7777778));margin-inline:auto}
+  .center-game.is-exploring .action-bar{margin-top:12px}
+  .center-game.is-exploring .build-note{padding-top:5px}
 }

@@ -1,158 +1,58 @@
-/* Center facilities and scene geometry. UI typography belongs to center.css. */
-.center-scene {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  min-height: 260px;
-  overflow: hidden;
-  background: #e1d8c9;
+/* Picture first: room names lead from the exterior to a single interior. */
+.center-game .center-scene.center-building{position:relative;aspect-ratio:auto;min-height:0;padding:0;border:0;border-radius:0;overflow:hidden;background:#e9dfd1;box-shadow:none;color:#3d382f}
+.center-building__exterior{position:relative;isolation:isolate}
+.center-building__exterior-art{display:block;width:100%;height:auto;aspect-ratio:1672/941;object-fit:cover;user-select:none}
+.center-building__hotspots{position:absolute;inset:0}
+.campus-project-button{position:absolute;z-index:3;left:17px;top:16px;display:flex;align-items:center;gap:7px;min-height:38px;padding:9px 13px;border:1px solid #b4a791;background:#fffaf1ed;color:#5a493a;font-size:12px;box-shadow:0 2px 8px #30211918}
+.building-room-link{position:absolute;display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:9px 13px;transform:translate(-50%,-50%);border:1px solid #fff9e9ba;border-bottom:3px solid #8c7050;border-radius:3px;background:#fff9e9ed;color:#423527;box-shadow:0 3px 10px #34241029;white-space:nowrap;font-size:13px;font-weight:650;backdrop-filter:blur(3px)}
+.building-room-link:hover{background:#fffdf4;border-color:#6b443d;color:#6b443d;box-shadow:0 4px 14px #3424103d}
+.building-room-link:focus-visible{outline:3px solid #2a72de;outline-offset:4px;z-index:2}
+.building-room-link:active:not(:disabled){transform:translate(-50%,-50%)}
+.building-room-link.is-locked{background:#ece7dce8;border-bottom-color:#8b8275;color:#6d6253}
+.center-building__interior{position:relative;isolation:isolate;animation:room-enter 260ms ease-out both}
+.center-building__interior-art{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;user-select:none}
+.center-building__interior.is-locked>.center-building__interior-art{filter:saturate(.6);opacity:.8}
+.room-return-button{position:absolute;left:17px;top:16px;display:flex;align-items:center;gap:7px;min-height:38px;padding:9px 13px;border:1px solid #b4a791;background:#fffaf1ed;color:#5a493a;font-size:12px;box-shadow:0 2px 8px #30211918}
+.room-return-button>svg{transform:rotate(180deg)}.room-return-button:hover{background:#fffdf7}
+.room-picture-caption{position:absolute;left:0;bottom:0;right:0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:30px 22px 20px;background:linear-gradient(transparent,#2f271cd6);color:#fff9eb}
+.room-picture-caption h2{margin:0;font-family:var(--display);font-size:27px;font-weight:600;line-height:1.4}
+.room-picture-caption>div>span{display:block;margin-top:5px;font-size:11px;color:#ecdfca}
+.room-picture-lock{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;background:#fff9e8e6;color:#645239;font-size:11px}
+.room-installed-equipment{position:absolute;left:17px;top:65px;display:flex;flex-wrap:wrap;align-items:center;gap:5px;max-width:calc(100% - 34px);padding:6px 9px;color:#65513a;background:#fffaf0e6;font-size:10px;border:1px solid #cbbd9e99}
+.room-installed-equipment>span+span::before{content:'·';margin-right:5px;color:#aa9676}
+.room-last-week{position:absolute;right:17px;top:16px;padding:10px 13px;min-width:145px;border:1px solid #e7deca;background:#fffaf0ed;color:#5a4b37}
+.room-last-week>span{display:block;font-size:10px;color:#8d7758}.room-last-week>strong{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:7px;font-size:13px;font-weight:500}.room-last-week b{font-size:16px;color:#5c6f5d}
+@keyframes room-enter{from{opacity:.4;transform:scale(.985)}to{opacity:1;transform:none}}
+.center-building--reduced .center-building__interior{animation:none}
+@media(max-width:1050px) and (min-width:651px){.building-room-link{font-size:11px;min-height:35px;padding:7px 9px;gap:4px}.building-room-link>svg{width:11px}}
+@media(max-width:650px){.center-building__hotspots{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px;background:#ece4d6;border-top:1px solid #c9bda9}.building-room-link{position:relative;left:auto!important;top:auto!important;transform:none;min-height:43px;padding:9px 10px;box-shadow:none;border-bottom-width:2px;font-size:12px}.building-room-link:active:not(:disabled){transform:none}.building-room-link:first-child{grid-column:1/-1}.center-building__interior-art{aspect-ratio:4/3}.room-return-button{left:12px;top:12px;font-size:11px;min-height:36px;padding:8px 10px}.room-picture-caption{padding:28px 16px 15px;gap:8px;align-items:flex-start;flex-direction:column}.room-picture-caption h2{font-size:23px}.room-picture-caption>div>span{font-size:10px;margin-top:2px}.room-picture-lock{font-size:10px;padding:4px 7px}.room-installed-equipment{left:12px;top:58px;max-width:calc(100% - 24px);font-size:9px}.room-last-week{right:12px;top:12px;min-width:130px;padding:8px 10px}.room-last-week>span{font-size:9px}.room-last-week>strong{font-size:11px;gap:10px}.room-last-week b{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.center-building__interior{animation:none}.center-building button{transition:none}}
+
+/* Generated ceramic-and-wood sign artwork, with real text kept accessible. */
+.building-room-link,.room-return-button,.campus-project-button{min-height:47px;padding:12px 18px;background-color:#f4ebda;background-image:url('/center/interface-v2/room-plaque.webp');background-repeat:no-repeat;background-position:center;background-size:100% 100%;border:0;border-radius:3px;box-shadow:none;backdrop-filter:none;color:#3c3025;text-shadow:0 1px #fff9ea99;font-weight:650}
+.building-room-link:hover,.building-room-link:focus-visible,.room-return-button:hover,.room-return-button:focus-visible,.campus-project-button:hover,.campus-project-button:focus-visible{background-color:#f4ebda;background-image:url('/center/interface-v2/room-plaque-active.webp');box-shadow:none;color:#2e241b}
+.building-room-link.is-locked{background-color:#f0e9dc;color:#554a3b;opacity:.91;border:0}
+.room-installed-equipment{color:#50402e}.room-last-week>span{color:#655038}
+@media(max-width:1050px) and (min-width:651px){.building-room-link{min-height:43px;padding:11px 14px}}
+@media(max-width:650px){.building-room-link{min-height:45px;padding:11px 14px}.room-return-button,.campus-project-button{min-height:42px;padding:10px 14px}.campus-project-button{left:12px;top:12px}}
+
+/* Stagger names on the picture when the viewport limits its width. */
+@container(max-width:720px){
+  .building-room-link{min-height:40px;padding:10px 13px;font-size:11px;gap:5px}
+  .building-room-link[data-room="G"]{top:25%!important}
+  .building-room-link[data-room="A"]{left:71%!important}
 }
-.center-scene__background {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  user-select: none;
-  pointer-events: none;
-}
-.center-scene__light {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  transition: background 1s;
-}
-.center-scene--evening .center-scene__light {
-  background: #4c4b7952;
-  mix-blend-mode: multiply;
-}
-.center-scene__season {
-  position: absolute;
-  top: 16px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px;
-  background: #f7f1e8;
-  color: #4a4741;
-  font-size: 12px;
-}
-.center-scene__room {
-  position: absolute;
-  top: 28%;
-  height: 41%;
-  pointer-events: none;
-}
-.center-scene__room-label {
-  pointer-events: auto;
-  position: absolute;
-  top: -8%;
-  left: 50%;
-  z-index: 6;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 12px 8px 9px;
-  border: 1px solid #4a47413b;
-  border-radius: 3px;
-  background: #f7f1e8f0;
-  color: #4a4741;
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 650;
-  cursor: pointer;
-  transition: background .2s;
-}
-.center-scene__room-label:hover { background: #ffffff; }
-.center-scene__room-label:focus-visible { outline: 3px solid #af751b; outline-offset: 3px; }
-.center-scene__room-letter {
-  display: grid;
-  place-items: center;
-  width: 19px;
-  height: 19px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  font-size: 10px;
-}
-.center-scene__room--selected .center-scene__room-label {
-  background: #4a4741;
-  color: #fffaf2;
-  border-color: #4a4741;
-}
-.center-scene__room--locked .center-scene__room-label { color: #706b64; background: #ece4d6ee; }
-.center-scene__room-hit {
-  pointer-events: auto;
-  position: absolute;
-  inset: 16% 0 1%;
-  z-index: 1;
-  border: 1px solid transparent;
-  border-radius: 0;
-  background: transparent;
-  cursor: pointer;
-  transition: background .2s, border-color .2s;
-}
-.center-scene__room-hit:hover { background: #fff6d314; border-color: #fff9; }
-.center-scene__room--selected .center-scene__room-hit { border-color: #fff8; }
-.center-scene__equipment { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-.center-scene__activity-tag {
-  position: absolute;
-  left: 50%;
-  bottom: -6%;
-  z-index: 5;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
-  border: 1px solid #4a47411f;
-  background: #fffaf2ef;
-  color: #4a4741;
-  white-space: nowrap;
-  font-size: 11px;
-}
-.center-scene__activity-tag strong { color: #224228; font-size: inherit; }
-.center-scene__activity-tag--empty { color: #6e665c; background: #e9e3d8e8; }
-.center-scene__activity-tag--empty strong { color: #6e665c; }
-.center-scene__live-dot { width: 5px; height: 5px; border-radius: 50%; background: #5c6f5d; }
-.center-scene__front-caption {
-  position: absolute;
-  left: 50%;
-  bottom: 15px;
-  z-index: 5;
-  transform: translateX(-50%);
-  padding: 6px 11px;
-  color: #4a4741;
-  background: #f7f1e8df;
-  white-space: nowrap;
-  font-size: 11px;
-}
-.center-scene__storage { position: absolute; left: 26%; bottom: 19%; width: 48%; height: 35%; opacity: .92; }
-.center-scene__storage span {
-  position: absolute;
-  width: 45%;
-  height: 43%;
-  background: #bea98b;
-  border: 1px solid #9b8970;
-  box-shadow: inset -7px 0 #aa9577;
-}
-.center-scene__storage span::after { content: ''; position: absolute; left: 45%; top: 0; height: 100%; width: 10%; background: #d0c4a6; }
-.center-scene__storage span:nth-child(1) { left: 0; bottom: 0; }
-.center-scene__storage span:nth-child(2) { left: 47%; bottom: 0; }
-.center-scene__storage span:nth-child(3) { left: 25%; bottom: 44%; }
-.center-scene__fallback { position: absolute; inset: 0; display: flex; gap: 8px; padding: 19% 6% 16%; background: #e5decc; }
-.center-scene__fallback > span { flex: 1; border: 6px solid #c9c7bb; background: #d7b795; }
-.center-scene--reduced * { animation: none !important; transition: none !important; }
-@media (prefers-reduced-motion: reduce) {
-  .center-scene * { animation: none !important; transition: none !important; }
-}
-@media (max-width: 700px) {
-  .center-scene { min-height: 220px; }
-  .center-scene__season { top: 10px; left: 10px; font-size: 11px; padding: 5px 8px; }
-  .center-scene__room-label { font-size: 11px; padding: 5px 7px; gap: 5px; }
-  .center-scene__room-letter { width: 16px; height: 16px; font-size: 9px; }
-  .center-scene__activity-tag { font-size: 10px; padding: 4px 6px; gap: 4px; }
-  .center-scene__front-caption { font-size: 10px; bottom: 9px; }
+@container(max-width:650px){
+  .center-building__hotspots{position:absolute;inset:0;display:block;padding:0;background:none;border:0}
+  .building-room-link{position:absolute;min-height:35px;padding:8px 10px;transform:translate(-50%,-50%);font-size:10px;gap:4px}
+  .building-room-link:active:not(:disabled){transform:translate(-50%,-50%)}
+  .building-room-link>svg{width:11px;height:11px}
+  .building-room-link[data-room="C"]{left:17%!important;top:54%!important}
+  .building-room-link[data-room="B"]{left:43%!important;top:34%!important}
+  .building-room-link[data-room="E"]{left:66%!important;top:44%!important}
+  .building-room-link[data-room="F"]{left:76%!important;top:18%!important}
+  .building-room-link[data-room="G"]{left:83%!important;top:65%!important}
+  .building-room-link[data-room="A"]{left:52%!important;top:74%!important}
+  .building-room-link[data-room="D"]{left:76%!important;top:90%!important}
+  .campus-project-button{left:8px;top:8px;min-height:32px;padding:7px 11px;font-size:10px;gap:5px}
 }

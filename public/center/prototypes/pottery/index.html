@@ -1,0 +1,22 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>도예 수업 · 애니메이션 시안</title><style>
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:28px;background:#20302c;font-family:"Malgun Gothic",sans-serif;color:#263830;background-image:linear-gradient(#1b2b2ce8,#1b2b2cf5),url('../../building-v2/room-E.webp');background-size:cover}main{width:min(820px,100%);background:#f8f2e6;box-shadow:0 24px 80px #0008;border:1px solid #b99b69}header{padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #cfbd9b}h1{font-family:Batang,serif;font-size:25px;margin:5px 0 0}small{font-size:11px;letter-spacing:.12em;color:#746448}header span{font-size:12px;color:#665940}.scene{padding:12px;background:#2d3c38}.scene img{width:100%;height:auto;display:block}footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 26px}p{margin:0;font-size:13px;line-height:1.7}button{flex-shrink:0;cursor:pointer;border:1px solid #b29867;background:#27443c;color:#fff8e8;padding:11px 18px;font:inherit;font-size:13px}button:focus-visible{outline:3px solid #237fff;outline-offset:3px}@media(max-width:550px){body{padding:12px}header,footer{padding:16px}header{align-items:flex-start;flex-direction:column}h1{font-size:21px}footer{gap:12px}p{font-size:11px}}
+main{width:min(740px,100%)}.scene canvas{display:block;width:100%;height:auto;aspect-ratio:3/2}.scene{position:relative}.scene img{position:absolute;inset:12px;width:calc(100% - 24px);height:auto}.scene img[hidden]{display:none}header{padding:16px 24px}footer{padding:14px 24px}@media(min-width:551px) and (max-height:760px){main{width:min(690px,100%)}body{padding:14px}header{padding:13px 20px}footer{padding:12px 20px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style></head><body><main><header><div><small>공예실 · 도예 클래스</small><h1>함께 빚는 도예 수업</h1></div><span>수강생 3명 · 강사 1명</span></header><div class="scene"><canvas id="scene" width="600" height="400" role="img" aria-label="고정된 도예 교실에서 세 명의 수강생과 강사가 손과 팔을 조금씩 움직입니다"></canvas><img id="fallback" src="poster.webp" alt="세 명의 성인 수강생과 강사 한 명이 함께하는 도예 교실"></div><footer><p>서두르지 않고, 손끝으로 모양을 다듬어요.<br>도예 클래스 움직임 미리보기</p><button id="toggle" type="button" disabled>준비 중</button></footer></main><script type="module">
+import {createMotion,WIDTH,HEIGHT,LOOP_MS} from './motion.mjs';
+const canvas=document.querySelector('#scene'),button=document.querySelector('#toggle'),fallback=document.querySelector('#fallback');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let playing=!reduced.matches,elapsed=0,lastTime=null,request=0;
+try{
+  const image=new Image();image.src='poster.webp';await image.decode();
+  const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(image,0,0,WIDTH,HEIGHT);
+  const source=context.getImageData(0,0,WIDTH,HEIGHT),target=new ImageData(new Uint8ClampedArray(source.data),WIDTH,HEIGHT),motion=createMotion(source.data);
+  fallback.hidden=true;
+  function draw(){motion.render(elapsed,target.data);context.putImageData(target,0,0)}
+  function label(){button.textContent=playing?'일시 정지':'재생';button.setAttribute('aria-pressed',String(playing))}
+  function tick(time){if(lastTime!==null)elapsed=(elapsed+Math.min(50,time-lastTime))%LOOP_MS;lastTime=time;draw();if(playing&&!document.hidden)request=requestAnimationFrame(tick)}
+  function resume(){cancelAnimationFrame(request);lastTime=null;if(playing&&!document.hidden)request=requestAnimationFrame(tick);label()}
+  button.disabled=false;button.addEventListener('click',()=>{playing=!playing;resume()});
+  reduced.addEventListener('change',()=>{if(reduced.matches){playing=false;resume()}});
+  document.addEventListener('visibilitychange',resume);draw();resume();
+}catch(error){button.textContent='그림 미리보기';console.error('Pottery preview failed',error)}
+</script></body></html>

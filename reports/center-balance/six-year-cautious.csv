@@ -1,0 +1,2 @@
+﻿strategy,name,runs,meanScore,minScore,maxScore,meanRank,winRate,top3Rate,meanFirstEvaluationRank,meanLastEvaluationRank,meanRankRecovery,meanCash,meanPublic,meanReputation,meanCampusTier,shortageRate,meanShortageSeasons,meanOverloadSeasons
+"mixed_discount_buffer","할인 혼합 · 예상적자와 80점 여유를 남기는 구매",12,91.35,91.02,91.57,1.92,8.33,100,1,1.92,-0.92,5249.01,95.23,100,0,41.67,0.67,0

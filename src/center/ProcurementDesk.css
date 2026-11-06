@@ -214,6 +214,7 @@
   .pps-request-note { font-size: 11px; }
   .pps-footer { align-items: flex-start; flex-direction: column; gap: 5px; padding: 13px 17px; font-size: 11px; }
 }
+.pps-room-spec { margin: -5px 0 15px; color: #526573; font-size: 12px; line-height: 1.6; }
 /* Desktop keeps the request action visible while each document pane scrolls. */
 @media (min-width: 761px) {
   .game-modal.procurement-modal { display: flex; flex-direction: column; height: min(860px, calc(100dvh - 40px)); max-height: none; overflow: hidden; }
@@ -234,3 +235,36 @@
 @media (prefers-reduced-motion: reduce) {
   .pps-desk * { transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Catalogue, short comparison, then the institution's delivery request. */
+.pps-workflow{padding:11px 27px;gap:20px;background:#f2f6fa;color:#71869a;border-bottom:1px solid #dbe4ec}
+.pps-workflow>span{font-size:12px;gap:7px}
+.pps-workflow b{display:inline-grid;place-items:center;width:22px;height:22px;border:1px solid #c5d2de;border-radius:3px;color:#7e91a4;background:#fff;font-size:10px}
+.pps-workflow .is-current{color:#174c86}
+.pps-workflow .is-current b{color:#fff;background:#245ead;border-color:#245ead;border-bottom:1px solid #245ead;padding:0}
+.pps-workflow .is-done{color:#4a6c8b}.pps-workflow .is-done b{color:#315e88;border-color:#aec4d8}
+.pps-workflow>small{color:#617b92;font-size:11px}
+.pps-catalog>.pps-search{display:flex;flex:0 0 auto;align-items:center;gap:10px;width:100%;max-width:none;min-height:43px;margin:0 0 16px;padding:8px 12px;border:2px solid #2b619d;border-radius:3px;background:#fff;color:#2c6199}
+.pps-catalog>.pps-search input{font-size:13px;padding:2px 0;color:#254965}
+.pps-catalog-top{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:7px 13px;margin-bottom:10px}
+.pps-catalog-top h3{font-size:16px;white-space:normal}.pps-result-room{font-size:10px;color:#70879a}
+.pps-product{padding-top:11px;padding-bottom:11px}
+.pps-product-code{font-size:10px;letter-spacing:0}
+.pps-product-description{font-size:10px;margin-top:5px}
+.pps-product-facts{margin-top:7px;gap:4px 10px}
+.pps-product-facts>span:first-child b{font-size:17px;color:#174b82}
+.pps-request-title{padding-bottom:9px;border-bottom:2px solid #254f77;color:#315a7b;font-size:13px;font-weight:650}
+.pps-request-title svg{width:17px}
+.pps-request-body>h3{font-size:18px;margin-bottom:14px}
+.pps-request-empty{padding-top:35px}.pps-request-empty h3{font-size:22px}
+.pps-product-connections{display:grid;gap:5px;margin-top:9px}
+.pps-product-connections>small{font-size:10px;color:#7b8d9b}
+.pps-product-connections>span{display:flex;align-items:center;flex-wrap:wrap;gap:3px 5px;width:fit-content;padding:4px 6px;border:1px solid #d8e2e8;background:#f2f6f8;color:#536e83;font-size:10px;line-height:1.5}
+.pps-product-connections b{font-size:11px;font-weight:600;color:#3e607a}
+.pps-product-connections em{font-size:10px;font-style:normal;color:#8c7551}
+.pps-product-connections .is-ready{background:#edf4ed;border-color:#cfdfd0}.pps-product-connections .is-ready em{color:#5c7b5d}
+.pps-product-connections>.operating-effect{border-color:#d9e4e1;color:#4e7167;background:#f0f5f2;font-size:11px}
+.pps-room-incompatible{display:flex;align-items:center;gap:5px;margin-top:7px;color:#9a513e;font-size:11px;font-weight:600;line-height:1.6}
+.pps-room-incompatible-detail{padding:9px 10px;background:#fbefea;border-left:3px solid #b36b53;font-size:12px}
+.pps-product.is-incompatible{border-left:3px solid #cfaa9c}
+@media(max-width:760px){.pps-workflow{padding:10px 15px;gap:8px}.pps-workflow>span{font-size:10px;gap:4px}.pps-workflow b{width:19px;height:19px;font-size:9px}.pps-catalog{padding-top:16px}.pps-catalog>.pps-search{min-height:43px;margin-bottom:13px}.pps-catalog-top{align-items:baseline}.pps-catalog-top h3{font-size:15px}.pps-result-room{font-size:10px}.pps-product-description{display:block}.pps-product-image{background:#f5f7f8}.pps-request-title{font-size:14px}.pps-request-body>h3{font-size:21px}}

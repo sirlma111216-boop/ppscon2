@@ -1,0 +1,15 @@
+{
+  "width": 600,
+  "height": 400,
+  "frames": 120,
+  "fps": 25,
+  "durationMs": 4800,
+  "movingPixels": 28411,
+  "fixedPixels": 211589,
+  "maxOutsideDifference": 0,
+  "maxStepDifference": 0.21529219903089178,
+  "wrapStepDifference": 0.21008294909248765,
+  "loopEndpointIdentical": true,
+  "decodedFramesExact": true,
+  "bytes": 2471942
+}

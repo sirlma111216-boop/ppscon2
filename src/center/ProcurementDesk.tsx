@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Icon from './Icon'
-import { OFFERS, PROGRAMS, SEASONS, buyEquipment, canRunProgram, freeCash } from './simulation'
-import type { GameState, Offer, RoomId } from './simulation'
+import ProcurementHeader from './ProcurementHeader'
+import { MAX_YEARS, OFFERS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, SEASONS, buyEquipment, canRunProgram, freeCash, getProgramRequirements, isRentalProgram, roomSupportsOffer } from './simulation'
+import type { GameState, Offer, Program, RoomId } from './simulation'
 import './ProcurementDesk.css'
 
 interface ProcurementDeskProps {
@@ -13,7 +14,6 @@ interface ProcurementDeskProps {
   initialFilter: string
 }
 
-const ROOM_NAMES: Record<RoomId, string> = { A: '문화교실', B: '다목적실', C: '행사실' }
 const CATEGORIES = [
   { id: 'all', label: '전체 물품', icon: 'box', families: [] },
   { id: 'culture', label: '문화 · 교육', icon: 'brush', families: ['craft', 'digital'] },
@@ -23,9 +23,15 @@ const CATEGORIES = [
 ] as const
 const CAPABILITIES: Record<string, string> = {
   craft: '공예 도구', mat: '매트', flex: '이동식 가구', audio: '음향', screen: '영상 장비',
-  digital: '교육용 컴퓨터', stage: '무대', hall: '열린 행사실', energy: '절전', quiet: '공간 분리', guide: '예약 안내',
+  digital: '교육용 컴퓨터', stage: '무대', hall: '대강당', energy: '절전', quiet: '공간 분리', guide: '예약 안내',
 }
 const money = (value: number) => value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
+const OPERATING_EFFECTS: Record<string, string> = {
+  flex: '활동을 바꿀 때 준비 부담 감소',
+  energy: '센터 기본운영비 −12점 / 계절',
+  quiet: '이웃방 음악에 따른 불편 감소',
+  guide: '반복 대관 접수 · 처음 온 주민 안내 지원',
+}
 
 /** Original catalogue illustrations; these are fictional game items, not certified products. */
 function ProductDrawing({ family }: { family: string }) {
@@ -99,9 +105,11 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
   const submitting = useRef(false)
   const detail = useRef<HTMLElement>(null)
   const selected = OFFERS.find((offer) => offer.id === selectedId)
+  const selectedRoom = ROOM_DEFINITIONS.find((item) => item.id === room)!
+  const selectedCompatible = selected ? roomSupportsOffer(room, selected.id) : true
   const available = freeCash(game.player)
   const seasonsLeft = 4 - game.season
-  const termSeasons = (5 - game.year) * 4 + seasonsLeft
+  const termSeasons = (MAX_YEARS - game.year) * 4 + seasonsLeft
   const total = selected ? selected.price + selected.maintenance * seasonsLeft : 0
   const validation = useMemo(() => selected ? buyEquipment(game, selected.id, room) : null, [game, selected, room])
   const alternatives = selected ? OFFERS.filter((offer) => offer.family === selected.family) : []
@@ -126,52 +134,77 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
     onBuy(selected.id)
   }
 
+  function connectionNote(program: Program, offer: Offer) {
+    const requirements = getProgramRequirements(game.player, room, program.id)
+    if (!requirements.roomCompatible) return { ready: false, note: '이 공간의 운영 대상 아님' }
+    const additional = requirements.missingFamilies.filter((family) => !offer.capabilities.includes(family)).map((family) => CAPABILITIES[family] || family)
+    if (!requirements.spaceReady && !additional.includes('대강당')) additional.push(`${requirements.spaceRequired}㎡ 공간`)
+    if (additional.length) return { ready: false, note: `${additional.join(' · ')} 추가 필요` }
+    if (!game.player.rooms.find((item) => item.id === room)?.open) return { ready: false, note: '시설 개방 필요' }
+    if (requirements.wornFamilies.length) return { ready: false, note: '기존 장비 정비 필요' }
+    if (requirements.ready) return { ready: true, note: '이 방에서 운영 가능' }
+    if (requirements.pendingFamilies.length) return { ready: false, note: '주문한 설비 설치 대기' }
+    return { ready: false, note: '이 물품 설치 후 가능' }
+  }
+
   return <div className="pps-desk">
-    <header className="pps-masthead">
-      <div className="pps-wordmark"><span className="pps-mark"><Icon name="box" size={28} /></span><div><small>조달청</small><strong>나라장터<span>조달 업무</span></strong></div></div>
-      <div className="pps-account"><span className="pps-game-label">게임 속 조달 화면</span><span>수요기관 · 늘봄 문화체육센터</span><button onClick={onClose}>센터로 돌아가기 <Icon name="arrow" size={14} /></button></div>
-    </header>
-    <div className="pps-workflow" aria-label="물품 조달 순서"><span className={!selected ? 'is-current' : 'is-done'}><b>01</b> 필요한 물품</span><Icon name="arrow" size={14} /><span className={selected ? 'is-current' : ''}><b>02</b> 비교 · 요청</span><Icon name="arrow" size={14} /><span><b>03</b> 납품 · 설치</span><small>{game.year}년 차 {SEASONS[game.season]}</small></div>
+    <ProcurementHeader service="shopping" location="계약상품 조회" guide="같은 기능도 가격·유지비·설치 시간이 달라요. 우리 공간에 맞게 골라 보세요." onClose={onClose} />
+    <div className="pps-workflow" aria-label="물품 조달 순서"><span className={!selected ? 'is-current' : 'is-done'}><b>01</b> 상품 조회</span><Icon name="arrow" size={14} /><span className={selected ? 'is-current' : ''}><b>02</b> 비교 · 납품요구</span><Icon name="arrow" size={14} /><span><b>03</b> 납품 · 설치</span><small>{game.year}년 차 {SEASONS[game.season]}</small></div>
 
     <div className="pps-workspace">
       <aside className="pps-navigation">
-        <h3>어떤 활동을 열까요?</h3>
+        <h3>상품 분류</h3>
         <nav aria-label="조달 물품 분류">{CATEGORIES.map((item) => <button key={item.id} className={category === item.id && !familyFilter ? 'is-selected' : ''} aria-pressed={category === item.id && !familyFilter} onClick={() => { setCategory(item.id); setFamilyFilter(null); setQuery('') }}><Icon name={item.icon} size={18} /><span>{item.label}</span>{category === item.id && !familyFilter && <Icon name="arrow" size={12} />}</button>)}</nav>
         <div className="pps-budget"><small>우리 센터의 가용예산</small><strong>{money(available)}<span>점</span></strong><span>필수 운영비 {money(game.player.reserved)}점 별도 확보</span></div>
-        <div className="pps-role"><span>조달청의 역할</span><p>조달청은 계약을 마련해요.<br />센터는 물품을 선택해요.</p><small>물품·가격은 게임용 설정입니다.</small></div>
+        <div className="pps-role"><span>조달청 → 계약 마련</span><p>우리 센터 → 상품 선택<br />공급업체 → 납품·설치</p></div>
       </aside>
 
       <section className="pps-catalog" aria-label="물품 카탈로그">
-        <div className="pps-catalog-top"><h3>{familyFilter ? '같은 기능, 다른 선택' : chosenCategory.label}<span>{offers.length}</span></h3><label className="pps-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="물품 찾기" aria-label="조달 물품 검색" /></label></div>
+        <label className="pps-search"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명·기능으로 검색" aria-label="조달 물품 검색" /></label>
+        <div className="pps-catalog-top"><h3>{familyFilter ? '같은 기능 상품 비교' : chosenCategory.label}<span>{offers.length}건</span></h3><span className="pps-result-room">설치 대상 · {ROOM_NAMES[room]}</span></div>
         {familyFilter && <button className="pps-filter-reset" onClick={() => setFamilyFilter(null)}>전체 물품 보기 <Icon name="close" size={12} /></button>}
         <div className="pps-catalog-list">{offers.map((offer) => {
-          const owned = game.player.inventory.some((equipment) => OFFERS.find((item) => item.id === equipment.id)?.family === offer.family)
-          return <button className={`pps-product ${selectedId === offer.id ? 'is-selected' : ''} ${owned ? 'is-owned' : ''}`} key={offer.id} aria-pressed={selectedId === offer.id} onClick={() => chooseOffer(offer)}>
+          const owned = game.player.inventory.some((equipment) => (equipment.room === room || equipment.room === null) && OFFERS.find((item) => item.id === equipment.id)?.family === offer.family)
+          const compatible = roomSupportsOffer(room, offer.id)
+          const connections = PROGRAMS.filter((program) => program.requires.some((capability) => offer.capabilities.includes(capability)))
+          return <button className={`pps-product ${selectedId === offer.id ? 'is-selected' : ''} ${owned ? 'is-owned' : ''} ${!compatible ? 'is-incompatible' : ''}`} key={offer.id} aria-pressed={selectedId === offer.id} onClick={() => chooseOffer(offer)}>
             <span className="pps-product-image"><ProductDrawing family={offer.family} /></span>
-            <span className="pps-product-info"><span className="pps-product-code">게임 물품 {offer.id}{owned && <em>보유 중</em>}</span><strong>{offer.name}</strong><span className="pps-product-description">{offer.description}</span><span className="pps-product-facts"><span>구매 <b>{offer.price}</b>점</span><span>유지 <b>{offer.maintenance}</b>점/계절</span><span>설치 <b>{offer.installSlots}</b>칸</span></span></span>
+            <span className="pps-product-info"><span className="pps-product-code">게임 물품번호 {offer.id}{owned && <em>보유 중</em>}</span><strong>{offer.name}</strong>{!compatible && <span className="pps-room-incompatible"><Icon name="lock" size={12} />이 공간에 설치 불가</span>}<span className="pps-product-connections" aria-label="연결 클래스와 효과">{connections.length ? <><small>연결 클래스 · 대관</small>{connections.map((program) => {
+              const connection = connectionNote(program, offer)
+              const name = isRentalProgram(program.id) ? program.shortName.includes('대관') ? program.shortName : `${program.shortName} 대관` : program.shortName
+              return <span className={connection.ready ? 'is-ready' : 'needs-equipment'} key={program.id}><Icon name={connection.ready ? 'check' : 'plus'} size={11} /><b>{name}</b><em>{connection.note}</em></span>
+            })}</> : <span className="operating-effect"><Icon name="tools" size={12} />{OPERATING_EFFECTS[offer.family] || offer.description}</span>}</span><span className="pps-product-facts"><span>단가 <b>{offer.price}</b>점</span><span>유지 <b>{offer.maintenance}</b>점/계절</span><span>설치 <b>{offer.installSlots}</b>칸</span></span></span>
             <span className="pps-product-select"><Icon name={selectedId === offer.id ? 'check' : 'plus'} size={17} /></span>
           </button>
         })}{offers.length === 0 && <div className="pps-no-results"><Icon name="box" size={34} /><p>찾는 물품이 없어요.</p><button onClick={() => { setQuery(''); setFamilyFilter(null); setCategory('all') }}>전체 물품 보기</button></div>}</div>
       </section>
 
-      <aside ref={detail} className={`pps-request ${selected ? 'has-selection' : ''}`} aria-label="조달 요청서">
+      <aside ref={detail} className={`pps-request ${selected ? 'has-selection' : ''}`} aria-label="납품요구서">
         {selected ? <>
           <div className="pps-request-body">
-          <div className="pps-request-title"><span>선택한 물품</span><Icon name="calendar" size={20} /></div>
+          <div className="pps-request-title"><span>납품요구서</span><Icon name="calendar" size={20} /></div>
           <h3>{selected.name}</h3>
-          {alternatives.length > 1 && <div className="pps-comparison"><span>같은 기능 비교</span><div>{alternatives.map((offer) => <button key={offer.id} className={offer.id === selectedId ? 'is-selected' : ''} onClick={() => setSelectedId(offer.id)}><strong>{offer.name.replace(' 공예 세트', '').replace(' 음향 세트', '')}</strong><span>구매 {offer.price} · 유지 {offer.maintenance}</span><b>{offer.price + offer.maintenance * termSeasons}<small>점</small></b></button>)}</div><small>5년 차까지 구매 + 정기 유지비 · 정비비 별도</small></div>}
-          <label className="pps-room-select">설치할 공간<select value={room} onChange={(event) => onRoomChange(event.target.value as RoomId)}>{game.player.rooms.filter((item) => item.open).map((item) => <option key={item.id} value={item.id}>{ROOM_NAMES[item.id]}</option>)}</select></label>
-          <div className="pps-unlocks"><span>{requestedPrograms.length ? '물품으로 열리는 활동' : '운영에 생기는 변화'}</span>{requestedPrograms.length ? <div>{requestedPrograms.map((program) => {
-            const ready = validation && !validation.error && canRunProgram(validation.state.player, room, program.id)
-            const missing = program.requires.filter((cap) => cap === 'hall' ? room !== 'C' : !selected.capabilities.includes(cap) && !game.player.inventory.some((equipment) => equipment.room === room && OFFERS.find((item) => item.id === equipment.id)?.capabilities.includes(cap)))
-            return <span className={ready ? '' : 'needs-more'} key={program.id}><Icon name={ready ? 'check' : 'plus'} size={12} />{program.shortName}{missing.length > 0 && <small>{missing.map((cap) => CAPABILITIES[cap]).join(' · ')} 필요</small>}</span>
+          {alternatives.length > 1 && <div className="pps-comparison"><span>같은 기능 비교</span><div>{alternatives.map((offer) => <button key={offer.id} className={offer.id === selectedId ? 'is-selected' : ''} onClick={() => setSelectedId(offer.id)}><strong>{offer.name.replace(' 공예 세트', '').replace(' 음향 세트', '')}</strong><span>구매 {offer.price} · 유지 {offer.maintenance}</span><b>{offer.price + offer.maintenance * termSeasons}<small>점</small></b></button>)}</div><small>{MAX_YEARS}년 차까지 구매 + 정기 유지비 · 정비비 별도</small></div>}
+          <label className="pps-room-select">납품·설치 장소<select value={room} onChange={(event) => onRoomChange(event.target.value as RoomId)}>{game.player.rooms.filter((item) => item.open).map((item) => <option key={item.id} value={item.id}>{ROOM_NAMES[item.id]}</option>)}</select></label>
+          <p className="pps-room-spec">{selectedRoom.area}㎡ · 정원 {selectedRoom.capacity}명 · 활동 장비 {selectedRoom.equipmentSlots}자리</p>
+          {!selectedCompatible && <p className="pps-room-incompatible pps-room-incompatible-detail"><Icon name="lock" size={14} />이 공간에 설치 불가 · 설치 장소를 바꿔 주세요.</p>}
+          <div className="pps-unlocks"><span>{requestedPrograms.length ? '물품으로 가능한 클래스 · 대관' : '운영에 생기는 변화'}</span>{requestedPrograms.length ? <div>{requestedPrograms.map((program) => {
+            const afterPurchase = validation && !validation.error ? validation.state.player : game.player
+            const requirements = getProgramRequirements(afterPurchase, room, program.id)
+            const ready = canRunProgram(afterPurchase, room, program.id)
+            const missing = requirements.missingFamilies.filter((family) => !selected.capabilities.includes(family))
+            const note = !requirements.roomCompatible ? '이 공간의 운영 대상 아님' : !requirements.spaceReady ? `${requirements.spaceRequired}㎡ 이상 필요`
+              : missing.length ? `${missing.map((cap) => CAPABILITIES[cap] || cap).join(' · ')} 추가 필요`
+                : requirements.wornFamilies.length ? '기존 장비 정비 필요'
+                  : ready ? isRentalProgram(program.id) ? '대관 신청 승인 후 운영' : '이 방에서 개설 가능' : '이 방에 설치 완료 후 개설'
+            return <span className={ready ? '' : 'needs-more'} key={program.id}><Icon name={ready ? 'check' : 'plus'} size={12} />{program.shortName}<small>{!isRentalProgram(program.id) && `${program.difficulty} · `}{note}</small></span>
           })}</div> : <p>{selected.description}</p>}</div>
           <dl className="pps-costs"><div><dt>물품 구매비</dt><dd>{selected.price}<span>점</span></dd></div><div><dt>올해 유지비 확보 <small>{seasonsLeft}계절</small></dt><dd>{selected.maintenance * seasonsLeft}<span>점</span></dd></div><div className="pps-total"><dt>필요 예산</dt><dd>{total}<span>점</span></dd></div><div className="pps-remaining"><dt>요청 후 가용예산</dt><dd>{money(available - total)}<span>점</span></dd></div></dl>
-          <div className="pps-delivery"><Icon name="box" size={19} /><span>첫 운영 주에 납품·설치<strong>설치 준비 {selected.installSlots}칸 사용</strong></span></div>
+          <div className="pps-delivery"><Icon name="box" size={19} /><span>{ROOM_NAMES[room]}에 납품·설치<strong>첫 운영 주 준비 {selected.installSlots}칸 · 설치 후 해당 방에서 개설</strong></span></div>
           </div>
           <div className="pps-request-actions">
           {validation?.error && <p className="pps-error" role="status"><Icon name="help" size={16} />{validation.error}</p>}
-          <button className="pps-submit" disabled={Boolean(validation?.error) || game.phase !== 'planning'} onClick={submit}>조달 요청 보내기 <Icon name="arrow" size={17} /></button>
+          <button className="pps-submit" disabled={!selectedCompatible || Boolean(validation?.error) || game.phase !== 'planning'} onClick={submit}>납품요구 보내기 <Icon name="arrow" size={17} /></button>
           <small className="pps-request-note">요청하면 구매비가 지출되고 유지비는 따로 확보됩니다.</small>
           </div>
         </> : <div className="pps-request-empty"><span className="pps-request-document"><Icon name="calendar" size={39} /></span><h3>우리 센터의<br />다음 변화는?</h3><p>물품을 고르면 가격과 설치 계획이<br />이곳에 함께 표시됩니다.</p><div><Icon name="check" size={15} /><span>필요한 기능</span></div><div><Icon name="coin" size={15} /><span>구매비와 유지비</span></div><div><Icon name="calendar" size={15} /><span>설치할 공간과 시간</span></div></div>}
