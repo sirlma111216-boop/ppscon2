@@ -1,0 +1,47 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "public/center/milestones-v1/ceremony.webp",
+  "commonPrompt": "Use case: illustration-story. Landscape 3:2 Korean community-center management game. Rich hand-painted editorial illustration, fine ink contours, expressive natural adults, clear midtones, not washed-out pastel. Important faces and hands inside central 80%. No text, logos, seals, watermarks or UI.",
+  "assets": [
+    {
+      "id": "y2-awarded",
+      "scene": "Second-year modest community-center performance review. Small wood-and-brick auditorium, team receives a simple elegant certificate plaque from a reviewer, colleagues smiling and applauding, young beginning team, grounded small celebration.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-865d246f-9b9e-4203-800c-2dd91e5ccfc0.png"
+    },
+    {
+      "id": "y2-unawarded",
+      "scene": "Second-year modest community-center performance review just ended. Small wood-and-brick meeting hall, three staff seated at a table reviewing a report together. Slight disappointment, kind encouraging hand on shoulder and hopeful smiles, no award trophy or certificate in their hands. Dignified fresh start.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-498be8c3-5ea3-4947-9cae-f539c821b7a5.png"
+    },
+    {
+      "id": "y4-awarded",
+      "scene": "Fourth-year performance review and excellent-center selection. Bright community hall with large windows, staff standing beside a display of pottery and class work, a center manager receives an elegant clear glass plaque, residents and colleagues warmly applauding. Established team proud of their growth.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-599b2f04-d18c-4c38-b68a-4b9eea95f49f.png"
+    },
+    {
+      "id": "y4-unawarded",
+      "scene": "Fourth-year performance review. At a bright center meeting table beside exhibition of residents' pottery and paintings, four staff thoughtfully discuss an assessment report and point at a new plan. Mild regret but supportive smiles, warm daylight, no trophies or award certificates. Ready to improve together.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-13fece2f-fe54-4546-8e6f-d756c9aed104.png"
+    },
+    {
+      "id": "y6-awarded",
+      "scene": "Sixth-year excellent-center selection ceremony. Small professional civic auditorium with deep blue stage and warm wood walls, experienced staff hold a polished silver plaque together, diverse adult residents applauding in foreground. Earned warm pride, tasteful flowers, no exaggerated palace.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-dc8d1a1b-4891-4d51-b070-cf4244b9503d.png"
+    },
+    {
+      "id": "y6-unawarded",
+      "scene": "Sixth-year center performance review just finished. In a community center foyer at winter sunset, experienced staff with a report folder and residents gather in a supportive circle, elderly resident sincerely thanks the manager, subtle bittersweet smiles and determination for their final year. No trophy, no prize, no sad humiliation.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-abe8e2a3-3072-4120-b3ae-55bdbdba1f7e.png"
+    },
+    {
+      "id": "y7-awarded",
+      "scene": "Seven-year grand finale national culture-and-sports center excellent operating practices ceremony. Elegant realistic civic auditorium stage, confident Korean woman manager in teal blazer and colleagues joyfully raise a tasteful glass-and-gold trophy, many adult and elderly residents cheer below, warm stage lights and restrained golden confetti. Moving culmination, dignified and celebratory.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-c5231cfa-7304-43ef-8159-a47e7362c586.png"
+    },
+    {
+      "id": "y7-unawarded",
+      "scene": "Seven-year grand finale after national culture-and-sports center excellent operating practices ceremony. Outside an elegant civic auditorium at blue evening, Korean woman center manager in teal blazer and colleagues stand surrounded by grateful adult and elderly residents, one offers a small bouquet of ordinary flowers as personal thanks. Quiet warm smiles, pride in seven years and gentle bittersweet emotion, no award trophy, no award certificate, no confetti.",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-f646bd8f-af44-42a2-85b0-5d45c3325fac.png"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { ceremonyAward, ceremonyDetails } from './ceremony'
 import SeasonBriefing from './SeasonBriefing'
 import { wonAmount, signedWonAmount } from './currency'
 import HallRegistration from './HallRegistration'
@@ -6,7 +7,7 @@ import { useState } from 'react'
 import { SEASON_EVENTS } from './seasonEvents'
 import './SeasonOpening.css'
 import Icon from './Icon'
-import { FINAL_YEAR_BONUS, BASE_ANNUAL_BUDGET, EVALUATION_COMPONENTS, MAX_YEARS, finalScore, freeCash, getAwardForRank, getFinalRank } from './simulation'
+import { FINAL_YEAR_BONUS, BASE_ANNUAL_BUDGET, EVALUATION_COMPONENTS, MAX_YEARS, finalScore, freeCash, getFinalRank } from './simulation'
 import type { GameState, SeasonReport } from './simulation'
 import './SeasonReview.css'
 
@@ -31,30 +32,41 @@ export default function SeasonReview({ game, report, onRivals, onContinue, onRes
   const awardStyle = evaluation?.award ? ['gold', 'silver', 'bronze'][evaluation.rank - 1] || 'standard' : 'standard'
   const nextBudget = evaluation && evaluation.appliesFromYear !== null
   const finalRank = ending ? getFinalRank(game) : null
-  const finalAward = finalRank ? getAwardForRank(finalRank) : null
+  const finalAward = finalRank ? ceremonyAward(finalRank, true) : null
 
   const ceremony = ending || Boolean(evaluation)
+  const honors = ceremonyDetails(game, report)
   const rank=ending?finalRank:evaluation?.rank
-  const award=ending?finalAward:evaluation?.award
-  if(ceremony && ceremonyStep < (ending?3:2)) return <section className={`ceremony-scene ${ending?'is-finale':''}`} aria-label={ending?'최종 시상식':'종합평가 시상식'}>
-    <img src={`/center/milestones-v1/${ending?'finale':'ceremony'}.webp`} alt={ending?'센터의 주민과 직원이 함께하는 최종 시상식':'센터 종합평가 시상식'} />
-    <div className="ceremony-caption"><span className="eyebrow">{ending?`함께 만든 ${MAX_YEARS}년의 기록`:`${report.year}년 차 센터 종합평가`}</span>
-      <h3>{ceremonyStep===0?(ending?'우리 동네가 함께 만든 결실':'센터 평가회에 오신 것을 환영합니다'):ceremonyStep===1?(award||'우리 센터의 성장 기록'):'센터장님, 수고하셨습니다'}</h3>
-      {ceremonyStep===0?<p>주민과 함께 쌓은 시간, 이제 그 결실을 발표합니다.</p>:<><strong className="ceremony-score">{rank}위 / {game.rivals.length+1}개 센터 · {money(ending?finalScore(game.player):evaluation!.score)}점</strong><p>{ceremonyStep===2?'수업과 모임, 새로운 공간에서 시작된 이야기는 계속됩니다.':award?'우리 센터의 노력이 수상으로 이어졌어요.':'수상 여부와 관계없이 주민을 위한 시간은 값진 기록으로 남아요.'}</p></>}
+  const evaluationAward = evaluation ? ceremonyAward(evaluation.rank) : null
+  if(ceremony && ceremonyStep < (ending?3:2)) return <section className={`ceremony-scene ${ending?'is-finale':''} ${honors.awarded?'is-awarded':'is-encouragement'}`} aria-label={honors.title}>
+    <img src={honors.image} alt={honors.imageAlt} />
+    <div className="ceremony-caption"><span className="eyebrow">{honors.title}</span>
+      <h3>{ceremonyStep===0?(ending?'주민과 함께 만든 7년의 결실':'우리 센터의 운영성과를 돌아봅니다'):ceremonyStep===1?(honors.award||honors.category?.title||'함께 쌓은 성장의 기록'):'센터장님, 함께해서 고마웠습니다'}</h3>
+      {ceremonyStep===0?<p>{ending?'7년의 평가 기록을 모아 종합상과 부문상을 발표합니다.':'명성·재정·주민 만족·공공서비스를 종합해 우수센터를 선정합니다.'}</p>:<>
+        <strong className="ceremony-score">{rank}위 / {participants}개 센터 · {money(ending?finalScore(game.player):evaluation!.score)}점</strong>
+        <p>{ceremonyStep===2?'주민의 배움과 만남을 지켜 온 센터장님의 시간을 기억하겠습니다.':honors.message}</p>
+        {ceremonyStep===1&&<div className="ceremony-reasons"><span>{honors.reasonLabel}</span><b>{honors.reason}</b>{honors.category&&<p><strong>부문상 · {honors.category.title}</strong><br/>{honors.category.reason}</p>}</div>}
+      </>}
       <button className="primary-button" onClick={()=>setCeremonyStep(v=>v+1)}>{ceremonyStep===0?'평가 결과 발표':ending&&ceremonyStep===1?'우리 센터의 마지막 인사':'종합 성적과 운영 기록 보기'}</button>
+      <small className="ceremony-fiction">게임 속 가상 평가·시상 제도입니다.</small>
     </div></section>
   return <div className={`season-review ${evaluation ? 'has-evaluation' : ''}`}>
     {report.year===6&&report.season===3&&!ending&&<div className="final-year-notice"><strong>앞으로 1년 후, 최종 종합평가가 열립니다!</strong><br/>7년 차 봄에는 정기 예산에 특별 운영비 {wonAmount(FINAL_YEAR_BONUS)}원이 추가 지급됩니다. 마지막 네 계절을 준비하세요.</div>}
     {ending && <section className="final-award-summary" aria-label={`${MAX_YEARS}년 종합 최종상`}>
-      <div className="final-award-heading"><Icon name="trophy" size={34} /><span>{MAX_YEARS}년 종합 최종상</span></div>
+      <div className="final-award-heading"><Icon name="trophy" size={34} /><span>전국 문화체육센터 우수 운영사례 시상식 · 종합상</span></div>
       <div className="final-award-result"><div><h3>{finalAward || '우리 동네의 소중한 센터'}</h3><span>최종 <b>{finalRank}위</b> / {game.rivals.length + 1}개 센터</span></div><strong>{money(finalScore(game.player))}<small>점</small></strong></div>
       <p>종합평가 평균 50% + 마지막 평가 50%</p>
+    </section>}
+    {ceremony && <section className="review-honors" aria-label="선정 근거와 부문상">
+      <div><span>{honors.reasonLabel}</span><strong>{honors.reason}</strong><p>{honors.message}</p></div>
+      {honors.category&&<div className="review-category"><span>부문상 · {honors.category.score.toFixed(1)}점</span><h3>{honors.category.title}</h3><p>{honors.category.reason}</p></div>}
+      <details><summary>부문상 선정 기준</summary><p>4개 평가 분야별 80점 이상이면서 참여 센터 중 최고점인 곳을 표창합니다. 동점은 공동 선정하며, 여러 분야에서 해당하면 가장 높은 점수의 부문상 1개만 받습니다. 최종 부문상은 평가 평균 50% + 마지막 평가 50%를 항목별로 적용합니다. 종합 순위·지원예산은 바뀌지 않습니다.</p></details>
     </section>}
     <SeasonBriefing report={report}/>
     {evaluation ? <>
       <div className={`evaluation-award evaluation-award--${awardStyle}`}>
         <span className="evaluation-award-emblem"><Icon name={evaluation.award ? 'trophy' : 'home'} size={43} /></span>
-        <div><span className="eyebrow">{ending ? `${evaluation.year}년 차 평가상 · 마지막 평가 기간` : evaluation.year===MAX_YEARS?`${MAX_YEARS}년 최종 연도 평가`:`${evaluation.year - 1}–${evaluation.year}년 종합평가`}</span><h3>{evaluation.award || '우리 센터의 성장 기록'}</h3><span className="evaluation-rank"><b>{evaluation.rank}위</b> / {participants}개 센터</span>{evaluation.partial && <small className="evaluation-partial">전환 이후 측정 {evaluation.measuredSeasons}계절</small>}</div>
+        <div><span className="eyebrow">{ending ? `${evaluation.year}년 차 운영성과 · 최종상과 별도` : evaluation.year===MAX_YEARS?`${MAX_YEARS}년 최종 연도 평가`:`${evaluation.year - 1}–${evaluation.year}년 운영성과 평가 · 우수센터 선정`}</span><h3>{ending ? '마지막 1년의 운영성과' : evaluationAward || '우리 센터의 성장 기록'}</h3><span className="evaluation-rank"><b>{evaluation.rank}위</b> / {participants}개 센터</span>{evaluation.partial && <small className="evaluation-partial">전환 이후 측정 {evaluation.measuredSeasons}계절</small>}</div>
         <div className="evaluation-total"><span>종합 점수</span><strong>{money(evaluation.score)}</strong><small>/ 100점</small></div>
       </div>
       <div className="evaluation-components" aria-label="네 가지 종합평가 항목">
