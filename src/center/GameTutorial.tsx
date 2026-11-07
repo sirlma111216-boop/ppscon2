@@ -59,7 +59,10 @@ export default function GameTutorial({onFinish,onCancel,replay=false,error=''}:{
  useEffect(()=>{
   const frame=viewport.current
   if(!frame)return
-  const resize=()=>frame.style.setProperty('--tutorial-scale',String(Math.min(1,frame.clientWidth/720)))
+  const resize=()=>{
+   const width=window.matchMedia('(max-width:700px)').matches?720:1000
+   frame.style.setProperty('--tutorial-scale',String(Math.min(frame.clientWidth/width,frame.clientHeight/440)))
+  }
   resize()
   const observer=new ResizeObserver(resize)
   observer.observe(frame)
@@ -78,4 +81,5 @@ export default function GameTutorial({onFinish,onCancel,replay=false,error=''}:{
   <footer className="tutorial-nav"><button className="secondary-button" disabled={index===0} onClick={()=>setIndex(n=>n-1)}>이전</button><span>{index+1} / {TUTORIAL_STEPS.length}</span><button className="primary-button" onClick={()=>last?onFinish():setIndex(n=>n+1)}>{last?(replay?'안내 마치기':'이제 센터 운영 시작'):'다음'}</button></footer>
  </main>
 }
+
 
