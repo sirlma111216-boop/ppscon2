@@ -56,16 +56,26 @@ export default function GameTutorial({onFinish,onCancel,replay=false,error=''}:{
  const viewport=useRef<HTMLDivElement>(null)
  const step=TUTORIAL_STEPS[index]!
  const last=index===TUTORIAL_STEPS.length-1
+ useEffect(()=>{
+  const frame=viewport.current
+  if(!frame)return
+  const resize=()=>frame.style.setProperty('--tutorial-scale',String(Math.min(1,frame.clientWidth/720)))
+  resize()
+  const observer=new ResizeObserver(resize)
+  observer.observe(frame)
+  return ()=>observer.disconnect()
+ },[])
  useEffect(()=>{heading.current?.focus({preventScroll:true});viewport.current?.scrollTo(0,0);window.scrollTo(0,0)},[index])
  return <main className="game-tutorial center-game">
   <header className="tutorial-top"><span>센터장님을 위한 안내 · {index+1} / {TUTORIAL_STEPS.length}</span><div><button className="text-button" onClick={onCancel}>첫 화면으로</button><button className="secondary-button" onClick={onFinish}>{replay?'안내 닫기':'튜토리얼 건너뛰기'}</button></div></header>
   <div className="tutorial-progress" role="progressbar" aria-label="안내 진행" aria-valuemin={1} aria-valuemax={TUTORIAL_STEPS.length} aria-valuenow={index+1}><span style={{width:`${(index+1)/TUTORIAL_STEPS.length*100}%`}}/></div>
   <section className="tutorial-slide" aria-labelledby="tutorial-title">
    <div className="tutorial-scene-label">실제 게임 화면 · 설명용 예시 · 조작하지 않아도 돼요</div>
-   <div className="tutorial-viewport" ref={viewport} tabIndex={0} role="region" aria-label="게임 장면 예시, 스크롤하여 보기"><div className="tutorial-example" inert><TutorialScene key={step.id} stage={step.id} demo={demo}/></div></div>
+   <div className="tutorial-viewport" ref={viewport} role="img" aria-label={`${step.title} · 실제 게임의 핵심 화면 예시`}><div className="tutorial-example" data-stage={step.id} inert><TutorialScene key={step.id} stage={step.id} demo={demo}/></div></div>
    <div className="tutorial-caption"><h1 ref={heading} tabIndex={-1} id="tutorial-title">{step.title}</h1><p>{step.text}</p><p className="tutorial-tip">{step.tip}</p></div>
   </section>
   {error&&<p role="alert" className="tutorial-error">{error}</p>}
   <footer className="tutorial-nav"><button className="secondary-button" disabled={index===0} onClick={()=>setIndex(n=>n-1)}>이전</button><span>{index+1} / {TUTORIAL_STEPS.length}</span><button className="primary-button" onClick={()=>last?onFinish():setIndex(n=>n+1)}>{last?(replay?'안내 마치기':'이제 센터 운영 시작'):'다음'}</button></footer>
  </main>
 }
+

@@ -4,3 +4,67 @@
 .tutorial-caption{padding:18px 24px 20px;border-top:1px solid #d4cabb}.tutorial-caption h1{font-size:clamp(21px,2.4vw,28px);margin:0 0 10px;font-family:'Noto Serif KR',Batang,serif;line-height:1.4}.tutorial-caption h1:focus{outline:none}.tutorial-caption p{font-size:15px;line-height:1.75;margin:0}.tutorial-caption .tutorial-tip{font-size:13px;color:#645c50;border-left:2px solid #b29a72;padding-left:12px;margin-top:12px}.tutorial-nav{position:sticky;bottom:0;background:#f7f1e8;padding:14px 0 6px;z-index:5}.tutorial-nav>span{font-size:13px;color:#716759}.tutorial-nav button{min-width:110px;min-height:44px}.tutorial-error{color:#96382b}.tutorial-plan-example{display:flex;gap:20px;align-items:center;padding:15px;background:#e8eddf}.tutorial-finale{text-align:center}.tutorial-finale>img{width:100%;max-height:330px;object-fit:contain}.tutorial-finale h3{font-size:24px}
 @media(max-width:600px){.game-tutorial{padding:12px}.tutorial-top{align-items:flex-start;gap:8px;font-size:11px}.tutorial-top>div{gap:8px;flex-wrap:wrap;justify-content:flex-end}.tutorial-top button{font-size:11px}.tutorial-top .secondary-button{padding:6px 10px}.tutorial-viewport{height:32dvh;min-height:210px}.tutorial-example{padding:10px}.tutorial-caption{padding:15px}.tutorial-caption p{font-size:14px;line-height:1.65}.tutorial-caption .tutorial-tip{font-size:12px}.tutorial-class-panel .activity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tutorial-nav{gap:8px}.tutorial-nav button{min-width:85px;font-size:13px}.tutorial-example .center-building--inside{height:210px}}
 @media(prefers-reduced-motion:reduce){.tutorial-progress>span{transition:none}}
+
+/* A slide is a framed detail, not another scrollable application. */
+.game-tutorial.center-game{width:100%;max-width:1440px;height:100dvh;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;padding:12px 24px 10px;overflow:hidden}
+.tutorial-top,.tutorial-progress,.tutorial-nav{flex-shrink:0}
+.tutorial-progress{margin-bottom:10px}
+.tutorial-slide{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.tutorial-scene-label{flex-shrink:0;padding:7px 16px}
+.tutorial-viewport{flex:1;min-height:0;height:auto;overflow:hidden;position:relative;isolation:isolate}
+.tutorial-example{width:100%;padding:12px 20px;box-sizing:border-box}
+.tutorial-caption{flex-shrink:0;padding:12px 22px 14px}
+.tutorial-caption h1{margin-bottom:6px;font-size:clamp(21px,2.2vw,28px)}
+.tutorial-caption p{line-height:1.6}
+.tutorial-caption .tutorial-tip{margin-top:7px;line-height:1.55}
+.tutorial-nav{position:static;padding:9px 0 0}
+.tutorial-example :is(.pps-workspace,.pps-catalog,.pps-request,.pps-request-body,.pps-product-list,.facility-body){overflow:hidden!important;max-height:none!important}
+.tutorial-example .rental-time-group:has(.rental-no-request){display:none}
+.tutorial-example .rental-intro{display:none}
+.tutorial-example .rental-room-heading{margin-bottom:0}
+.tutorial-example .center-building__exterior{max-width:940px}
+.tutorial-example .tutorial-class-panel{max-width:980px}
+.tutorial-example .class-card-art{height:clamp(100px,20vh,175px)}
+.tutorial-example .center-building--inside{height:clamp(220px,40dvh,430px)}
+.tutorial-example[data-stage='welcome'] .room-schedule-summary{display:none}
+.tutorial-example[data-stage='schedule'] .center-building--inside{height:190px}
+.tutorial-example[data-stage='schedule'] .room-schedule-summary{margin:5px auto}
+.tutorial-example[data-stage='tender'] :is(.procurement-guide,.facility-document-facts,.facility-scope,.facility-footer){display:none}
+.tutorial-example[data-stage='upgrade'] :is(.procurement-guide,.facility-document-heading,.campus-description,.facility-footer){display:none}
+.tutorial-example[data-stage='settlement'] :is(.operation-details,.season-briefing){display:none}
+.tutorial-example[data-stage='evaluation'] :is(.review-explanation,.evaluation-budget){display:none}
+.tutorial-example :is(.season-opening,.tutorial-finale){max-width:100%;margin:0;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:center;gap:20px}
+.tutorial-example .season-opening>img,.tutorial-example .tutorial-finale>img{width:100%;max-height:49dvh;object-fit:contain;grid-row:1/3}
+.tutorial-example .season-opening-copy{padding:14px}
+.tutorial-example .tutorial-finale h3{align-self:end;margin:0}
+.tutorial-example .tutorial-finale p{align-self:start}
+@media(max-width:700px){
+ .game-tutorial.center-game{padding:8px 10px}
+ .tutorial-top{padding-bottom:8px;font-size:11px;gap:5px}
+ .tutorial-top>div{gap:5px}
+ .tutorial-top .secondary-button{min-height:34px;padding:6px 8px}
+ .tutorial-progress{margin-bottom:7px}
+ .tutorial-scene-label{font-size:10px;padding:6px 10px}
+ .tutorial-caption{padding:10px 12px}
+ .tutorial-caption h1{font-size:20px;line-height:1.35}
+ .tutorial-caption p{font-size:13px;line-height:1.5}
+ .tutorial-caption .tutorial-tip{font-size:11px;line-height:1.45;padding-left:8px;margin-top:6px}
+ .tutorial-example{padding:12px;width:720px;zoom:var(--tutorial-scale,1)}
+ .tutorial-class-panel .activity-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .tutorial-nav{padding-top:7px}.tutorial-nav button{min-height:40px;min-width:80px}
+}
+/* At large text zoom or a very short landscape viewport, preserve readable captions. */
+@media(max-height:480px){.game-tutorial.center-game{height:auto;min-height:100dvh;overflow:visible}.tutorial-viewport{flex:none;height:210px}.tutorial-slide{flex:none}}
+.tutorial-example :is(.procurement-utility,.procurement-location,.procurement-guide){display:none}
+.tutorial-example .procurement-brandbar{padding:8px 16px;min-height:58px}
+.tutorial-example .rental-request-row{min-height:100px}
+.tutorial-example[data-stage='tender'] .facility-document-heading{margin:0;padding:8px 0}
+.tutorial-example[data-stage='finale'],.tutorial-example[data-stage='season'],.tutorial-example[data-stage='operate']{height:100%}
+.tutorial-example[data-stage='finale'] .tutorial-finale,.tutorial-example[data-stage='season'] .season-opening{height:100%;display:block}
+.tutorial-example[data-stage='finale'] .tutorial-finale>img,.tutorial-example[data-stage='season'] .season-opening>img{height:100%;max-height:none;object-fit:cover;object-position:center 42%}
+.tutorial-example[data-stage='finale'] :is(h3,p),.tutorial-example[data-stage='season'] .season-opening-copy{display:none}
+.tutorial-example[data-stage='operate'] .center-building--inside{height:100%}
+@media(max-width:700px){
+ .tutorial-example:is([data-stage='finale'],[data-stage='season'],[data-stage='welcome'],[data-stage='operate']){zoom:1;width:100%;height:100%;padding:8px}
+ .tutorial-example[data-stage='welcome'] .center-building__exterior{height:100%;display:flex;align-items:center}
+}
