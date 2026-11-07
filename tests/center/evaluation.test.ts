@@ -33,8 +33,8 @@ function record(year:number,score:number,rank=4):EvaluationRecord {
 
 test('new institutions have independent two-year ledgers and the same starting grant',()=>{
   const game=createGame()
-  assert.equal(MAX_YEARS,6)
-  assert.equal(MAX_TURNS,24)
+  assert.equal(MAX_YEARS,7)
+  assert.equal(MAX_TURNS,28)
   assert.equal(game.rivals.length,9)
   for(const inst of institutions(game)){
     assert.equal(inst.annualBudget,900)
@@ -48,31 +48,31 @@ test('new institutions have independent two-year ledgers and the same starting g
   assert.equal(game.rivals[1].evaluationStats.grants,900)
 })
 
-test('only winters 2, 4 and 6 settle evaluations, rank ten institutions and apply noncompounding grants',()=>{
+test('only winters 2, 4, 6 and 7 settle evaluations, rank ten institutions and apply noncompounding grants',()=>{
   let game=createGame()
-  for(let turn=0;turn<24;turn++){
-    const result=operate(game),checkpoint=[7,15,23].includes(turn)
+  for(let turn=0;turn<28;turn++){
+    const result=operate(game),checkpoint=[7,15,23,27].includes(turn)
     assert.equal(isEvaluationSeason(result),checkpoint)
     assert.equal(Boolean(result.lastReport!.evaluation),checkpoint)
     for(const inst of institutions(result)){
-      assert.equal(inst.evaluations.length,Math.floor((turn+1)/8))
+      assert.equal(inst.evaluations.length,Math.floor((turn+1)/8)+(turn===27?1:0))
       if(checkpoint){
         const entry=inst.evaluations.at(-1)!
         assert.equal(entry.year,result.year)
         assert.equal(entry.participants,10)
-        assert.equal(entry.measuredSeasons,8)
+        assert.equal(entry.measuredSeasons,result.year===7?4:8)
         assert.equal(entry.partial,false)
         assert.equal(entry.award,getAwardForRank(entry.rank))
         assert.equal(inst.evaluationStats.seasons,0)
         assert.equal(inst.evaluationStats.weeks,0)
         assert.equal(inst.evaluationStats.cost,0)
         assert.equal(inst.evaluationStats.grants,0)
-        if(result.year<6){
+        if(result.year<7){
           assert.equal(entry.budgetChange,getBudgetChange(entry.rank,10))
           close(entry.nextAnnualBudget,900*(1+entry.budgetChange/100))
           assert.equal(inst.annualBudget,entry.nextAnnualBudget)
           assert.equal(entry.appliesFromYear,result.year+1)
-          assert.equal(entry.appliesThroughYear,result.year+2)
+          assert.equal(entry.appliesThroughYear,Math.min(7,result.year+2))
         }else{
           assert.equal(entry.budgetChange,0)
           assert.equal(entry.nextAnnualBudget,inst.annualBudget)
@@ -91,18 +91,18 @@ test('only winters 2, 4 and 6 settle evaluations, rank ten institutions and appl
     const next=nextSeason(result)
     for(const inst of institutions(result)){
       const advanced=institutions(next).find(item=>item.id===inst.id)!
-      close(advanced.cash-inst.cash,result.season===3&&result.year<6?inst.annualBudget:0)
+      close(advanced.cash-inst.cash,result.season===3&&result.year<7?inst.annualBudget+(result.year===6?450:0):0)
       assert.equal(advanced.annualBudget,inst.annualBudget)
-      if(checkpoint&&result.year<6)assert.equal(advanced.evaluationStats.grants,inst.annualBudget)
+      if(checkpoint&&result.year<7)assert.equal(advanced.evaluationStats.grants,inst.annualBudget+(result.year===6?450:0))
     }
     assert.equal(nextSeason(next),next,'advancing twice cannot pay a second grant')
     assert.ok(validateSave(next))
     game=next
   }
   assert.equal(game.phase,'ending')
-  assert.equal(game.history.length,24)
-  assert.equal(game.history.reduce((n,r)=>n+r.weekly.length,0),312)
-  for(const inst of institutions(game))assert.deepEqual(inst.evaluations.map(r=>r.year),[2,4,6])
+  assert.equal(game.history.length,28)
+  assert.equal(game.history.reduce((n,r)=>n+r.weekly.length,0),364)
+  for(const inst of institutions(game))assert.deepEqual(inst.evaluations.map(r=>r.year),[2,4,6,7])
 })
 
 test('evaluation uses period evidence and the specified four weights, not final-day reputation alone',()=>{
@@ -265,7 +265,8 @@ test('an old five-year ending resumes in year six without fabricated past evalua
     if(season<3)assert.equal(game.lastReport!.evaluation,undefined)
     game=nextSeason(game)
   }
-  assert.equal(game.phase,'ending')
+  assert.equal(game.phase,'planning')
+  assert.equal(game.year,7)
   assert.equal(game.history.length,24)
   for(const inst of institutions(game)){
     assert.equal(inst.evaluations.length,1)

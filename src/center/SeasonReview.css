@@ -41,3 +41,9 @@
   .season-review .review-actions{flex-wrap:wrap}.season-review .review-actions>button{font-size:12px;flex:1;white-space:nowrap;padding-inline:10px}
 }
 @media(max-width:360px){.evaluation-award-emblem{display:none}.evaluation-components{grid-template-columns:1fr}.evaluation-award h3{font-size:23px}}
+
+.season-briefing{display:grid;grid-template-columns:100px minmax(0,1fr);gap:20px;border-top:2px solid #a18a65;padding:20px 0;margin-top:20px;text-align:left}
+.briefing-speaker img{display:block;width:100%;height:150px;object-fit:contain;object-position:bottom}
+.briefing-speaker strong{display:block;text-align:center;font-size:14px}.briefing-speaker small{display:block;font-size:11px;font-weight:normal;margin-top:4px}
+.briefing-content{min-width:0}.briefing-content h3{margin:0 0 14px;font-size:21px}.briefing-content dl{margin:0}.briefing-content dl>div{display:grid;grid-template-columns:70px minmax(0,1fr);gap:10px;margin:10px 0;font-size:13px;line-height:1.6}.briefing-content dt{font-weight:700;color:#76553d}.briefing-content dd{margin:0;word-break:keep-all;overflow-wrap:anywhere}.briefing-content details{margin-top:16px;font-size:12px}.briefing-content summary{cursor:pointer;padding:8px 0}.briefing-content table{width:100%;border-collapse:collapse;font-size:12px}.briefing-content caption{text-align:left;color:#777;padding:8px 0}.briefing-content th,.briefing-content td{padding:7px 3px;border-bottom:1px solid #d9d0c1;text-align:right}.briefing-content th:first-child{text-align:left}.briefing-note{font-size:11px;color:#766b5b;line-height:1.6;margin-bottom:0}
+@media(max-width:560px){.season-briefing{grid-template-columns:64px minmax(0,1fr);gap:10px}.briefing-speaker img{height:110px}.briefing-content h3{font-size:18px}.briefing-content dl>div{display:block}.briefing-content dt{margin-bottom:3px}.briefing-content table{font-size:10px}.briefing-content td{overflow-wrap:anywhere}}

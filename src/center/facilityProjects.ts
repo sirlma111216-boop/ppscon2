@@ -1,3 +1,5 @@
+import { wonAmount } from './currency.ts'
+import { MAX_YEARS } from './campaign.ts'
 import type { GameState, Institution, MutationResult, RoomId } from './simulation'
 
 export interface FacilityBid {
@@ -15,7 +17,7 @@ export function expectedConstructionCompletion(calendar:Pick<GameState,'year'|'s
   if(!Number.isFinite(remainingWeeks)||remainingWeeks<=0)return null
   const start=(calendar.year-1)*4+calendar.season+(calendar.phase==='planning'?0:1)
   const completed=start+Math.floor((remainingWeeks-1)/13),year=Math.floor(completed/4)+1
-  return {year,season:completed%4,week:(remainingWeeks-1)%13+1,turn:completed+1,turns:constructionTurns(remainingWeeks),withinGame:year<=6}
+  return {year,season:completed%4,week:(remainingWeeks-1)%13+1,turn:completed+1,turns:constructionTurns(remainingWeeks),withinGame:year<=MAX_YEARS}
 }
 export const FACILITY_SCOPES:FacilityScope[] = [
   {room:'C',title:'대강당 시설 조성',brief:'객석·흡음·무대 기반과 안전 동선을 갖춘 큰 행사 공간',budget:540,baseUpkeep:6},
@@ -69,7 +71,7 @@ export function awardFacilityContract(state:GameState,room:RoomId,bidId:string):
   const project=getFacilityProject(state.player,room),bid=project?.bids.find(item=>item.id===bidId)
   if(project?.stage!=='bidding'||!bid)return {state,error:'접수된 제안서 중 업체를 골라 주세요.'}
   const reserve=bid.upkeep*(4-state.season),required=bid.price+reserve
-  if(state.player.cash-state.player.reserved<required)return {state,error:`공사비와 올해 시설 관리비 확보에 ${required}점이 필요해요.`}
+  if(state.player.cash-state.player.reserved<required)return {state,error:`공사비와 올해 시설 관리비 확보에 ${wonAmount(required)}원이 필요해요.`}
   const next=clone(state),target=getFacilityProject(next.player,room)!
   next.player.cash=round(next.player.cash-bid.price)
   next.player.reserved=round(next.player.reserved+reserve)
@@ -115,7 +117,7 @@ export function validateFacilityProjects(inst:Institution):boolean {
   for(const project of inst.facilityProjects){
     if(!project||!facilityScope(project.room)||seen.has(project.room)||typeof project.id!=='string'||typeof project.title!=='string'||!['announced','bidding','construction','complete'].includes(project.stage)||!Array.isArray(project.bids)||!Number.isInteger(project.remainingWeeks)||project.remainingWeeks<0||project.remainingWeeks>31)return false
     seen.add(project.room)
-    if(!Number.isInteger(project.announcedYear)||project.announcedYear<1||project.announcedYear>6||!Number.isInteger(project.announcedSeason)||project.announcedSeason<0||project.announcedSeason>3)return false
+    if(!Number.isInteger(project.announcedYear)||project.announcedYear<1||project.announcedYear>MAX_YEARS||!Number.isInteger(project.announcedSeason)||project.announcedSeason<0||project.announcedSeason>3)return false
     if(project.stage==='announced'&&(project.bids.length!==0||project.selectedBidId!==null))return false
     if(project.stage!=='announced'&&project.bids.length!==3)return false
     if(new Set(project.bids.map(bid=>bid.id)).size!==project.bids.length)return false

@@ -181,7 +181,7 @@ test('stored ownership retains maintenance and condition while reinstalling char
 })
 
 test('reinstallation rejects incompatible, locked, occupied and full rooms without spending or changing the stored item',()=>{
-  let state=install(buy(buy(buy(buy(rich(),'E01','A'),'E01','E'),'E06','F'),'E05','F'))
+  let state=install(buy(buy(buy(buy(buy(rich(),'E01','A'),'E01','E'),'E06','F'),'E05','F'),'E13','F'))
   const id=item(state,'E01','A').instanceId;state=storeEquipment(state,id).state
   for(const room of ['B','D','E','F'] as const){
     const snapshot=structuredClone(state),result=reinstallEquipment(state,id,room)

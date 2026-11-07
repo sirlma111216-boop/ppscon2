@@ -1,0 +1,203 @@
+{
+  "status": "제작용 프롬프트. 실제 ElevenLabs 음원 생성·검청·연결은 미실시. 현재 게임은 기존 합성 스케치 사용.",
+  "music": [
+    {
+      "id": "title",
+      "use": "타이틀",
+      "durationSeconds": 75,
+      "loop": true,
+      "prompt": "Warm and curious chamber music for a neighborhood community center management game. Felt piano, pizzicato strings and soft clarinet, 88 BPM. A memorable understated motif, inviting and hopeful. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
+      "id": "spring",
+      "use": "봄 계획",
+      "durationSeconds": 75,
+      "loop": true,
+      "prompt": "Fresh spring morning, light acoustic guitar, felt piano and woodwind, 92 BPM. Calm planning music with a gently optimistic melody. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
+      "id": "summer",
+      "use": "여름 계획",
+      "durationSeconds": 75,
+      "loop": true,
+      "prompt": "Bright summer afternoon, soft marimba, acoustic guitar and brushed percussion, 96 BPM. Relaxed civic community atmosphere, never frantic. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
+      "id": "autumn",
+      "use": "가을 계획",
+      "durationSeconds": 75,
+      "loop": true,
+      "prompt": "Thoughtful autumn management music, warm piano, cello pizzicato and soft brushed drums, 82 BPM. Rich midrange, cozy and quietly productive. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
+      "id": "winter",
+      "use": "겨울 계획",
+      "durationSeconds": 75,
+      "loop": true,
+      "prompt": "Quiet winter community center, intimate piano, warm clarinet and restrained string pads, 76 BPM. Hopeful rather than melancholy. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
+      "id": "procurement",
+      "use": "조달·입찰",
+      "durationSeconds": 75,
+      "loop": true,
+      "prompt": "Focused and lightly playful procurement desk music. Muted plucked bass, soft piano ostinato and brushed percussion, 90 BPM. Analytical, reassuring, no corporate advertising feel. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
+      "id": "awards",
+      "use": "정기 시상식",
+      "durationSeconds": 45,
+      "loop": false,
+      "prompt": "A dignified civic awards ceremony, small orchestral ensemble, restrained brass, warm strings and timpani played softly. Build over 8 seconds then sustain anticipation and resolve warmly. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Natural complete ending, leave room for UI sound effects."
+    },
+    {
+      "id": "finale",
+      "use": "최종 엔딩",
+      "durationSeconds": 100,
+      "loop": false,
+      "prompt": "An emotional finale celebrating seven years of building a neighborhood community. Start with intimate piano, grow into lyrical strings and tasteful brass, warm victorious resolution without bombast. 78 BPM, memorable returning theme. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Natural complete ending, leave room for UI sound effects."
+    }
+  ],
+  "effects": [
+    {
+      "id": "hover",
+      "use": "버튼 가리키기",
+      "durationSeconds": 0.15,
+      "loop": false,
+      "prompt": "A tiny dry soft wooden tick, delicate and unobtrusive. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "select",
+      "use": "클래스·시간 선택",
+      "durationSeconds": 0.25,
+      "loop": false,
+      "prompt": "A refined tactile button click, soft wood tap with a very brief rounded bell accent. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "confirm",
+      "use": "편성·승인 완료",
+      "durationSeconds": 0.6,
+      "loop": false,
+      "prompt": "Two gentle ascending wooden chimes, satisfying confirmation, restrained. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "cancel",
+      "use": "취소·이전 단계",
+      "durationSeconds": 0.35,
+      "loop": false,
+      "prompt": "A soft lower wooden click and muted short swish, no negative alarm. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "error",
+      "use": "조건 미충족",
+      "durationSeconds": 0.45,
+      "loop": false,
+      "prompt": "Two soft low marimba taps, clear gentle warning, not harsh or punishing. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "popup",
+      "use": "팝업 열기",
+      "durationSeconds": 0.4,
+      "loop": false,
+      "prompt": "A gentle paper unfold with a subtle airy swish, close and dry. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "room",
+      "use": "방 이동",
+      "durationSeconds": 0.4,
+      "loop": false,
+      "prompt": "A quiet interior door latch and soft airy transition, no footsteps. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "purchase",
+      "use": "납품요구",
+      "durationSeconds": 0.8,
+      "loop": false,
+      "prompt": "A paper stamp followed by a subtle wooden confirmation chime, precise and satisfying. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "tender",
+      "use": "입찰 도착",
+      "durationSeconds": 0.8,
+      "loop": false,
+      "prompt": "A crisp paper envelope placed on a desk and a restrained two-note notification. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "contract",
+      "use": "계약 체결",
+      "durationSeconds": 0.8,
+      "loop": false,
+      "prompt": "A fountain pen stroke and one firm rubber stamp on paper, refined office sound. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "install",
+      "use": "장비 설치 완료",
+      "durationSeconds": 1,
+      "loop": false,
+      "prompt": "Two small tool clicks followed by a gentle ascending chime, no drilling. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "construction",
+      "use": "공사 완료",
+      "durationSeconds": 1.4,
+      "loop": false,
+      "prompt": "A short bright orchestral shimmer with a soft wooden impact, an achievement moment. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "season",
+      "use": "계절 시작",
+      "durationSeconds": 1.5,
+      "loop": false,
+      "prompt": "A gentle wind sweep into three warm bell notes, fresh beginning, no ambience tail. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "event_good",
+      "use": "좋은 소식",
+      "durationSeconds": 1,
+      "loop": false,
+      "prompt": "A playful three-note clarinet and bell flourish, warm modest delight. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "event_bad",
+      "use": "아쉬운 소식",
+      "durationSeconds": 0.8,
+      "loop": false,
+      "prompt": "A brief gentle descending woodwind phrase, mildly concerned, no horror or alarm. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "income",
+      "use": "수입 반영",
+      "durationSeconds": 0.6,
+      "loop": false,
+      "prompt": "A small tidy cluster of coin clinks on a wooden desk, not a slot machine. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "result",
+      "use": "계절 결산",
+      "durationSeconds": 1.2,
+      "loop": false,
+      "prompt": "Three clean ascending piano notes and a soft resolved chord, measured satisfaction. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "drumroll",
+      "use": "수상 발표 직전",
+      "durationSeconds": 2.5,
+      "loop": false,
+      "prompt": "A restrained snare brush roll building anticipation, clean stop, small civic auditorium. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "award",
+      "use": "수상 발표",
+      "durationSeconds": 3,
+      "loop": false,
+      "prompt": "A tasteful brief orchestral award fanfare with warm brass and strings, uplifting but not militaristic. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    },
+    {
+      "id": "applause",
+      "use": "시상식 박수",
+      "durationSeconds": 4,
+      "loop": false,
+      "prompt": "Natural applause from a small seated auditorium audience, warm enthusiastic hands clapping, no whistles, no voices. Isolated game UI sound effect, clean background, no speech, no music bed, no reverb tail beyond the specified duration."
+    }
+  ]
+}

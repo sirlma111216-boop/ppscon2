@@ -17,6 +17,8 @@ import {awardFacilityContract, collectFacilityBids, getFacilityProject, postFaci
 // Funded fixtures isolate contract/accounting behavior from the separate balance bot.
 function funded(seed=20261106):GameState {
   const state=createGame(seed)
+  // Isolate construction accounting from separately tested seasonal event effects.
+  state.eventDeck=Array(28).fill(null)
   state.player.cash=20000
   return state
 }
@@ -165,10 +167,11 @@ test('independent campus projects award reputation exactly once and outside the 
   const plazaBid=getCampusProject(state.player,'plaza')!.bids[2]
   const expected=Math.round(CAMPUS_SCOPES[1].reputation*facadeBid.finalQuality/100)+Math.round(CAMPUS_SCOPES[2].reputation*plazaBid.finalQuality/100)
   assert.ok(expected>8,'simultaneous investments must not be clipped to the class cap')
+  const eventHistoryStart=state.history.length
   const started=state.player.reputation
   state=complete(state,'facade')
-  assert.equal(state.player.reputation,started+expected)
-  assert.equal(state.lastReport!.reputationChange,expected)
+  assert.equal(state.player.reputation,started+expected+state.history.slice(eventHistoryStart).reduce((sum,r)=>sum+(r.eventImpact?.reputation??0),0))
+  assert.equal(state.lastReport!.reputationChange,expected+(state.lastReport!.eventImpact?.reputation??0))
   assert.equal(campusTier(state.player),2)
   const completed=state.player.reputation
   assert.equal(advanceCampusProjects(state.player),0)

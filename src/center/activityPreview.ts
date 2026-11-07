@@ -1,4 +1,15 @@
 import type { RoomId } from './simulation'
+import { activityStillPath } from './activityArt.ts'
+
+/** Operating stills include rentals; planning and unattended slots have no still. */
+export function selectActivityStill({room,viewingResult,roomOpen,activeSlot,activities}:CraftActivityPreviewInput) {
+  if(!viewingResult||!roomOpen||!Number.isInteger(activeSlot)||activeSlot<0||activeSlot>=5)return null
+  return activities?.find(activity=>activity.room===room&&activity.slot===activeSlot&&Number.isFinite(activity.attendees)&&activity.attendees>0&&activityStillPath(activity.program))??null
+}
+export function selectLastActivityStill(input:Omit<CraftActivityPreviewInput,'activeSlot'>) {
+  for(let activeSlot=4;activeSlot>=0;activeSlot--){const record=selectActivityStill({...input,activeSlot});if(record)return record}
+  return null
+}
 
 export interface CraftActivityPreview { room:RoomId; slot:number; program:'P01'|'P02'|'P12'; attendees:number }
 interface RecordedActivity { room:string; slot:number; program:string; attendees:number }

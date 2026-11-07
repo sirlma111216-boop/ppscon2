@@ -1,0 +1,106 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "spring-y1",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-063e8f62-d88d-46b0-9b7b-7e86902dba48.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 1. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. Only 3 to 4 residents in total, including inside windows. Calm early days, ample empty pathways. Remove all extra background people. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "spring-y3",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-2c2c01cd-eb0b-4d99-8934-4df627c26d89.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 3. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 8 to 10 residents in total, including inside windows. A modestly growing community, clearly more than four but spacious. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "spring-y7",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7f36691a-9cdb-4e65-aaa3-e2b0efe6a771.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 7. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 35 to 40 residents in total, small varied social groups across foreground, entrance and visible interior. A flourishing center with substantially more people than the reference, but natural safe uncrowded passageways. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "summer-y1",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-a9110086-4b24-457c-ba14-fb7eac82057e.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 1. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. Only 3 to 4 residents in total, including inside windows. Calm early days, ample empty pathways. Remove all extra background people. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "summer-y3",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-40032d4e-8daf-4062-93d7-a902e56b7d28.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 3. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 8 to 10 residents in total, including inside windows. A modestly growing community, clearly more than four but spacious. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "summer-y7",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-a46e1b2f-f178-4087-a873-26ff0a5431cf.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 7. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 35 to 40 residents in total, small varied social groups across foreground, entrance and visible interior. A flourishing center with substantially more people than the reference, but natural safe uncrowded passageways. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "autumn-y1",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-9ec4092b-fc71-43c1-bdbf-ac81714c97d4.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 1. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. Only 3 to 4 residents in total, including inside windows. Calm early days, ample empty pathways. Remove all extra background people. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "autumn-y3",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-4fe7933c-3968-4757-9be1-081116168c02.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 3. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 8 to 10 residents in total, including inside windows. A modestly growing community, clearly more than four but spacious. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "autumn-y7",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-b9db96f6-e186-4624-a927-9f1fe4ce921d.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 7. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 35 to 40 residents in total, small varied social groups across foreground, entrance and visible interior. A flourishing center with substantially more people than the reference, but natural safe uncrowded passageways. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "winter-y1",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-579511c7-31d8-49f0-8a3c-af7f924bfeb2.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 1. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. Only 3 to 4 residents in total, including inside windows. Calm early days, ample empty pathways. Remove all extra background people. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "winter-y3",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7307d01f-0179-44ea-81fa-2db121cf8328.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 3. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 8 to 10 residents in total, including inside windows. A modestly growing community, clearly more than four but spacious. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "winter-y7",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-cbf90cd4-0bc6-41ff-afa3-d6910551e044.png",
+      "prompt": "Edit this community center seasonal illustration for campaign year 7. Preserve EXACT building architecture, camera perspective, seasonal weather and foliage, rendering style and colors. Change ONLY resident population and their positions, preserve realistic anatomy. About 35 to 40 residents in total, small varied social groups across foreground, entrance and visible interior. A flourishing center with substantially more people than the reference, but natural safe uncrowded passageways. Landscape 3:2, refined detailed ink and gouache. No text or UI. This is a still illustration."
+    },
+    {
+      "id": "newsletter",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-2cebe59c-bc3c-43e7-956c-8ff3b9c0762b.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. A local journalist photographing a community center instructor and several students for a neighborhood newsletter, calm small positive recognition. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "detour",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-d8281325-ee1f-4a6b-9074-bdde52185ada.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. A small roadworks detour outside a Korean community center, two residents finding the alternate pedestrian path with a staff member guiding them, mild inconvenience, no danger. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "refund",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-f31907fb-3446-4615-90c0-e7e5731c4b05.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. A community center accountant opening a small utility overpayment refund envelope at a warm wooden office desk, pleasantly surprised. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "cleaning",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e80290d4-f98a-4e9f-b74a-ebef991389b3.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. Two community center staff carefully cleaning a lobby after a muddy rainy day with a mop and bucket, routine modest extra cleanup. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "volunteer",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e3800670-d9b9-45ab-b297-45125a208729.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. Neighborhood volunteers helping center staff neatly sort craft supplies and books on tables, cooperative cheerful practical help. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "heating",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-01fe004a-f852-4f21-b3df-a2fc130170b6.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. A community center maintenance worker checking a heating control panel during a cold day, thoughtful expression, warm interior windows. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "alumni",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-bc3b4918-b633-4797-9d5d-5ff50c925990.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. Former adult students returning to a community center with a handmade thank-you gift and greeting their instructor, heartfelt reunion. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    },
+    {
+      "id": "queue",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-98460095-fc13-4d04-914b-e32a4b54f6db.png",
+      "prompt": "Landscape 3:2 narrative illustration for Korean community center management game. Residents waiting briefly in a small orderly reception queue while a staff member apologizes and helps them, mild impatience, no hostility. Refined hand-painted ink contours and textured gouache, rich natural midtones and warm brick wood interiors, believable people, no pastel washout, no text, logos, UI or borders."
+    }
+  ],
+  "reused": "Original four season illustrations are the years 5–6 variants. 16 active season images plus 16 event images and 2 ceremonies."
+}

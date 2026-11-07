@@ -1,0 +1,42 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-11-06",
+  "spec": "Preserve architectural shell/camera. Modern premium civic finishes, richer illustrated natural contrast, empty room, no specialist equipment, no text. 16:9.",
+  "assets": {
+    "A": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-87ab487c-2c32-4fd9-9621-7c3d4171389b.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room A: small multipurpose classroom, flexible empty floor, elegant wall storage and stackable chairs. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-A.webp"
+    },
+    "B": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7d9db231-261c-40a5-8863-ed2ae8969e35.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room B: community sports studio, sprung floor, full back-wall mirror, acoustic ceiling, no exercise equipment. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-B.webp"
+    },
+    "C": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-05239223-c350-47bb-8adf-687b1a949c40.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room C: large community auditorium, dignified acoustic wall panels, modest recessed stage at back, open flexible seating area no rows of seats. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-C.webp"
+    },
+    "D": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-0269cbd0-1f1a-4302-8672-9b6589905db0.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room D: second flexible seminar hall, refined oak wall slats, contemporary ceiling lighting, stackable chairs. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-D.webp"
+    },
+    "E": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-ac9138ba-0bc7-485e-8e4e-abf524266111.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room E: craft classroom with several durable worktables, comfortable stools, organized shelves, sink counter, no kiln or special tools. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-E.webp"
+    },
+    "F": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-d77a2614-f9f0-4d3b-a8df-6579f8376822.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room F: learning classroom with rows of ergonomic desks and chairs, refined acoustic surfaces, no computers. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-F.webp"
+    },
+    "G": {
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-38a19122-788d-4b5e-9605-fe1c55244c87.png",
+      "prompt": "Edit this reference interior into its expensive but realistic renovated version for a Korean community center management game. Room G: premium meeting room with long oval meeting table, elegant upholstered chairs, refined wall panels. Preserve EXACT architectural shell, window locations, camera position, perspective and room scale from reference; same recognizable room. Visibly modern upgraded premium civic interior: sophisticated natural oak and soft stone, brushed metal accents, designer integrated linear lighting, excellent craftsmanship, richer balanced natural contrast. Preserve illustrated hand-painted architectural game art style, no photorealism, no washed-out pastel haze. Autumn trees remain outside. Empty room, NO people, NO text, NO interface, NO frame. No new specialist class equipment. Wide landscape 16:9 composition. One finished image only.",
+      "reference": "public/center/building-v2/room-G.webp"
+    }
+  }
+}

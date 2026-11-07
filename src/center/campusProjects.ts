@@ -1,3 +1,5 @@
+import { wonAmount } from './currency.ts'
+import { MAX_YEARS } from './campaign.ts'
 import type {GameState,Institution,MutationResult} from './simulation'
 import type {FacilityBid} from './facilityProjects'
 export {constructionTurns,expectedConstructionCompletion} from './facilityProjects.ts'
@@ -69,7 +71,7 @@ export function awardCampusContract(state:GameState,id:CampusProjectId,bidId:str
   const project=getCampusProject(state.player,id),bid=project?.bids.find(b=>b.id===bidId)
   if(project?.stage!=='bidding'||!bid)return {state,error:'접수한 제안서에서 업체를 골라 주세요.'}
   const reserve=bid.upkeep*(4-state.season)
-  if(state.player.cash-state.player.reserved<bid.price+reserve)return {state,error:`공사비와 올해 관리비 ${bid.price+reserve}점이 필요해요.`}
+  if(state.player.cash-state.player.reserved<bid.price+reserve)return {state,error:`공사비와 올해 관리비 ${wonAmount(bid.price+reserve)}원이 필요해요.`}
   const next=structuredClone(state),target=getCampusProject(next.player,id)!
   next.player.cash=round(next.player.cash-bid.price);next.player.reserved=round(next.player.reserved+reserve)
   target.stage='construction';target.selectedBidId=bid.id;target.remainingWeeks=bid.weeks
@@ -113,7 +115,7 @@ export function validateCampusProjects(inst:Institution):boolean{
     if(!p||p.scopeVersion!==2||!CAMPUS_SCOPES.some(s=>s.id===p.id)||ids.has(p.id)||!['announced','bidding','construction','complete'].includes(p.stage))return false
     if(p.legacyFacadeIncludesPlaza!==undefined&&(p.legacyFacadeIncludesPlaza!==true||p.id!=='facade'))return false
     ids.add(p.id)
-    if(!Number.isInteger(p.announcedYear)||p.announcedYear<1||p.announcedYear>6||!Number.isInteger(p.announcedSeason)||p.announcedSeason<0||p.announcedSeason>3||!Number.isInteger(p.remainingWeeks)||p.remainingWeeks<0||p.remainingWeeks>31||!Array.isArray(p.bids))return false
+    if(!Number.isInteger(p.announcedYear)||p.announcedYear<1||p.announcedYear>MAX_YEARS||!Number.isInteger(p.announcedSeason)||p.announcedSeason<0||p.announcedSeason>3||!Number.isInteger(p.remainingWeeks)||p.remainingWeeks<0||p.remainingWeeks>31||!Array.isArray(p.bids))return false
     if(p.stage==='announced'&&(p.bids.length!==0||p.selectedBidId!==null||p.remainingWeeks!==0))return false
     if(p.stage!=='announced'&&p.bids.length!==3)return false
     if(new Set(p.bids.map(b=>b.id)).size!==p.bids.length||!p.bids.every(b=>typeof b.id==='string'&&b.id.startsWith(`campus-${p.id}-`)&&typeof b.vendor==='string'&&typeof b.approach==='string'&&[b.price,b.weeks,b.upkeep,b.qualityMin,b.qualityMax,b.finalQuality].every(Number.isFinite)&&b.price>0&&Number.isInteger(b.weeks)&&b.weeks>0&&b.weeks<=31&&b.upkeep>=0&&b.qualityMin>=0&&b.qualityMin<=b.finalQuality&&b.finalQuality<=b.qualityMax&&b.qualityMax<=100))return false

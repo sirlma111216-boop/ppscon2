@@ -1,3 +1,4 @@
+import { wonAmount } from './currency'
 import { BLOCKS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, isRentalProgram } from './simulation'
 import type { GameState, RoomId } from './simulation'
 import { getFacilityProject } from './facilityProjects'
@@ -5,7 +6,6 @@ import './RoomScheduleSummary.css'
 
 type OccupancyKind = 'rental' | 'class' | 'empty' | 'closed'
 const LABELS: Record<OccupancyKind, string> = { rental: '대관', class: '클래스', empty: '빈 시간', closed: '미개방' }
-const money = (value: number) => value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
 
 function occupancyAt(game: GameState, room: RoomId, slot: number): { kind: OccupancyKind; label: string } {
   const prefix = `${ROOM_NAMES[room]} · ${BLOCKS[slot]} · `
@@ -39,6 +39,6 @@ export default function RoomScheduleSummary({ game, selectedRoom, overview = fal
       const content = <><span className="room-summary-name">{room.name}</span><span className="room-summary-bar" role="group" aria-label={`${room.name} 주간 편성`}>{room.slots.map((slot, index) => <i key={index} className={`room-summary-slot is-${slot.kind}`} title={slot.label} role="img" aria-label={slot.label} />)}</span></>
       return onSelectRoom ? <button type="button" key={room.id} className={`room-summary-row ${selectedRoom === room.id ? 'is-selected' : ''}`} onClick={() => onSelectRoom(room.id)} aria-label={`${room.name} 현황 · 방으로 이동`} aria-current={selectedRoom === room.id ? 'location' : undefined}>{content}</button> : <div key={room.id} className="room-summary-row">{content}</div>
     })}</div>
-    <dl className="room-summary-finance" aria-label="승인 대관의 주간 수입 예상"><div><dt>대관 수입</dt><dd>+{money(fee)}</dd></div><div><dt>대관 운영비</dt><dd>−{money(cost)}</dd></div><div><dt>대관 잔액</dt><dd>+{money(fee - cost)}<small>점/주</small></dd></div></dl>
+    <dl className="room-summary-finance" aria-label="승인 대관의 주간 수입 예상"><div><dt>대관 수입</dt><dd>+{wonAmount(fee)}</dd></div><div><dt>대관 운영비</dt><dd>−{wonAmount(cost)}</dd></div><div><dt>대관 잔액</dt><dd>+{wonAmount(fee - cost)}<small>원/주</small></dd></div></dl>
   </section>
 }

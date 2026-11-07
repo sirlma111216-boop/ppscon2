@@ -55,7 +55,7 @@ test('ten-rival v2 migration removes only Onnuri and preserves all active assets
   assert.equal(validateSave(old),false)
   const restored=migrateSave(old)
   assert.ok(restored&&validateSave(restored))
-  assert.deepEqual(restored,expected,'only the retired competitor record may be removed')
+  assert.deepEqual(restored,{...expected,campaignVersion:2},'only the retired competitor record may be removed')
   assert.equal(restored.lastReport!.rank,11)
   assert.equal(restored.lastReport!.participants,11)
   assert.ok(restored.history.some(report=>report.rank===11))

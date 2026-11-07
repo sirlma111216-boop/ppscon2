@@ -1,0 +1,46 @@
+{
+  "tool": "built-in image_gen",
+  "style": "Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean slice-of-life management game, no text or logos, complete heads safely framed.",
+  "assets": [
+    {
+      "id": "mascot-parade",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-a8240172-4296-454d-97bc-df0a67a72528.png",
+      "prompt": "Two Korean community center staff discover their cute oversized animal mascot costume cannot fit through a normal office doorway, residents laughing warmly, harmless slapstick."
+    },
+    {
+      "id": "umbrella-mixup",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-f676fddf-7ba4-485c-9b48-1c37f44322ec.png",
+      "prompt": "At a Korean community center lobby umbrella stand everyone has the identical yellow umbrella; three amused adults compare matching umbrellas in a friendly comic scene."
+    },
+    {
+      "id": "star-concert",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e9d108a6-9388-471b-a1af-a9aedcd54bca.png",
+      "prompt": "A fictional popular Korean singer performs a small community outdoor concert, modest stage in a brick community center courtyard, joyful families applauding."
+    },
+    {
+      "id": "culture-festival",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-cf025cad-687d-48fb-8328-dff026e1ed4f.png",
+      "prompt": "Neighborhood culture festival in a modest Korean community center courtyard, small colorful craft and food booths, diverse age residents happily browsing."
+    },
+    {
+      "id": "starlight-cinema",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-2bc2d5a5-8f53-45fc-b525-ab63ae03fa9f.png",
+      "prompt": "Outdoor evening cinema in Korean community center courtyard, seated families with blankets looking at a portable screen showing abstract starry landscapes, warm string lights."
+    },
+    {
+      "id": "residents-exhibition",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7be4f6c1-ed6f-45d6-9399-371e223b758c.png",
+      "prompt": "Residents artwork exhibition inside a Korean community center hall, handmade ceramics paintings and wood crafts on display, proud adult creators greeting visitors."
+    },
+    {
+      "id": "window-repair",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-f4359ec7-6836-43d4-b21a-4cb1e1df1b59.png",
+      "prompt": "Maintenance worker repairs a cracked small entrance window safely while normal community center visitors walk through the other door."
+    },
+    {
+      "id": "printing-cost",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-503a6814-8e93-451e-a305-97231e384508.png",
+      "prompt": "Community center office staff check a small invoice beside stacks of new printed program brochures and printer paper, thoughtful expression."
+    }
+  ]
+}

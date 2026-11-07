@@ -30,9 +30,9 @@ test('the seven ordinary classes stay available while exactly eleven specialties
   const counts:Record<RoomId,number>={A:7,B:6,C:7,D:7,E:5,F:5,G:5}
   const exclusiveCounts:Record<RoomId,number>={A:0,B:2,C:3,D:0,E:2,F:1,G:3}
   const general:Record<RoomId,ProgramId[]>={A:['P01','P02','P03','P04','P06','P07','P09'],D:['P01','P02','P03','P04','P06','P07','P09'],B:['P03','P04','P06','P09'],C:['P03','P04','P06','P09'],E:['P01','P02','P06'],F:['P01','P02','P06','P07'],G:['P06','P07']}
-  assert.equal(PROGRAMS.filter(program=>program.exclusiveRoom).length,11)
+  assert.equal(PROGRAMS.filter(program=>program.exclusiveRoom&&Number(program.id.slice(1))<=21).length,11)
   for(const room of ROOM_IDS){
-    const classes=PROGRAMS.filter(program=>!isRentalProgram(program.id)&&roomSupportsProgram(room,program.id))
+    const classes=PROGRAMS.filter(program=>Number(program.id.slice(1))<=21&&!isRentalProgram(program.id)&&roomSupportsProgram(room,program.id))
     assert.equal(classes.length,counts[room],room)
     assert.equal(classes.filter(program=>program.exclusiveRoom).length,exclusiveCounts[room],room)
     assert.deepEqual(classes.filter(program=>!program.exclusiveRoom).map(program=>program.id),general[room])

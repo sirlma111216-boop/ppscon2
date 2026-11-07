@@ -1,0 +1,75 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "spring",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-4e49e789-2ac2-490a-8f0c-b0658bb3b92b.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A modest well-built Korean brick and glass community culture center entrance in spring, cherry blossoms, fresh green leaves, morning sunlight, residents arriving. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "summer",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-6e47020f-99e8-42c7-8528-f4731afd766b.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A modest well-built Korean brick and glass community culture center entrance in summer, lush green trees, bright sun, leafy shade, residents with sun hats. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "autumn",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-afccc027-498c-42ee-a2fa-7903584d856c.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A modest well-built Korean brick and glass community culture center entrance in autumn, golden foliage and clear sky, residents carrying books. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "winter",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-71ffc933-ffff-4c86-a852-0e7445ac38f6.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A modest well-built Korean brick and glass community culture center entrance in winter, light snow outdoors and warm indoor lights, residents wearing coats. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "word-of-mouth",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-6a86f854-e448-41d1-8803-3eaec03b2b66.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. Several cheerful adult residents at a community center lobby sharing enthusiastic news on a smartphone with a receptionist, small lively happy moment. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "rain",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-573e9da0-9daf-44a0-8221-84ba53e01e02.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. Rain on windows of a Korean community center lobby, several residents shaking folded umbrellas at an entrance mat, cozy indoor light, mild inconvenience not disaster. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "donation",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-c7218153-0e30-4c7b-829c-75620aa6eebc.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. Residents handing a small tasteful donation envelope to a community center receptionist, modest grateful gesture, no text or money markings. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "repair",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-3bc30b65-3ea8-45eb-bb98-5801fdfef0c8.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A maintenance worker repairing a small ceiling light in a community center while a staff member holds tools below, modest routine work, no disaster. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "praise",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-afc4f7eb-4024-41ef-870a-40ab66024d5e.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A community center instructor reading a handwritten thank-you card from adult students, smiling group and flowers, heartfelt modest scene, no legible writing. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "complaint",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-04247d5b-f71d-4573-a83a-a97f6c5a779d.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A concerned resident politely discussing noise with a community center manager at a reception desk, calm conversation, no confrontation. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "saving",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-a3b8fdd1-7ec2-4b65-9411-f9061b9873d3.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A facility manager examining a utility meter and efficient lights in a community center, pleased with lower energy use, simple calm scene. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "supplies",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-326c5f0e-ecb3-4508-8fbf-bb1be3d32f70.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A community center craft teacher examining a box of supplies and an invoice with mild concern, adult students in background, price rise but no dramatic distress. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "ceremony",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-47ffe49f-43cd-4132-a113-ca7534574e81.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A tasteful Korean public community-center achievement awards ceremony in an intimate civic auditorium, stage with three modest podiums and trophies, award recipients and presenter, audience applauding, silver and warm gold accents, deep navy backdrop, no official seals, no text. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    },
+    {
+      "id": "finale",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-b3c1e6df-0720-4319-9753-ed43697b5d33.png",
+      "prompt": "Landscape 3:2 illustration for a Korean management simulation game. A celebratory finale awards ceremony for a Korean community center management game, wider auditorium stage, grown community of teachers and residents applauding, staff receiving a trophy from presenter, warm spotlights, tasteful silver and gold accents with deep navy, a few gold confetti, emotionally satisfying grand finale but believable civic scale, no official seals, no text. Refined hand-painted editorial illustration, expressive ink contours and detailed gouache, vivid natural midtones, warm brick and wood, confident anatomy and architecture. Not pale pastel, not generic flat icons, no UI, no lettering, no borders. An integrated narrative scene with clear focal point."
+    }
+  ]
+}

@@ -80,7 +80,7 @@ test('purchase spends once, reserves maintenance and does not unlock before inst
 })
 
 test('room slots and auditorium-only stage reject purchases without spending',()=>{
-  const full=purchase(purchase(createGame(),'E01','A'),'E02','A')
+  const full=purchase(purchase(purchase(createGame(),'E01','A'),'E02','A'),'E04','A')
   for(const [offer,room] of [['E05','A'],['E07','A']] as const){
     const before=JSON.stringify(full),rejected=buyEquipment(full,offer,room)
     assert.ok(rejected.error)
@@ -205,7 +205,8 @@ test('invalid moves never spend money or mutate the original state',()=>{
   assert.ok(moveEquipment(poor,id,'E').error)
   const common=completeInstallation(purchase(createGame(),'E08','A'))
   assert.ok(moveEquipment(common,common.player.inventory[0].instanceId,'B').error)
-  const full=completeInstallation(purchase(purchase(purchase(createGame(),'E01','A'),'E06','F'),'E05','F'))
+  const roomBudget=createGame();roomBudget.player.cash=5000
+  const full=completeInstallation(purchase(purchase(purchase(purchase(roomBudget,'E01','A'),'E06','F'),'E05','F'),'E13','F'))
   assert.ok(moveEquipment(full,full.player.inventory.find(e=>e.id==='E01')!.instanceId,'F').error)
   const hall=completeInstallation(purchase(openedFixture('C'),'E07','C'))
   assert.ok(moveEquipment(hall,hall.player.inventory[0].instanceId,'A').error)
@@ -347,7 +348,7 @@ test('rentals earn cash while taught classes contribute substantially more reput
   assert.equal(classReport.rentalRevenue,0)
   assert.ok(rentalReport.profit>classReport.profit)
   assert.ok(classReport.reputationChange>rentalReport.reputationChange+1)
-  assert.equal(rentalReport.revenue,rentalReport.rentalRevenue+rentalReport.classRevenue)
+  assert.equal(rentalReport.revenue,Math.round((rentalReport.rentalRevenue+rentalReport.classRevenue+(rentalReport.eventImpact?.cash??0)+(rentalReport.eventImpact?.revenue??0))*100)/100)
 })
 
 test('maximum legal equipment maintenance fits the annual operation grant',()=>{
@@ -377,7 +378,7 @@ test('maximum legal equipment maintenance fits the annual operation grant',()=>{
   assert.ok(newYear.player.reserved<=annualGrant,'all opened rooms and legal equipment fit the annual protected budget')
 })
 
-test('six years settle 312 weeks with independent rivals and no seventh grant',()=>{
+test('seven years settle 364 weeks with independent rivals and one final-year bonus',()=>{
   let state=purchase(purchase(createGame(73),'E01','A'),'E02','B')
   for(let turn=0;turn<MAX_TURNS;turn++){
     state=finishRentalReview(acceptAvailable(state))
@@ -398,7 +399,7 @@ test('six years settle 312 weeks with independent rivals and no seventh grant',(
       assert.equal(inst.history.length,turn+1)
     }
     const next=nextSeason(result)
-    if(result.season===3&&result.year<MAX_YEARS)assert.ok(Math.abs(next.player.cash-result.player.cash-result.player.annualBudget)<.001)
+    if(result.season===3&&result.year<MAX_YEARS)assert.ok(Math.abs(next.player.cash-result.player.cash-result.player.annualBudget-(result.year===6?450:0))<.001)
     if(turn===MAX_TURNS-1)assert.equal(next.player.cash,result.player.cash)
     assert.equal(nextSeason(next),next)
     assert.ok(validateSave(next))
@@ -406,9 +407,9 @@ test('six years settle 312 weeks with independent rivals and no seventh grant',(
   }
   assert.equal(state.phase,'ending')
   assert.equal(state.year,MAX_YEARS)
-  assert.equal(state.history.reduce((sum,r)=>sum+r.weekly.length,0),312)
+  assert.equal(state.history.reduce((sum,r)=>sum+r.weekly.length,0),364)
   assert.equal(state.player.annualScores.length,MAX_YEARS)
-  assert.deepEqual(state.player.evaluations.map(e=>e.year),[2,4,6])
+  assert.deepEqual(state.player.evaluations.map(e=>e.year),[2,4,6,7])
   assert.equal(runSeason(state),state)
   assert.ok(state.rivals.every(r=>r.inventory.length>0))
   assert.ok(new Set(state.rivals.map(r=>r.score)).size>3)

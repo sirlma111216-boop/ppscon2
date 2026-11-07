@@ -1,7 +1,7 @@
 /* Picture first: exterior hotspots lead into one room at a time. */
 .center-game .center-scene.center-building{position:relative;aspect-ratio:auto;min-height:0;padding:0;border:0;border-radius:0;overflow:hidden;background:#e9dfd1;box-shadow:none;color:#3d382f;container-type:inline-size;container-name:center-scene}
 .center-building__exterior{position:relative;isolation:isolate}
-.center-building__exterior-art{display:block;width:100%;height:auto;aspect-ratio:1672/941;object-fit:cover;user-select:none}
+.center-building__exterior-art{display:block;width:100%;height:auto;object-fit:contain;user-select:none}
 .center-building__hotspots{position:absolute;inset:0}
 
 /* Finished image buttons. Do not inherit generic padding, panels or pressed translations. */
@@ -68,39 +68,17 @@
 .center-building--reduced .center-building__interior{animation:none}
 .center-game .center-building.center-building--reduced button.scene-art-button{transition:none}
 
-/* Size is based on the actual picture width, including height-limited desktop scenes. */
-@container center-scene (max-width:720px){
-  .center-game .center-building button.scene-art-button,
-  .center-game .center-building button.scene-art-button:is(:hover,:active,:focus,:disabled){--button-height:30px}
-  .building-room-link[data-room="E"]{left:63%!important}
-  .building-room-link[data-room="F"]{left:79%!important}
-  .building-room-link[data-room="G"]{left:80%!important;top:24%!important}
-  .building-room-link[data-room="A"]{left:71%!important}
-}
+/* One image coordinate system at every width. Scale labels, never move rooms. */
+.center-game .center-building .center-building__exterior button.scene-art-button,
+.center-game .center-building .center-building__exterior button.scene-art-button:is(:hover,:active,:focus,:disabled){--button-height:clamp(17px,3.6cqw,32px)}
+.building-room-pointer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.building-room-pointer path{fill:none;stroke:#f5f3eb;stroke-width:3px;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 1px #34352e)}
+.building-room-pointer circle{fill:#f5f3eb;stroke:#55584f;stroke-width:1px;vector-effect:non-scaling-stroke}
 @container center-scene (max-width:650px){
-  .center-game .center-building button.scene-art-button,
-  .center-game .center-building button.scene-art-button:is(:hover,:active,:focus,:disabled){--button-height:28px}
-  .building-room-link[data-room="C"]{left:17%!important;top:54%!important}
-  .building-room-link[data-room="B"]{left:39%!important;top:34%!important}
-  .building-room-link[data-room="E"]{left:68%!important;top:44%!important}
-  .building-room-link[data-room="F"]{left:76%!important;top:18%!important}
-  .building-room-link[data-room="G"]{left:73%!important;top:62%!important}
-  .building-room-link[data-room="A"]{left:45%!important;top:78%!important}
-  .building-room-link[data-room="D"]{left:76%!important;top:90%!important}
   .center-game .center-building button.campus-project-button,
   .center-game .center-building button.room-return-button{left:8px;top:8px}
-  .scene-art-lock{width:10px;height:10px;top:2px;right:2px}
-  .scene-art-lock>svg{width:8px;height:8px}
-}
-@container center-scene (max-width:340px){
-  .center-game .center-building button.scene-art-button,
-  .center-game .center-building button.scene-art-button:is(:hover,:active,:focus,:disabled){--button-height:27px}
-  .building-room-link[data-room="C"]{top:59%!important}
-  .building-room-link[data-room="E"]{left:72%!important;top:42%!important}
-  .building-room-link[data-room="F"]{top:15%!important}
-  .building-room-link[data-room="G"]{left:67%!important;top:60%!important}
-  .building-room-link[data-room="A"]{left:42%!important;top:79%!important}
-  .building-room-link[data-room="D"]{top:91%!important}
+  .scene-art-lock{width:8px;height:8px;top:1px;right:1px}
+  .scene-art-lock>svg{width:6px;height:6px}
 }
 @media(max-width:650px){
   .center-game .center-building--inside{--room-picture-height:170px}
@@ -120,3 +98,13 @@
   .center-game .center-building button.scene-art-button,
   .center-game .center-building button.scene-art-button:is(:hover,:active,:focus,:disabled){transition:none}
 }
+
+.room-activity-still{position:absolute;left:25.5%;top:12%;width:46%;height:75%;object-fit:contain;display:block;border:0;border-radius:0;box-shadow:none;pointer-events:none;z-index:1}
+.center-building__interior:has(.room-activity-still) .room-last-week{min-width:0;max-width:24%;padding:6px;right:1%}
+.center-building__interior:has(.room-activity-still) .room-installed-equipment{max-width:23%;overflow:hidden}
+
+.center-game button.room-installed-equipment{cursor:pointer;border:1px solid #cbbda8;text-align:left;min-height:34px}.center-game button.room-installed-equipment:hover{background:#fff8e9}.center-game button.room-installed-equipment:focus-visible{outline:2px solid #2a72de;outline-offset:2px}
+
+/* Keep navigation outside the activity picture even in a narrow room panel. */
+.center-game .center-building__interior:has(.room-activity-still) button.room-return-button,
+.center-game .center-building__interior:has(.room-activity-still) button.room-return-button:is(:hover,:active,:focus){max-width:23%;left:1%;}

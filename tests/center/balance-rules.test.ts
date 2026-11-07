@@ -23,13 +23,13 @@ test('dance can earn a class operating surplus when compatible groups share a we
   const report=runSeason(state).lastReport!
   assert.ok(report.classRevenue>report.classCost,JSON.stringify({revenue:report.classRevenue,cost:report.classCost}))
 })
-test('resident guidance has a service-quality benefit distinct from fast rental processing',()=>{
+test('retired fast-processing mode retains the same resident guidance benefit in legacy saves',()=>{
   let state=prepared([['E01','E'],['E10','A']])
   state=setProgram(state,'E',1,'P01')
   const fast=runSeason(setGuideMode(state,'fast')).lastReport!
   const welcome=runSeason(setGuideMode(state,'welcome')).lastReport!
-  assert.ok(welcome.experienceScore>fast.experienceScore)
-  assert.ok(welcome.reputationChange>fast.reputationChange)
+  assert.equal(welcome.experienceScore,fast.experienceScore)
+  assert.equal(welcome.reputationChange,fast.reputationChange)
 })
 test('noise lowers both experience and reputation after all service effects are applied',()=>{
   let quiet=prepared([['E01','A'],['E02','B'],['E04','B'],['E09','A']])

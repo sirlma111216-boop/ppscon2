@@ -1,5 +1,8 @@
+import {contractRoomRemodel,REMODEL_COST} from '../src/center/roomRemodel.ts';
+import {scheduleClass} from '../src/center/classPlacement.ts';
 /** Reproducible adversarial playthroughs. Bots use the same public actions as the UI. */
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as sim from '../src/center/simulation.ts';
@@ -7,6 +10,9 @@ import * as facilities from '../src/center/facilityProjects.ts';
 import * as campus from '../src/center/campusProjects.ts';
 
 export const STRATEGIES = [
+  { id:'thoughtful_balanced', name:'균형 성장 · 수요·안내·운영비·시설 개선', classes:'mixed', rent:true, care:true, price:'standard', guide:'welcome', operatingBuffer:200, auditPreview:true, remodel:true, budgeted:true, perfect:true, train:true },
+  { id:'thoughtful_premium', name:'균형 성장 · 숙련 강좌 재투자', classes:'mixed', rent:true, care:true, price:'premium', guide:'welcome', operatingBuffer:200, auditPreview:true, remodel:true, budgeted:true, train:true },
+  { id:'careful_standard', name:'성실 운영 · 표준요금·안내·정비', classes:'mixed', rent:true, care:true, guide:'welcome', operatingBuffer:150, auditPreview:true, budgeted:true },
   { id:'idle', name:'아무것도 하지 않기', classes:'none' },
   { id:'community_spam', name:'무료 생활안전 교실 전칸 반복', classes:'community' },
   { id:'rent_only', name:'대관만 · 정비 포함', rent:true, care:true, classes:'none' },
@@ -35,7 +41,7 @@ export const STRATEGIES = [
   { id:'recover_after8', name:'첫 8턴 방치·하위평가 후 할인 혼합 회복', classes:'mixed', rent:true, care:true, price:'discount', recoveryAfter:8 },
   { id:'recover_free8', name:'첫 8턴 무료수업 몰빵 후 할인 혼합 회복', classes:'mixed', rent:true, care:true, price:'discount', recoveryAfter:8, opening:'free-spam' },
 ];
-export const CAUTIOUS_STRATEGY={id:'mixed_discount_buffer',name:'할인 혼합 · 예상적자와 80점 여유를 남기는 구매',classes:'mixed',rent:true,care:true,price:'discount',operatingBuffer:80,auditPreview:true};
+export const CAUTIOUS_STRATEGY={id:'mixed_discount_buffer',name:'할인 혼합 · 예상적자와 80만원 여유를 남기는 구매',classes:'mixed',rent:true,care:true,price:'discount',operatingBuffer:80,auditPreview:true};
 const roomOrder = ['E','B','F','A','D','G','C'];
 const classIds = ['P01','P02','P03','P04','P06','P07','P09'];
 const byProgram = Object.fromEntries(sim.PROGRAMS.map(item=>[item.id,item]));
@@ -74,12 +80,14 @@ function invest(state, policy) {
     if (!facilities.getFacilityProject(state.player,room)) state=facilities.postFacilityTender(state,room).state;
     if (facilities.getFacilityProject(state.player,room)?.stage==='announced') state=facilities.collectFacilityBids(state,room).state;
     const project=facilities.getFacilityProject(state.player,room);
-    if (project?.stage==='bidding') state=facilities.awardFacilityContract(state,room,project.bids[policy.expansion].id).state;
+    if (project?.stage==='bidding'){const result=facilities.awardFacilityContract(state,room,project.bids[policy.expansion].id);if(!policy.budgeted||sim.freeCash(result.state.player)>=500)state=result.state;}
     // Each strategy invests in C, then D, then G; no free unlocks.
     if (facilities.getFacilityProject(state.player,room)?.stage==='bidding') break;
   }
+  if(policy.train&&sim.freeCash(state.player)>300){const kind=['culture','sport','event'].filter(k=>state.player.xp[k]>0&&sim.getLevel(state.player.xp[k])<5).sort((a,b)=>state.player.xp[a]-state.player.xp[b])[0];if(kind)state=sim.trainStaff(state,kind).state;}
   if (['none','community'].includes(policy.classes)) return state;
   const gear=[['E01','E'],['E02','B'],['E06','F'],['E05','F'],['E04','B'],['E01','A']];
+  if(policy.train)gear.push(['E08','A'],['E09','A'],['E09','E'],['E09','F']);
   if (policy.classes.endsWith('spam')) for (const room of state.player.rooms.filter(r=>r.open)) gear.push(['E01',room.id],['E02',room.id]);
   for (const [id,room] of gear) {
     if (state.player.inventory.some(e=>e.room===room&&byOffer[e.id].family===byOffer[id].family)) continue;
@@ -109,13 +117,15 @@ function makePlan(state, policy) {
   // Greedy marginal demand coverage, using only the demand list visible to a player.
   // Multiple groups may share one class. A group is not counted twice for planning.
   const demand=sim.getDemand(state), remaining=new Map(demand.map(g=>[g.id,g.people]));
-  const support=[...sim.PREPARATION_SUPPORT];
+
+  const rentMargin=state.player.rentalRequests.reduce((sum,r)=>sum+Math.max(0,r.fee-r.cost),0)*.35;
+  const lossBudget=Math.max(0,(sim.freeCash(state.player)-(policy.operatingBuffer??150))/13+rentMargin);let plannedLoss=0;
   const candidates=roomOrder.flatMap(room=>allowed.filter(id=>sim.canRunProgram(state.player,room,id)).map(id=>({room,id})));
   for (let step=0;step<20;step++) {
     let best=null;
     for (const {room,id} of candidates) for (let slot=0;slot<5;slot++) {
       const p=byProgram[id];
-      if (plan[room][slot]||support[slot]<p.support) continue;
+      if (plan[room][slot]) continue;
       let seats=sim.roomCapacity(room,id), utility=0;
       const served=[];
       for (const g of demand) {
@@ -127,25 +137,27 @@ function makePlan(state, policy) {
       }
       // Avoid redundant classes with no attendance; public and paid goals differ.
       if (policy.classes==='mixed') utility+=served.reduce((sum,entry)=>sum+entry[1],0)*p.income/p.capacity*.12;
-      if (served.length&&(!best||utility>best.utility)) best={room,slot,id,utility,served};
+      const net=served.reduce((n,x)=>n+x[1],0)*p.income/p.capacity*(state.player.priceMode==='discount'?.85:1)-p.cost;
+      if(policy.budgeted&&plannedLoss+Math.max(0,-net)>lossBudget)continue;
+      if(policy.budgeted)utility-=Math.max(0,...state.player.rentalRequests.filter(r=>r.room===room&&r.slot===slot).map(r=>r.fee-r.cost))*.35;
+      if (served.length&&(!best||utility>best.utility)) best={room,slot,id,utility,served,net};
     }
     if (!best) break;
-    plan[best.room][best.slot]=best.id;support[best.slot]-=byProgram[best.id].support;
+    plan[best.room][best.slot]=best.id;plannedLoss+=Math.max(0,-best.net);
     for (const [id,count] of best.served) remaining.set(id,remaining.get(id)-count);
   }
   return plan;
 }
 function prepareSeason(state,policy){
   const plan=makePlan(state,policy);
-  const support=Array.from({length:5},(_,slot)=>sim.PREPARATION_SUPPORT[slot]-sim.ROOM_IDS.reduce((n,room)=>n+(plan[room][slot]?byProgram[plan[room][slot]].support:0),0));
   if(policy.rent)for(const request of [...state.player.rentalRequests].sort((a,b)=>(b.fee-b.cost)-(a.fee-a.cost)||a.id.localeCompare(b.id))){
     const needed=byProgram[request.program].support;
-    if(plan[request.room][request.slot]||!policy.overload&&support[request.slot]<needed)continue;
+    if(plan[request.room][request.slot])continue;
     const result=sim.decideRental(state,request.id,'accepted');
-    if(!result.error){state=result.state;support[request.slot]-=needed;}
+    if(!result.error){state=result.state;}
   }
   state=sim.finishRentalReview(state);
-  for(const room of sim.ROOM_IDS)for(let slot=0;slot<5;slot++)if(plan[room][slot])state=sim.setProgram(state,room,slot,plan[room][slot]);
+  for(const room of sim.ROOM_IDS)for(let slot=0;slot<5;slot++)if(plan[room][slot])state=scheduleClass(state,room,slot,plan[room][slot]).state;
   return state;
 }
 export function runBot(policy,seed) {
@@ -174,6 +186,10 @@ export function runBot(policy,seed) {
     }
     const purchaseSpend=money(cashBeforeInvest-state.player.cash),freeAfterInvest=sim.freeCash(state.player);
     state=prepareSeason(state,activePolicy);
+    if(activePolicy.remodel&&state.year>=4){
+      const target=state.player.rooms.filter(r=>r.open&&!r.remodel&&state.player.plan[r.id].some(Boolean)).sort((a,b)=>state.player.plan[b.id].filter(id=>id&&!sim.isRentalProgram(id)).length-state.player.plan[a.id].filter(id=>id&&!sim.isRentalProgram(id)).length)[0];
+      if(target&&sim.freeCash(state.player)>REMODEL_COST[target.id]+600)state=contractRoomRemodel(state,target.id).state;
+    }
     const forecast=policy.auditPreview?sim.previewSeason(state):null;
     state=sim.runSeason(state);
     for(const {key,project} of projects())if(project.stage==='complete'&&projectTimings.has(key)&&projectTimings.get(key).completedTurn===null){
@@ -188,7 +204,7 @@ export function runBot(policy,seed) {
     for(const inst of [state.player,...state.rivals]){
       check(Number.isFinite(inst.cash)&&inst.cash>=0&&inst.reserved>=0&&inst.reserved<=inst.cash+.01,'Solvency');
       check(inst.history.length===turn+1,'Independent institution simulation');
-      check(inst.evaluations.length===Math.floor((turn+1)/(sim.EVALUATION_INTERVAL*4)),'Evaluation count');
+      check(inst.evaluations.length===Math.floor((turn+1)/(sim.EVALUATION_INTERVAL*4))+(turn+1===sim.MAX_TURNS&&sim.MAX_YEARS%sim.EVALUATION_INTERVAL!==0?1:0),'Evaluation count');
       check(inst.inventory.every(e=>!e.room||sim.roomSupportsOffer(e.room,e.id)),'Legal new equipment');
     }
     rentalRevenue+=report.rentalRevenue;classRevenue+=report.classRevenue;classCost+=report.classCost;rentalCost+=report.rentalCost;
@@ -200,7 +216,7 @@ export function runBot(policy,seed) {
     const settled=state,next=sim.nextSeason(state),newYear=next.phase==='planning'&&next.year!==settled.year;
     for(const inst of [settled.player,...settled.rivals]){
       const after=inst.id===next.player.id?next.player:next.rivals.find(r=>r.id===inst.id);
-      const actualGrant=money(after.cash-inst.cash),expected=newYear?inst.annualBudget:0;
+      const actualGrant=money(after.cash-inst.cash),expected=newYear?inst.annualBudget+(next.year===sim.MAX_YEARS?sim.FINAL_YEAR_BONUS:0):0;
       check(Math.abs(actualGrant-expected)<.011,'Grant amount and once-per-year timing');
       if(newYear){if(inst.id===state.player.id)grants.push({year:next.year,amount:actualGrant});else rivalGrants[inst.id].push({year:next.year,amount:actualGrant});}
     }
@@ -209,9 +225,9 @@ export function runBot(policy,seed) {
     check(sim.nextSeason(next)===next,'Duplicate calendar advance guard');
     state=next;
   }
-  check(state.phase==='ending'&&state.year===sim.MAX_YEARS&&state.season===3,'Six-year ending');
+  check(state.phase==='ending'&&state.year===sim.MAX_YEARS&&state.season===3,'Seven-year ending');
   check(grants.length===sim.MAX_YEARS&&state.history.reduce((sum,report)=>sum+report.weekly.length,0)===sim.MAX_TURNS*13,'Weeks and grants');
-  check(state.player.evaluations.every(e=>e.measuredSeasons===8&&!e.partial),'Complete evaluation evidence');
+  check(state.player.evaluations.every(e=>e.measuredSeasons===(e.year===sim.MAX_YEARS?4:8)&&!e.partial),'Complete evaluation evidence');
   const score=sim.finalScore(state.player);
   const rank=sim.getFinalRank(state),evaluations=structuredClone(state.player.evaluations);
   return {strategy:policy.id,seed,score,rank,award:sim.getAwardForRank(rank),evaluations,grants,seasons,invariantChecks,projectTimings:[...projectTimings.values()],campusExteriorKey:campus.campusExteriorKey(state.player),
@@ -239,18 +255,21 @@ function main() {
   const label=option('--label','current'), output=path.resolve(option('--output','reports/center-balance'));
   const requested=option('--strategy','all'),policies=requested==='all'?STRATEGIES:[...STRATEGIES,CAUTIOUS_STRATEGY].filter(policy=>requested.split(',').includes(policy.id));
   if(!policies.length)throw new Error('Unknown strategy');
+  const sourceFiles=['src/center/simulation.ts','src/center/classPlacement.ts','src/center/balanceRules.ts','src/center/campaign.ts','src/center/seasonEvents.ts','src/center/facilityProjects.ts','src/center/campusProjects.ts'];
+  const hashSources=()=>Object.fromEntries(sourceFiles.map(p=>[p,createHash('sha256').update(fs.readFileSync(p)).digest('hex')]));
+  const sourceHashes=hashSources();
   const started=Date.now(),rows=[];
   for (const policy of policies) {
     for(let index=0;index<count;index++) rows.push(runBot(policy,start+index));
     console.log(`${policy.id}: ${count} full games completed`);
   }
-  const summary=summarize(rows,policies),result={label,rules:'six-year-independent-campus-v2',years:sim.MAX_YEARS,turns:sim.MAX_TURNS,evaluationIntervalYears:sim.EVALUATION_INTERVAL,weights:sim.EVALUATION_COMPONENTS,seedStart:start,seedCount:count,strategies:policies.length,games:rows.length,seasons:rows.length*sim.MAX_TURNS,invariantChecks:rows.reduce((sum,row)=>sum+row.invariantChecks,0),elapsedSeconds:money((Date.now()-started)/1000),summary,runs:rows};
+  const summary=summarize(rows,policies),result={label,rules:'seven-year-28-events-ui-placement',sourceHashes,sourceUnchangedDuringRun:JSON.stringify(sourceHashes)===JSON.stringify(hashSources()),policies,years:sim.MAX_YEARS,turns:sim.MAX_TURNS,evaluationIntervalYears:sim.EVALUATION_INTERVAL,weights:sim.EVALUATION_COMPONENTS,seedStart:start,seedCount:count,strategies:policies.length,games:rows.length,seasons:rows.length*sim.MAX_TURNS,invariantChecks:rows.reduce((sum,row)=>sum+row.invariantChecks,0),elapsedSeconds:money((Date.now()-started)/1000),summary,runs:rows};
   fs.mkdirSync(output,{recursive:true});
   fs.writeFileSync(path.join(output,`${label}.json`),JSON.stringify(result,null,2)+'\n');
   const columns=Object.keys(summary[0]);
   fs.writeFileSync(path.join(output,`${label}.csv`),'\uFEFF'+columns.join(',')+'\n'+summary.map(row=>columns.map(k=>JSON.stringify(row[k])).join(',')).join('\n')+'\n');
   const md=[`# 경영 밸런스 자동 검증: ${label}`,'',`${rows.length}게임 · ${count}개 시드 · 게임당 ${sim.MAX_YEARS}년/${sim.MAX_TURNS}계절. 시드 ${start}–${start+count-1}.`,'',
-    `2·4·6년 종합평가와 지원금 조정 적용. 총 ${result.seasons}계절, ${result.invariantChecks}회 상태·예산·진행 불변식 확인. 기존 5년 보고서와 수치를 직접 비교하지 않습니다.`,'',
+    `2·4·6·7년 종합평가와 지원금 조정 적용. 총 ${result.seasons}계절, ${result.invariantChecks}회 상태·예산·진행 불변식 확인. 기존 5년 보고서와 수치를 직접 비교하지 않습니다.`,'',
     '| 전략 | 평균 평가 (최소–최대) | 평균 순위 | 1위 비율 | 3위 이내 | 평균 잔액 | 운영비 부족 경험 |','|---|---:|---:|---:|---:|---:|---:|',
     ...summary.map(s=>`| ${s.name} | ${s.meanScore} (${s.minScore}–${s.maxScore}) | ${s.meanRank} | ${s.winRate}% | ${s.top3Rate}% | ${s.meanCash} | ${s.shortageRate}% |`),'',
     '## 부진 후 회복','',
@@ -262,7 +281,7 @@ function main() {
     '- 현금은 승리 조건이 아닙니다. 최종 1위와 주민 서비스·이용 경험·명성을 함께 비교해야 합니다.',
     '- 운영비 부족 경험은 한 계절 이상 수업 취소 경고가 발생한 게임 비율입니다. 파산 판정과 같지 않습니다.',
     '- 공통 경제·수요·시공·평가 규칙을 사용하는 경쟁기관 9곳과 비교합니다. 봇의 계획 알고리즘은 경쟁기관과 다릅니다.',
-    '- 점수는 명성25%·재정20%·주민만족30%·공공서비스25%이며 최종 성적은 세 차례 평가 평균50%+마지막평가50%입니다. 현금이 많다는 이유로 재정점수가100을 넘지 않습니다.',
+    '- 점수는 명성25%·재정20%·주민만족30%·공공서비스25%이며 최종 성적은 네 차례 평가 평균50%+마지막평가50%입니다. 현금이 많다는 이유로 재정점수가100을 넘지 않습니다.',
     '- 모든 계절의 평가·순위·지원금과 경쟁기관의 평가·지원금은 동명 JSON에 저장합니다. 조기 방치·과도한 무료운영의 손해를 이후 전략으로 회복할 수 있는지도 별도로 비교합니다.',
     '- 주어진 여러 시드는 수요 인원과 신청 시간·견적·품질의 변동을 검증합니다. 별도 게임 난이도/충격 시나리오는 포함하지 않습니다.',''];
   fs.writeFileSync(path.join(output,`${label}.md`),md.join('\n'));

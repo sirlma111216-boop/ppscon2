@@ -579,7 +579,7 @@ svg { vertical-align: middle; }
   .modal-heading .icon-button { width: 34px; height: 34px; }
   .welcome-layout { grid-template-columns: 1fr; gap: 17px; }
   .welcome-portrait { min-height: 180px; max-height: 180px; background: #e9ddc8; }
-  .welcome-portrait > img { width: 100%; height: 260px; object-position: 75% bottom; }
+  .welcome-portrait > img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
   .welcome-portrait > span { left: 13px; bottom: 13px; font-size: 11px; }
   .welcome-copy { padding: 0; }
   .welcome-copy h3 { font-size: 29px; margin: 8px 0 13px; line-height: 1.4; }
@@ -637,8 +637,8 @@ svg { vertical-align: middle; }
 .activity-chip.class-card{display:block;padding:0;min-height:0;overflow:hidden;border:1px solid #cdbfac;border-radius:3px;background:#fffaf0;box-shadow:none}
 .activity-chip.class-card.locked{border-style:solid;color:var(--stone)}
 .activity-chip.class-card.chosen{border-color:var(--clay);box-shadow:0 0 0 1px var(--clay)}
-.class-card .class-card-art{position:relative;display:block;aspect-ratio:3/2;max-height:114px;overflow:hidden;background:#e9ddc6;color:#aa9577}
-.class-card-art>img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;transition:filter 150ms}
+.class-card .class-card-art{position:relative;display:block;width:100%;height:114px;overflow:hidden;background:#f5e6cd;color:#aa9577}
+.class-card-art>img{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:contain;object-position:center;transition:filter 150ms}
 .class-card-art>svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
 .activity-chip.class-card:disabled{opacity:1}
 .class-card .class-card-name{position:relative;display:flex;align-items:center;gap:6px;min-height:35px;padding:8px 10px;font-size:12px;color:#5c4937;background:#fffaf0}
@@ -767,3 +767,21 @@ svg { vertical-align: middle; }
   .center-game.is-exploring .action-bar{margin-top:12px}
   .center-game.is-exploring .build-note{padding-top:5px}
 }
+
+.new-course-level{position:absolute;bottom:8px;left:0;width:100%;text-align:center;color:#5a5145;font-size:11px}
+
+.class-economics-card{display:grid;gap:5px;padding:2px 10px 10px;font-size:11px;line-height:1.45;color:#514a40;text-align:left}.class-economics-card small{font-size:10px;color:#776851}.class-economics-card b{font-weight:600;color:#314d42}.class-economics-card .is-deficit{color:#974e3e}.class-economics-detail{padding:12px 0;border-bottom:1px solid #d9cdbb}.class-economics-detail>strong{font-size:12px}.class-economics-detail dl{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:12px 0}.class-economics-detail dl>div{display:flex;justify-content:space-between;gap:8px;font-size:12px}.class-economics-detail dd{margin:0;font-weight:600;text-align:right}.class-economics-detail p{font-size:11px;line-height:1.65;color:#6c6255;margin:8px 0}.budget-badge strong{font-size:clamp(20px,2.5vw,34px)}.pps-product-facts{flex-wrap:wrap}.pps-costs dd{overflow-wrap:anywhere}.facility-bid>strong{font-size:clamp(22px,2.2vw,38px)}@media(max-width:450px){.class-economics-card{font-size:10px;padding-inline:7px}.class-economics-detail dl{grid-template-columns:1fr}}
+/* Keep currency and metric values readable in narrow class cards. */
+.class-economics-card b{display:inline-block;white-space:nowrap}
+.class-economics-card>span{word-break:keep-all;overflow-wrap:normal}
+.operation-issues{padding:12px 0;font-size:13px;line-height:1.65}.operation-issues h3{font-size:16px}.operation-issues ul{padding:0;list-style:none;max-height:280px;overflow:auto}.operation-issues li{padding:8px 10px;border-left:3px solid #a77a40;background:#eee5d6;margin:6px 0}.operation-issues li strong,.operation-issues li span{display:block}.operation-issues p{margin:8px 0}.class-economics-card .is-deficit{color:#8b4034}
+/* Separate operating restrictions from financial metrics without adding prose. */
+.class-economics-card>.class-operation-warning{display:flex;align-items:center;gap:6px;margin-top:3px;padding:7px 8px;min-height:31px;border:1px solid #ba967b;border-left:3px solid #945f40;border-radius:3px;background:#f2e3d2;color:#713d29;font-size:11px;font-weight:600;line-height:1.35}
+.class-operation-warning>i{display:inline-flex;align-items:center;justify-content:center;flex:0 0 14px;width:14px;height:14px;border:1.4px solid currentColor;border-radius:50%;font-style:normal;font-size:10px;line-height:1}
+.class-operation-warning>span{min-width:0;word-break:keep-all}
+@media(max-width:450px){.class-economics-card>.class-operation-warning{font-size:10px;padding:6px;gap:5px}}
+.schedule-warning{display:block;margin:6px 5px 0;padding:5px 6px;background:#f2e3d2;border:1px solid #ba967b;border-left:3px solid #945f40;border-radius:3px;color:#713d29;font-size:10px;line-height:1.4;word-break:keep-all}
+.operation-busy:disabled{opacity:1;background:#315f96;color:white;cursor:wait}.operation-spinner{display:inline-block;width:18px;height:18px;flex:0 0 18px;border:2px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:operation-spin .85s linear infinite}.operation-spinner.is-paused{animation-play-state:paused}@keyframes operation-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.operation-spinner{animation:none}}
+
+.action-bar .actionbar-skip{color:#f7f1e8;border-color:#a89e8f;white-space:nowrap;padding:10px 14px}.action-bar .actionbar-skip:hover{background:#494239}
+@media(max-width:650px){.operating-action-bar .rival-button{display:none}.operating-action-bar .actionbar-actions{width:100%;min-width:0;display:grid;grid-template-columns:1fr 1.4fr}.operating-action-bar .actionbar-actions>button{min-width:0;padding:10px 6px;font-size:12px}.operation-busy small{font-size:10px}}

@@ -12,7 +12,7 @@ const Screen = isGallery
   ? lazy(() => import('./dev/AssetGallery'))
   : lazy(async () => {
       await import('./center/center.css')
-      return import('./center/CenterGame')
+      return import('./center/CenterShell')
     })
 
 createRoot(root).render(

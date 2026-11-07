@@ -1,3 +1,4 @@
+import { wonAmount } from './currency'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Icon from './Icon'
 import ProcurementHeader from './ProcurementHeader'
@@ -31,12 +32,11 @@ const CAPABILITIES: Record<string, string> = {
   recording: '녹화·발표 코칭 장비', cycle: '실내 사이클', orchestra: '합주 악기', lighting: '무대 조명', wood: '목공 작업대·집진 설비', interpret: '통역·토론 장비', pitch: '창업 발표 장비',
   stage: '무대', hall: '대강당', energy: '절전', quiet: '공간 분리', guide: '예약 안내',
 }
-const money = (value: number) => value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
 const OPERATING_EFFECTS: Record<string, string> = {
-  flex: '활동을 바꿀 때 준비 부담 감소',
-  energy: '센터 기본운영비 −12점 / 계절',
+  flex: '수업 전환 시 공간 마모 소폭 감소',
+  energy: '센터 기본운영비 −120,000원 / 계절',
   quiet: '이웃방 음악에 따른 불편 감소',
-  guide: '반복 대관 접수 · 처음 온 주민 안내 지원',
+  guide: '예약 접수 · 처음 온 주민 안내 지원',
 }
 
 /** Original catalogue illustrations; these are fictional game items, not certified products. */
@@ -211,7 +211,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
       <aside className="pps-navigation">
         <h3>상품 분류</h3>
         <nav aria-label="조달 물품 분류">{CATEGORIES.map((item) => <button key={item.id} className={category === item.id && !familyFilter ? 'is-selected' : ''} aria-pressed={category === item.id && !familyFilter} onClick={() => { setCategory(item.id); setFamilyFilter(null); setQuery('') }}><Icon name={item.icon} size={18} /><span>{item.label}</span>{category === item.id && !familyFilter && <Icon name="arrow" size={12} />}</button>)}</nav>
-        <div className="pps-budget"><small>우리 센터의 가용예산</small><strong>{money(available)}<span>점</span></strong><span>필수 운영비 {money(game.player.reserved)}점 별도 확보</span></div>
+        <div className="pps-budget"><small>우리 센터의 가용예산</small><strong>{wonAmount(available)}<span>원</span></strong><span>필수 운영비 {wonAmount(game.player.reserved)}원 별도 확보</span></div>
         <div className="pps-role"><span>조달청 → 계약 마련</span><p>우리 센터 → 상품 선택<br />공급업체 → 납품·설치</p></div>
       </aside>
 
@@ -229,7 +229,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
               const connection = connectionNote(program, offer)
               const name = isRentalProgram(program.id) ? program.shortName.includes('대관') ? program.shortName : `${program.shortName} 대관` : program.shortName
               return <span className={connection.ready ? 'is-ready' : 'needs-equipment'} key={program.id}><Icon name={connection.ready ? 'check' : 'plus'} size={11} /><b>{name}</b><em>{connection.note}</em></span>
-            })}</> : <span className="operating-effect"><Icon name="tools" size={12} />{OPERATING_EFFECTS[offer.family] || offer.description}</span>}</span><span className="pps-product-facts"><span>단가 <b>{offer.price}</b>점</span><span>유지 <b>{offer.maintenance}</b>점/계절</span><span>설치 <b>{offer.installSlots}</b>칸</span></span></span>
+            })}</> : <span className="operating-effect"><Icon name="tools" size={12} />{OPERATING_EFFECTS[offer.family] || offer.description}</span>}</span><span className="pps-product-facts"><span>단가 <b>{wonAmount(offer.price)}</b>원</span><span>유지 <b>{wonAmount(offer.maintenance)}</b>원/계절</span><span>설치 <b>{offer.installSlots}</b>칸</span></span></span>
             <span className="pps-product-select"><Icon name={selectedId === offer.id ? 'check' : 'plus'} size={17} /></span>
           </button>
         })}{offers.length === 0 && <div className="pps-no-results"><Icon name="box" size={34} /><p>찾는 물품이 없어요.</p><button onClick={() => { setQuery(''); setFamilyFilter(null); setCategory('all') }}>전체 물품 보기</button></div>}</div>
@@ -241,7 +241,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
           <div className="pps-request-title"><span>납품요구서</span><Icon name="calendar" size={20} /></div>
           <h3>{selected.name}</h3>
           {selected.exclusiveRoom && <p className="pps-room-spec">{ROOM_NAMES[selected.exclusiveRoom]} 전용 설비</p>}
-          {alternatives.length > 1 && <div className="pps-comparison"><span>같은 기능 비교</span><div>{alternatives.map((offer) => <button key={offer.id} className={offer.id === selectedId ? 'is-selected' : ''} onClick={() => setSelectedId(offer.id)}><strong>{offer.name.replace(' 공예 세트', '').replace(' 음향 세트', '')}</strong><span>구매 {offer.price} · 유지 {offer.maintenance}</span><b>{offer.price + offer.maintenance * termSeasons}<small>점</small></b></button>)}</div><small>{MAX_YEARS}년 차까지 구매 + 정기 유지비 · 정비비 별도</small></div>}
+          {alternatives.length > 1 && <div className="pps-comparison"><span>같은 기능 비교</span><div>{alternatives.map((offer) => <button key={offer.id} className={offer.id === selectedId ? 'is-selected' : ''} onClick={() => setSelectedId(offer.id)}><strong>{offer.name.replace(' 공예 세트', '').replace(' 음향 세트', '')}</strong><span>구매 {wonAmount(offer.price)} · 유지 {wonAmount(offer.maintenance)}</span><b>{wonAmount(offer.price + offer.maintenance * termSeasons)}<small>원</small></b></button>)}</div><small>{MAX_YEARS}년 차까지 구매 + 정기 유지비 · 정비비 별도</small></div>}
           <label className="pps-room-select">납품·설치 장소<select value={room} onChange={(event) => onRoomChange(event.target.value as RoomId)}>{game.player.rooms.filter((item) => item.open).map((item) => <option key={item.id} value={item.id}>{ROOM_NAMES[item.id]}</option>)}</select></label>
           <div className="pps-room-spec"><span>{selectedRoom.area}㎡ · 정원 {selectedRoom.capacity}명</span><strong>활동 장비 {equipmentUsage.used}/{equipmentUsage.capacity}자리</strong><small>보조 {equipmentUsage.auxiliary.length}개 · 센터 공용 {equipmentUsage.common.length}개는 자리 별도</small></div>
           {equipmentUsage.full && <div className="pps-equipment-capacity">
@@ -262,7 +262,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
                   : ready ? isRentalProgram(program.id) ? '대관 신청 승인 후 운영' : '이 방에서 개설 가능' : '이 방에 설치 완료 후 개설'
             return <span className={ready ? '' : 'needs-more'} key={program.id}><Icon name={ready ? 'check' : 'plus'} size={12} />{program.shortName}<small>{!isRentalProgram(program.id) && `${program.difficulty} · `}{note}</small></span>
           })}</div> : <p>{selected.description}</p>}</div>
-          <dl className="pps-costs"><div><dt>물품 구매비</dt><dd>{selected.price}<span>점</span></dd></div><div><dt>올해 유지비 확보 <small>{seasonsLeft}계절</small></dt><dd>{selected.maintenance * seasonsLeft}<span>점</span></dd></div><div className="pps-total"><dt>필요 예산</dt><dd>{total}<span>점</span></dd></div><div className="pps-remaining"><dt>요청 후 가용예산</dt><dd>{money(available - total)}<span>점</span></dd></div></dl>
+          <dl className="pps-costs"><div><dt>물품 구매비</dt><dd>{wonAmount(selected.price)}<span>원</span></dd></div><div><dt>올해 유지비 확보 <small>{seasonsLeft}계절</small></dt><dd>{wonAmount(selected.maintenance * seasonsLeft)}<span>원</span></dd></div><div className="pps-total"><dt>필요 예산</dt><dd>{wonAmount(total)}<span>원</span></dd></div><div className="pps-remaining"><dt>요청 후 가용예산</dt><dd>{wonAmount(available - total)}<span>원</span></dd></div></dl>
           <div className="pps-delivery"><Icon name="box" size={19} /><span>{ROOM_NAMES[room]}에 납품·설치<strong>첫 운영 주 준비 {selected.installSlots}칸 · 설치 후 해당 방에서 개설</strong></span></div>
           </div>
           <div className="pps-request-actions">

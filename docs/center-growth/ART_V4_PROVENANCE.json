@@ -1,0 +1,376 @@
+{
+  "tool": "built-in imagegen",
+  "generated": [
+    {
+      "id": "P01",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-4d8f1608-89c0-44c3-adaa-ffd50e652745.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, pottery wheel with wet clay bowl and hand shaping tools. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P01.",
+      "target": "public/center/course-symbols-v4/P01.webp"
+    },
+    {
+      "id": "P02",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-458a8c10-3872-4444-a4b8-c3e654c66d82.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, colorful folded paper flowers, scissors and simple handmade craft gifts. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P02.",
+      "target": "public/center/course-symbols-v4/P02.webp"
+    },
+    {
+      "id": "P03",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-4dc9e81e-b288-4b4f-b8f5-e3eb81eab8e2.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, rolled yoga mat with small towel. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P03.",
+      "target": "public/center/course-symbols-v4/P03.webp"
+    },
+    {
+      "id": "P04",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-3d655eea-f1ff-48f6-a143-0f198b737ea9.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, stretching elastic band and sturdy exercise chair. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P04.",
+      "target": "public/center/course-symbols-v4/P04.webp"
+    },
+    {
+      "id": "P05",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-4955d260-30b1-488d-b89b-87bdcdc6d9f9.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Local neighborhood association meeting in rented community room, adults discussing around tables, no teacher. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P05.",
+      "target": "public/center/activities-v4/P05.webp"
+    },
+    {
+      "id": "P06",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-aef8787e-3266-4af3-bbc5-79535f96ec5b.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, first aid training kit and small CPR practice mannequin. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P06.",
+      "target": "public/center/course-symbols-v4/P06.webp"
+    },
+    {
+      "id": "P07",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-413112cc-7922-4254-b5ac-a8e958e091fe.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, desktop computer, keyboard and presentation screen. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P07.",
+      "target": "public/center/course-symbols-v4/P07.webp"
+    },
+    {
+      "id": "P08",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-c025fbe6-1140-4299-a9a0-dfe8ba3c1ff7.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Amateur music performance on modest rented auditorium stage with seated audience. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P08.",
+      "target": "public/center/activities-v4/P08.webp"
+    },
+    {
+      "id": "P09",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-d41b99bf-cf60-4cfa-b8cb-28933aa8758a.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, dance shoes and portable speaker. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P09.",
+      "target": "public/center/course-symbols-v4/P09.webp"
+    },
+    {
+      "id": "P10",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-33606d5d-02ec-4124-8c7b-0fe9305c974a.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Small business seminar in rented conference room, presenter and audience, projection screen with abstract diagram. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P10.",
+      "target": "public/center/activities-v4/P10.webp"
+    },
+    {
+      "id": "P11",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-5c66fc7a-0408-4e23-8387-4a4f7256d57c.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, pilates reformer machine with springs and straps. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P11.",
+      "target": "public/center/course-symbols-v4/P11.webp"
+    },
+    {
+      "id": "P12",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e5d65641-1c5d-4da9-8c5e-e55cb6bc4736.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, ceramic kiln and refined glazed ceramic vessels. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P12.",
+      "target": "public/center/course-symbols-v4/P12.webp"
+    },
+    {
+      "id": "P13",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-64eaf43b-09fb-4b36-aae7-07a155bc3531.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, video camera on tripod beside editing monitor. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P13.",
+      "target": "public/center/course-symbols-v4/P13.webp"
+    },
+    {
+      "id": "P14",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-c8ed67b1-e46a-4b0a-8f80-cd4ce655d7c3.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, theater masks and stage microphone. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P14.",
+      "target": "public/center/course-symbols-v4/P14.webp"
+    },
+    {
+      "id": "P15",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-1dc0e99d-17fd-4452-8a93-31f206cf994f.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, podium microphone and cue cards. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P15.",
+      "target": "public/center/course-symbols-v4/P15.webp"
+    },
+    {
+      "id": "P16",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-5a881e79-6d67-46d7-bf28-0eb15a888c7a.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, indoor exercise bicycle. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P16.",
+      "target": "public/center/course-symbols-v4/P16.webp"
+    },
+    {
+      "id": "P17",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-079b6f15-c5ad-499e-bd49-d7e1b4241112.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, violin cello and orchestral music stand. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P17.",
+      "target": "public/center/course-symbols-v4/P17.webp"
+    },
+    {
+      "id": "P18",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-af42ca77-3ff3-472a-91fd-fb0c00851300.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, theatrical spotlight and lighting console. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P18.",
+      "target": "public/center/course-symbols-v4/P18.webp"
+    },
+    {
+      "id": "P19",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-a70cb701-267c-48db-8446-b05f136e3f61.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, wood plane, carpenter square and small handmade wooden stool. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P19.",
+      "target": "public/center/course-symbols-v4/P19.webp"
+    },
+    {
+      "id": "P20",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-ace5acdf-2eb6-42fb-a2cb-093f60e27ea4.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, globe headphones and bilingual dictionaries. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P20.",
+      "target": "public/center/course-symbols-v4/P20.webp"
+    },
+    {
+      "id": "P21",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e867fbf6-cce1-4e9c-9861-22b10ff40891.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, business presentation board with simple chart and small architectural model. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P21.",
+      "target": "public/center/course-symbols-v4/P21.webp"
+    },
+    {
+      "id": "P22",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-59ceb67d-0d82-4ec5-b350-2809769692c1.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, brush pen inkstone and flowing abstract ink strokes on paper. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P22.",
+      "target": "public/center/course-symbols-v4/P22.webp"
+    },
+    {
+      "id": "P22",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-f5bcc81d-be03-43a9-8b9e-c05cea147964.png",
+      "prompt": "Earlier generated operating illustration; original prompt unavailable in stored result.",
+      "target": "public/center/activities-v4/P22.webp"
+    },
+    {
+      "id": "P23",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-ce7004b7-b813-435f-822e-e7b8dee25169.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, watercolor palette brushes and landscape painting. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P23.",
+      "target": "public/center/course-symbols-v4/P23.webp"
+    },
+    {
+      "id": "P23",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-cbd5d91f-1cbc-4f53-bb70-52d21071580b.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adult residents learning watercolor painting at desks, landscapes on paper, teacher demonstrating a brush. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P23.",
+      "target": "public/center/activities-v4/P23.webp"
+    },
+    {
+      "id": "P24",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-47702461-88bb-4d09-b1a8-b4b7812157ac.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, leather wallet, stitching awl and leather pieces. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P24.",
+      "target": "public/center/course-symbols-v4/P24.webp"
+    },
+    {
+      "id": "P24",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-3c7161b7-ece5-44c7-8134-d0ed2a0a424f.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adults crafting leather wallets together with stitching punches and leather sheets on safe workbenches. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P24.",
+      "target": "public/center/activities-v4/P24.webp"
+    },
+    {
+      "id": "P25",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e87547f7-a04e-4260-98a0-036ab33c5b76.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration of line dance shoes with rhythmic directional footprint marks. Representative objects only, NO PEOPLE, NO ROOM SCENE. Large central objects occupying 75 percent of frame, simple warm ivory paper background. Expressive ink outlines, textured gouache, confident navy terracotta wood and muted silver, refined handcrafted materials, readable at thumbnail size. No written text, labels, logos, UI or border. One integrated still life.",
+      "target": "public/center/course-symbols-v4/P25.webp"
+    },
+    {
+      "id": "P25",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-027389a6-97c2-48ec-99d4-91b2a5ee85c7.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Group of adults practicing synchronized line dancing with instructor in wooden floor studio. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P25.",
+      "target": "public/center/activities-v4/P25.webp"
+    },
+    {
+      "id": "P26",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-5b5f5515-bd3c-4f42-8084-433f227c6b4a.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration of a sturdy exercise chair, resistance band and balance cushion for gentle balance exercise. Representative objects only, NO PEOPLE, NO ROOM SCENE. Large central objects occupying 75 percent of frame, simple warm ivory paper background. Expressive ink outlines, textured gouache, confident navy terracotta wood and muted silver, refined handcrafted materials, readable at thumbnail size. No written text, labels, logos, UI or border. One integrated still life.",
+      "target": "public/center/course-symbols-v4/P26.webp"
+    },
+    {
+      "id": "P26",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-fbaa77ec-b241-498d-873d-668e6eadad0f.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Older and middle aged adults practicing gentle standing balance exercises beside sturdy chairs in fitness studio. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P26.",
+      "target": "public/center/activities-v4/P26.webp"
+    },
+    {
+      "id": "P27",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-8b3128d7-653c-45d0-9dbf-1b2f1348ea9d.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, yoga blocks strap and neatly folded mat. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P27.",
+      "target": "public/center/course-symbols-v4/P27.webp"
+    },
+    {
+      "id": "P27",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-f4839e43-c5e6-4fd8-9d2c-b0a229a3eeee.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Several experienced adults practicing advanced yoga poses with instructor on individual mats. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P27.",
+      "target": "public/center/activities-v4/P27.webp"
+    },
+    {
+      "id": "P28",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-b8467cf4-7cc4-4aa4-96ef-3c4a8af1502f.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, choral sheet music and conductor baton. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P28.",
+      "target": "public/center/course-symbols-v4/P28.webp"
+    },
+    {
+      "id": "P28",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-2772a0d1-8d9d-40f4-8e23-7ab193b16930.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Community adult choir rehearsal on modest auditorium stage, conductor and music stands. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P28.",
+      "target": "public/center/activities-v4/P28.webp"
+    },
+    {
+      "id": "P29",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-2bc2136a-e971-4a6b-a5e1-0905a5adeb1d.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, smartphone with large simple app tiles and stylus. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P29.",
+      "target": "public/center/course-symbols-v4/P29.webp"
+    },
+    {
+      "id": "P29",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7a4ad40c-8207-4cfb-aa0c-888185b3adca.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Older adults learning smartphones at classroom tables, friendly teacher helping. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P29.",
+      "target": "public/center/activities-v4/P29.webp"
+    },
+    {
+      "id": "P30",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-915b5063-87a5-4686-ae5c-e53fba4ac42c.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, pen display tablet with digital botanical drawing. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P30.",
+      "target": "public/center/course-symbols-v4/P30.webp"
+    },
+    {
+      "id": "P30",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-97b5a7f7-a6af-4ab3-b5e0-54e5cd907493.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adults creating digital paintings on pen tablets and computer monitors in media classroom. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P30.",
+      "target": "public/center/activities-v4/P30.webp"
+    },
+    {
+      "id": "P31",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-c6298692-8af9-4478-b73c-9637458f6020.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, English conversation phrasebook and two speech bubble symbols. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P31.",
+      "target": "public/center/course-symbols-v4/P31.webp"
+    },
+    {
+      "id": "P31",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-2f83b3a4-3cab-41a9-9a6b-54abcb79e13c.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Small adult English conversation class around meeting table, teacher and paired speaking exercises. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P31.",
+      "target": "public/center/activities-v4/P31.webp"
+    },
+    {
+      "id": "P32",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-972cdef4-05bc-4914-bc73-749182401e03.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, open novel and two reading glasses with bookmark. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P32.",
+      "target": "public/center/course-symbols-v4/P32.webp"
+    },
+    {
+      "id": "P32",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-972c15fe-88bc-4ace-9415-6d6838e2f250.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adult book discussion circle around meeting table, open novels and engaged discussion. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P32.",
+      "target": "public/center/activities-v4/P32.webp"
+    },
+    {
+      "id": "P33",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-58310a14-149f-4e62-b63f-9d790a506afc.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, two tabletop microphones facing each other and discussion cards. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P33.",
+      "target": "public/center/course-symbols-v4/P33.webp"
+    },
+    {
+      "id": "P33",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-aac0f438-f8a1-457b-8795-3376c3d4be49.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adult advanced debate and public speaking workshop with one speaker and seated peers, recording camera. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P33.",
+      "target": "public/center/activities-v4/P33.webp"
+    },
+    {
+      "id": "P34",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7c51cfa5-bb2b-4cb4-9cd0-408571087780.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, flower arrangement in ceramic vase and floral scissors. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P34.",
+      "target": "public/center/course-symbols-v4/P34.webp"
+    },
+    {
+      "id": "P34",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e581827b-3e6d-489f-ba31-8c7681acd078.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adults learning floral arrangement around craft tables with flowers and vases. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P34.",
+      "target": "public/center/activities-v4/P34.webp"
+    },
+    {
+      "id": "P35",
+      "kind": "symbol",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7f455bd2-f3b9-4c7a-8f67-ee123003677d.png",
+      "prompt": "Landscape 3:2 symbolic course selection illustration, laptop displaying abstract spreadsheet grid beside calculator. A refined hand-painted still life of these representative objects only, NO PEOPLE, NO ROOM SCENE, no classroom. Large central subject occupying 75 percent of frame, simple warm ivory paper background with subtle soft grounding shadow. Expressive ink outlines, richly textured gouache, confident navy terracotta natural wood and muted silver accents, elegant tactile real materials, clean readable silhouette at tiny thumbnail size. Not generic flat app icon or glossy 3D. No written text, labels, letters, logos, UI or border. One integrated still life, no collage panels. Asset P35.",
+      "target": "public/center/course-symbols-v4/P35.webp"
+    },
+    {
+      "id": "P35",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-921c9acf-d856-44e1-8d5f-0580fb75cd4c.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Adult spreadsheet and office computer skills class with teacher, computers with abstract grid interfaces. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P35.",
+      "target": "public/center/activities-v4/P35.webp"
+    },
+    {
+      "id": "P36",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-4236280f-83fa-45bc-9c74-fdaeb3bf9aa4.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Local art exhibition in rented multipurpose hall, framed paintings on portable display panels and visitors. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P36.",
+      "target": "public/center/activities-v4/P36.webp"
+    },
+    {
+      "id": "P37",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-e55cdccb-d89a-44ad-8896-6d4c818941b3.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Community group hands-on workshop in rented classroom, organizers and participants collaborating with paper materials. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P37.",
+      "target": "public/center/activities-v4/P37.webp"
+    },
+    {
+      "id": "P38",
+      "kind": "course",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-c63bae49-a12b-449e-9f93-29bf60540a09.png",
+      "prompt": "Landscape 3:2 still illustration for Korean municipal culture center management game. Small portrait photography session in rented multipurpose studio, adult photographer, tripod camera, softbox and adult subject. Several adults, believable Korean neighborhood public center interiors, rich ink outlines and textured gouache painting, realistic adult proportions, deep navy and terracotta accents, natural warm wood, vivid middle tones, not pastel or toy-like. Wide group composition. No legible text, labels, UI, borders, logos or watermarks. Each participant has a coherent separate body. Asset P38.",
+      "target": "public/center/activities-v4/P38.webp"
+    }
+  ],
+  "reusedOperatingArt": {
+    "P06": "classes-v3/P06.webp",
+    "P11": "classes-v3/premium-pilates.webp",
+    "P12": "classes-v3/premium-pottery.webp",
+    "P13": "classes-v3/premium-filmmaking.webp"
+  },
+  "notes": "P01-P04/P07/P09 from classes-v2; P14-P21 from classes-v3/special. P34-P38 are prepared assets pending program integration."
+}

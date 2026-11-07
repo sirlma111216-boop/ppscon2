@@ -97,7 +97,7 @@ test('uncompleted independent projects do not change the visible finished scope'
   assert.equal(getCampusProject(state.player,'garden')!.remainingWeeks,13)
 })
 
-test('construction estimates count actual 13-week seasons, winter rollover and the six-year boundary',()=>{
+test('construction estimates count actual 13-week seasons, winter rollover and the seven-year boundary',()=>{
   const planning={year:3,season:2,phase:'planning'} as const
   for(const [weeks,turns,season,week,turn,year] of [
     [9,1,2,9,11,3],[18,2,3,5,12,3],[31,3,0,5,13,4],
@@ -108,8 +108,8 @@ test('construction estimates count actual 13-week seasons, winter rollover and t
   }
   assert.deepEqual(expectedConstructionCompletion({...planning,phase:'review'},18),{year:4,season:0,week:5,turn:13,turns:2,withinGame:true})
   assert.deepEqual(expectedConstructionCompletion({year:6,season:3,phase:'planning'},13),{year:6,season:3,week:13,turn:24,turns:1,withinGame:true})
-  assert.deepEqual(expectedConstructionCompletion({year:6,season:3,phase:'planning'},18),{year:7,season:0,week:5,turn:25,turns:2,withinGame:false})
-  assert.equal(expectedConstructionCompletion({year:6,season:3,phase:'ending'},1)?.withinGame,false)
+  assert.deepEqual(expectedConstructionCompletion({year:6,season:3,phase:'planning'},18),{year:7,season:0,week:5,turn:25,turns:2,withinGame:true})
+  assert.equal(expectedConstructionCompletion({year:7,season:3,phase:'ending'},1)?.withinGame,false)
   for(const weeks of [0,-1,NaN,Infinity])assert.equal(expectedConstructionCompletion(planning,weeks),null)
 })
 

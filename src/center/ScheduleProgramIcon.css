@@ -1,0 +1,4 @@
+.schedule-program-icon{display:block;width:72px;max-width:100%;height:auto;aspect-ratio:3/2;object-fit:contain;border:0;border-radius:3px;pointer-events:none;user-select:none}
+.center-game .main-grid.is-room-view .rental-slot-content .slot-icon{display:block}
+.center-game .slot-content .slot-icon:has(.schedule-program-icon){display:grid;place-items:center;width:min(72px,100%);line-height:0}
+@media(max-width:650px){.center-game .slot-content .slot-icon:has(.schedule-program-icon){width:min(60px,100%)}}

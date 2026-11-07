@@ -13,3 +13,5 @@
 .campus-bundled .construction-timing{margin-bottom:19px}
 .campus-desk .facility-publish>strong{display:block;margin-bottom:17px}
 @media(max-width:560px){.campus-options{gap:7px}.campus-options span{padding:9px 7px;gap:6px}.campus-options small{font-size:9px;line-height:1.5}.campus-options strong{font-size:12px;line-height:1.5;word-break:keep-all}.campus-bundled{padding:20px 13px}}
+
+.remodel-room-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}.remodel-room-tabs button{padding:10px 14px;border:1px solid #bdcbd6;background:#fff;color:#31556d}.remodel-room-tabs button[aria-pressed=true]{background:#e9f2fa;border-color:#315f85}.remodel-comparison{display:grid;grid-template-columns:1fr 1fr;gap:16px}.remodel-comparison figure{margin:0}.remodel-comparison img{width:100%;height:auto;display:block}.remodel-comparison figcaption{padding:8px;color:#506478}.room-remodel-panel p{line-height:1.7}.room-remodel-panel .facility-award{flex-wrap:wrap;gap:12px}@media(max-width:600px){.remodel-comparison{grid-template-columns:1fr}}

@@ -1,3 +1,4 @@
+import { wonAmount } from './currency'
 import Icon from './Icon'
 import { BLOCKS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, getRoomManagement, isRentalProgram } from './simulation'
 import type { GameState, RentalRequest, RoomId } from './simulation'
@@ -11,7 +12,6 @@ interface RentalReviewProps {
   onClearClass: (slot: number) => void
   onOpenFacility: (room: RoomId) => void
 }
-const money = (value: number) => value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
 
 export default function RentalReview({ game, room, onDecide, onClearClass, onOpenFacility }: RentalReviewProps) {
   const accepted = game.player.rentalRequests.filter(request => request.status === 'accepted')
@@ -30,14 +30,14 @@ export default function RentalReview({ game, room, onDecide, onClearClass, onOpe
             const conflict = accepted.find((other) => other.room === room && other.slot === slot && other.id !== request.id)
             return <article className={`rental-request-row is-${request.status}`} key={request.id}>
               <div className="rental-request-copy"><span className="rental-client">{request.client}</span><h4>{request.title}</h4><span className="rental-request-meta"><Icon name="people" size={13} />{request.attendees}명{request.status === 'accepted' ? <b>승인됨</b> : request.status === 'declined' ? <em>거절함</em> : conflict ? <em>같은 시간에 다른 대관 승인됨</em> : inSlot.length > 1 ? <em>같은 시간의 신청 중 선택</em> : null}</span></div>
-              <div className="rental-request-fee"><strong>{money(request.fee)}<small>점 / 주</small></strong><span>운영비 {money(request.cost)}점</span></div>
+              <div className="rental-request-fee"><strong>{wonAmount(request.fee)}<small>원 / 주</small></strong><span>운영비 {wonAmount(request.cost)}원</span></div>
               <div className="rental-request-actions">{request.status === 'accepted' ? <button className="rental-undo" onClick={() => onDecide(request.id, 'pending')}>승인 취소</button> : request.status === 'declined' ? <button className="rental-undo" onClick={() => onDecide(request.id, 'pending')}>다시 검토</button> : <><button className="rental-decline" onClick={() => onDecide(request.id, 'declined')}>거절</button><button className="rental-accept" disabled={Boolean(conflict)} onClick={() => onDecide(request.id, 'accepted')}><Icon name="check" size={14} />승인</button></>}</div>
             </article>
           })}</div> : <div className="rental-no-request">접수 없음 <span>{existingClass ? `${existingClass.shortName} 클래스 편성 중` : '클래스를 편성할 수 있어요'}</span></div>}</div>
         })}</div>}
       </section>
     <aside className="rental-advice" aria-label="대관 운영 안내">
-        <div className="rental-advisor"><span className="dialogue-portrait"><img src="/center/jiseon-portrait.png" alt="운영팀장 오지선" /></span><div><strong>오지선 <small>운영팀장</small></strong><p>전부 받을 필요는 없어요. 클래스에 쓸 시간도 남겨 주세요.</p></div></div>
+        <div className="rental-advisor"><span className="dialogue-portrait"><img src="/center/jiseon-portrait.webp" alt="운영팀장 오지선" /></span><div><strong>오지선 <small>운영팀장</small></strong><p>전부 받을 필요는 없어요. 클래스에 쓸 시간도 남겨 주세요.</p></div></div>
         <p className="rental-finish-note"><Icon name="arrow" size={15} />대관 확정 후, 남은 시간에 클래스를 편성해요.</p>
     </aside>
   </section>

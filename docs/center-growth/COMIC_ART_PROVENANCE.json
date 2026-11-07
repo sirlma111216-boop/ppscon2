@@ -1,0 +1,25 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "cat-director",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-56c44bb9-9c0a-4e0d-b738-de5699b3503c.png",
+      "prompt": "Landscape 3:2 comedic event illustration for Korean community center management game. A dignified orange neighborhood cat sitting in the community center director chair behind a wooden reception desk, wearing a tiny paper bow tie; amused adult staff respectfully presenting a toy stamp, lighthearted charming comedy, no writing. Expressive natural faces, refined hand-painted ink and textured gouache, vivid earthy colors, warm sunlight, realistic human proportions, gentle situational comedy not caricature, no text or UI or border."
+    },
+    {
+      "id": "balloons",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-53be1645-8b2f-4225-b020-5ce430ff8d7e.png",
+      "prompt": "Landscape 3:2 comedic event illustration for Korean community center management game. Community center staff opening a mistakenly delivered cardboard box from which dozens of colorful balloons float upward, one staff member trying to collect ribbons and another laughing, harmless absurd surprise. Expressive natural faces, refined hand-painted ink and textured gouache, vivid earthy colors, warm sunlight, realistic human proportions, gentle situational comedy not caricature, no text or UI or border."
+    },
+    {
+      "id": "robot-dance",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-7f71921d-c33e-4105-87c7-4850df88ac94.png",
+      "prompt": "Landscape 3:2 comedic event illustration for Korean community center management game. A small round robot vacuum accidentally joining an adult line-dance class in a wood-floored community sports room, dancers amused and mimicking its little turn, instructor laughing, playful grounded comedy. Expressive natural faces, refined hand-painted ink and textured gouache, vivid earthy colors, warm sunlight, realistic human proportions, gentle situational comedy not caricature, no text or UI or border."
+    },
+    {
+      "id": "rooster-mic",
+      "source": "C:\\Users\\admin\\.codex\\generated_images\\01a1a51c-5d95-7181-a9da-bb27514b5ec1\\exec-333912a4-d486-4a8c-bdfb-c1803ed6ea2d.png",
+      "prompt": "Landscape 3:2 comedic event illustration for Korean community center management game. An adult community-center choir rehearsal paused as an electronic microphone unexpectedly plays a rooster sound; startled then laughing singers, embarrassed smiling technician at the sound mixer, a small stylized rooster-shaped sound visualization above the speaker, no actual animal inside and no written words. Expressive natural faces, refined hand-painted ink and textured gouache, vivid earthy colors, warm sunlight, realistic human proportions, gentle situational comedy not caricature, no text or UI or border."
+    }
+  ]
+}
