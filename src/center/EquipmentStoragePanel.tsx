@@ -1,3 +1,4 @@
+import ConditionBadge from './ConditionBadge'
 import { wonAmount } from './currency'
 import { STORAGE_CAPACITY, OFFERS, ROOM_NAMES, roomSupportsOffer } from './simulation'
 import type { GameState, RoomId } from './simulation'
@@ -17,12 +18,13 @@ export default function EquipmentStoragePanel({ game, room, canEdit, onMove, onS
   const stored = game.player.inventory.filter(item => item.stored)
   return <div className="equipment-management">
     <div className="equipment-section-heading"><strong>이 방의 장비</strong><span>{installed.length}개</span></div>
+    <p className="equipment-storage-note">방의 ‘시설·장비 정비’로 상태 +40 · 다음 운영 때 적용</p>
     {!installed.length && <p className="equipment-empty">아직 설치한 장비가 없어요.</p>}
     {installed.map(item => {
       const offer = OFFERS.find(value => value.id === item.id)!
       const targets = game.player.rooms.filter(value => value.open && value.id !== room && roomSupportsOffer(value.id, item.id))
       return <div key={item.instanceId} className="gear-detail">
-        <div className="gear-identity"><strong>{offer.name}</strong><span>{item.ready ? `상태 ${Math.round(item.condition)}` : '설치 대기'}</span></div>
+        <div className="gear-identity"><strong>{offer.name}</strong>{item.ready ? <ConditionBadge label="상태" value={item.condition} /> : <span>설치 대기</span>}</div>
         <div className="gear-actions">
           <select aria-label={`${offer.name} 옮길 방`} value="" disabled={!canEdit || !item.ready || !targets.length} onChange={event => onMove(item.instanceId, event.target.value as RoomId)}>
             <option value="" disabled>다른 방 이전 · 80,000원</option>
@@ -41,7 +43,7 @@ export default function EquipmentStoragePanel({ game, room, canEdit, onMove, onS
         const offer = OFFERS.find(value => value.id === item.id)!
         const targets = game.player.rooms.filter(value => value.open && roomSupportsOffer(value.id, item.id))
         return <div key={item.instanceId} className="gear-detail">
-          <div className="gear-identity"><strong>{offer.name}</strong><span>상태 {Math.round(item.condition)}</span></div>
+          <div className="gear-identity"><strong>{offer.name}</strong><ConditionBadge label="상태" value={item.condition} /></div>
           <small className="stored-maintenance">유지비 {wonAmount(offer.maintenance)}원/계절</small>
           <select aria-label={`${offer.name} 재설치할 방`} value="" disabled={!canEdit || !targets.length} onChange={event => onReinstall(item.instanceId, event.target.value as RoomId)}>
             <option value="" disabled>{targets.length ? '재설치할 방 선택 · 80,000원' : '재설치 가능한 열린 방 없음'}</option>

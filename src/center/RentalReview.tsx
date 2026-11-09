@@ -1,3 +1,4 @@
+import ConditionBadge from './ConditionBadge'
 import { wonAmount } from './currency'
 import Icon from './Icon'
 import { BLOCKS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, getRoomManagement, isRentalProgram } from './simulation'
@@ -22,7 +23,7 @@ export default function RentalReview({ game, room, onDecide, onClearClass, onOpe
   return <section className="rental-review" aria-label="대관 신청 검토">
     <div className="rental-intro"><span className="small-overline">01 · 이번 계절의 대관 신청</span><h2>어떤 모임에 문을 열까요?</h2></div>
       <section className="rental-applications" aria-label={`${ROOM_NAMES[room]} 대관 신청`}>
-        <div className="rental-room-heading"><div><h3>{definition.name}<span>{roomRequests.length}건</span></h3><p>{definition.description}</p></div><span className="rental-management"><Icon name="check" size={15} />관리 신뢰 <b>{Math.round(getRoomManagement(game.player, room))}</b></span></div>
+        <div className="rental-room-heading"><div><h3>{definition.name}<span>{roomRequests.length}건</span></h3><p>{definition.description}</p></div><span className="rental-management"><Icon name="check" size={15} /><ConditionBadge value={getRoomManagement(game.player, room)} /></span></div>
         {!roomOpen ? <div className="rental-facility-gateway"><Icon name="lock" size={34}/><h4>{project?.stage === 'construction' ? `개방까지 ${constructionTurns(project.remainingWeeks)}턴` : '더 높은 대관료를 위한 새 공간'}</h4><p>나라장터에 시설 조성 공고를 내고<br/>업체를 비교해 시공을 진행하세요.</p><button className="primary-button" onClick={()=>onOpenFacility(room)}>{project?.stage === 'construction' ? '시공 현황 보기' : '시설 입찰 진행'}<Icon name="arrow" size={16}/></button></div> : <div className="rental-app-list">{BLOCKS.map((block, slot) => {
           const inSlot = roomRequests.filter((request) => request.slot === slot)
           const existingClass = PROGRAMS.find((program) => program.id === game.player.plan[room][slot] && !isRentalProgram(program.id))
