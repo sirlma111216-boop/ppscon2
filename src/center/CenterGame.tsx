@@ -1,4 +1,5 @@
-import { ceremonyAward, ceremonyTitle } from './ceremony'
+import AudioControls from './AudioControls'
+import { ceremonyAward, ceremonyTitle, ceremonyDetails } from './ceremony'
 import { buildOperationTour } from './operationTour'
 import type { OperationFrame } from './operationTour'
 import { scheduleClass } from './classPlacement'
@@ -28,7 +29,7 @@ import { constructionTurns, getFacilityProject } from './facilityProjects'
 import { getRoomEquipmentUsage } from './equipmentUsage'
 import { SAVE_KEY, SaveBackupError, backupExclusiveSave, persistGameSave, replaceGameSave } from './savePersistence'
 import Icon from './Icon'
-import { playSound, setMusic } from './audio'
+import { playSound, playOnce, setTrack } from './audio'
 import { BLOCKS, EVALUATION_INTERVAL, MAX_TURNS, MAX_YEARS, OFFERS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, SEASONS, buyEquipment, canRunProgram, createGame, decideRental, finalScore, finishRentalReview, freeCash,  getDemand, getFinalStandings, getLevel, getProgramRequirements, getProgramPlacementError, getProgramWeeklyCount, getStorageImpact, getRentalAt, getRoomManagement, isRentalProgram, maintainRoom, migrateSave, moveEquipment, storeEquipment, reinstallEquipment, nextSeason, previewSeason, previewClass, reopenRentalReview, replaceClassWithRental, roomCapacity, roomSupportsProgram, runSeason, setPriceMode, setProgram, trainStaff } from './simulation'
 import type { GameState, ProgramId, RentalRequest, RoomId } from './simulation'
 
@@ -122,7 +123,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   const [operationPaused, setOperationPaused] = useState(false)
   const [activeSlot, setActiveSlot] = useState(0)
   const [speed, setSpeed] = useState(1)
-  const [music, updateMusic] = useState(false)
+  const [comicEvent, setComicEvent] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const [saved, setSaved] = useState(true)
   const [saveIssue, setSaveIssue] = useState<string | null>(null)
@@ -194,22 +195,28 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
         setPlaying(false)
         const last=selectLastActivityStill({room:frame.room,viewingResult:true,roomOpen:true,activities:game.lastReport?.activity})
         if(last)setActiveSlot(last.slot)
-        playSound('result')
+
       }else setTourIndex(index=>index+1)
     },1500/speed)
     return ()=>clearTimeout(timer)
   },[playing,operationPaused,tourIndex,operationTour,speed,game.lastReport])
-  useEffect(() => () => setMusic(false), [])
+  useEffect(() => {
+    const track = modal==='season-start'&&comicEvent ? 'comic_event' : ['shop','facility','campus'].includes(modal||'') ? 'procurement' : modal==='review'&&game.lastReport?.evaluation ? game.phase==='ending' ? ceremonyDetails(game,game.lastReport).awarded?'final_awarded':'final_unawarded' : 'evaluation' : game.phase!=='planning'&&modal!=='review' ? 'operation' : game.season<2 ? 'planning_spring_summer':'planning_autumn_winter'
+    setTrack(track)
+    if(modal==='season-start')playOnce('season-'+game.seed+'-'+game.year+'-'+game.season,'season_open')
+    if(modal==='review')playOnce('review-'+game.seed+'-'+game.year+'-'+game.season,'settlement')
+  }, [modal,comicEvent,game.phase,game.year,game.season,game.seed,game.lastReport])
+  useEffect(()=>{if(modal!=='season-start')setComicEvent(false)},[modal])
   const dismissWelcome = () => {
     try { localStorage.setItem(INTRO_KEY, 'seen') } catch { /* optional */ }
     setModal(null)
   }
-  function notify(message: string, tone: FeedbackTone = 'success') { setFeedback({ id: ++feedbackSerial.current, message, tone }) }
+  function notify(message: string, tone: FeedbackTone = 'success') { if(tone==='error')playSound('notice');else if(tone==='success'&&message.includes('계약 ·'))playSound('tender_contract');setFeedback({ id: ++feedbackSerial.current, message, tone }) }
   function setSelected(program: ProgramId | null) { setSelectedByRoom(previous => ({ ...previous, [room]: program })) }
   function cancelSlotSelection() { setSlotSelection(null) }
   function selectRoom(value: RoomId) {
     if(playing)setOperationPaused(true)
-    setSlotSelection(null); setRoom(value); setInsideRoom(true); playSound('select'); setDetail(false)
+    setSlotSelection(null); setRoom(value); setInsideRoom(true); playSound('room_enter'); setDetail(false)
     if (viewingResult) {
       const input = { room: value, viewingResult, roomOpen: Boolean(game.player.rooms.find(item => item.id === value)?.open), activities: game.lastReport?.activity }
       if (!selectActivityStill({ ...input, activeSlot })) { const last = selectLastActivityStill(input); if (last) setActiveSlot(last.slot) }
@@ -260,7 +267,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     if (next.player.plan[room][slot] !== id) { notify('클래스를 편성하지 못했어요. 시간과 공간 조건을 확인해 주세요.', 'error'); return }
     const placementIssues=previewSeason(next).operationIssues?.filter(issue=>issue.room===room&&issue.slot===slot)??[]
     const interruptionNotice=placementIssues.length?` · ${shortOperationReason(placementIssues[0]!.reason)} · ${placementIssues.reduce((n,i)=>n+i.weeks,0)}/13주 휴강`:''
-    setGame(next); setSlotSelection(null); setSelected(null); playSound('select')
+    setGame(next); setSlotSelection(null); setSelected(null); playSound('schedule_place')
     notify(`${ROOM_NAMES[room]} · ${BLOCKS[slot]} · ${previous ? previous.shortName + ' → ' : ''}${PROGRAMS.find(program => program.id === id)?.shortName} 편성${interruptionNotice}`)
     setDialogue('편성이 완료됐어요. 시작 전 운영 예상과 비용을 확인해 주세요.')
   }
@@ -268,7 +275,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     if (!canPlan || getRentalAt(game.player, room, slot)) return
     const previous = PROGRAMS.find(program => program.id === game.player.plan[room][slot])
     if (!previous) { notify('이미 빈 시간이에요.', 'info'); return }
-    setGame(setProgram(game, room, slot, null)); setSlotSelection(null); playSound('select')
+    setGame(setProgram(game, room, slot, null)); setSlotSelection(null); playSound('schedule_remove')
     notify(`${ROOM_NAMES[room]} · ${BLOCKS[slot]} · ${previous.shortName} 편성 취소`)
   }
   function clearRoomClasses() {
@@ -279,6 +286,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
       if (next.player.plan[room][slot] && !getRentalAt(next.player, room, slot)) { next = setProgram(next, room, slot, null); removed++ }
     })
     setGame(next)
+    if(removed)playSound('schedule_remove')
     notify(removed ? `${ROOM_NAMES[room]} 클래스 ${removed}칸을 비웠어요. 대관 일정은 유지됩니다.` : '비울 클래스가 없어요.', removed ? 'success' : 'info')
   }
   function act(result: { state: GameState; error?: string }, success: string, actor: keyof typeof CAST = 'doyun') {
@@ -286,7 +294,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     if (result.state === game) { notify('이미 적용된 설정이에요.', 'info'); return false }
     const cashChange = result.state.player.cash - game.player.cash
     const cost = cashChange ? ` · 예산 ${cashChange > 0 ? '+' : '−'}${wonAmount(Math.abs(cashChange))}원` : ''
-    setGame(result.state); setSpeaker(actor); setDialogue(success); notify(success + cost); playSound('buy'); return true
+    setGame(result.state); setSpeaker(actor); setDialogue(success); notify(success + cost); playSound(success.includes('납품요구')?'procurement_order':'ui_click'); return true
   }
   function requestEquipmentStorage(instanceId: string) {
     if (!canEdit) return
@@ -325,6 +333,9 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     if (!canEdit) return
     try {
       const next = runSeason(game)
+      const installed=next.player.inventory.some(e=>e.ready&&!game.player.inventory.find(p=>p.instanceId===e.instanceId)?.ready)
+      const completed=next.player.facilityProjects.some(p=>p.stage==='complete'&&game.player.facilityProjects.find(old=>old.id===p.id)?.stage!=='complete')||next.player.campusProjects.some(p=>p.stage==='complete'&&game.player.campusProjects.find(old=>old.id===p.id)?.stage!=='complete')||next.player.rooms.some(r=>r.remodel?.remainingWeeks===0&&game.player.rooms.find(old=>old.id===r.id)?.remodel?.remainingWeeks!==0)
+      if(installed||completed)playSound('install_complete')
       const tour=buildOperationTour(next.player.rooms)
       setOperationTour(tour);setTourIndex(0)
       if(tour[0]){setRoom(tour[0].room);setActiveSlot(tour[0].slot);setInsideRoom(true)}
@@ -348,7 +359,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     }
     const result = decideRental(game, id, status)
     if (result.error) { notify(result.error, 'error'); return }
-    setGame(result.state); playSound('select')
+    setGame(result.state); playSound(status==='accepted'?'rental_approve':'schedule_remove')
     if (request) notify(`${ROOM_NAMES[request.room]} · ${BLOCKS[request.slot]} · ${request.client} ${status === 'accepted' ? '대관 승인' : status === 'declined' ? '신청 거절' : request.status === 'accepted' ? '승인 취소' : '다시 검토'}${status === 'accepted' ? ` · ${wonAmount(request.fee)}원/주` : ''}`)
   }
   function closeReplacement() { setReplacementRentalId(null); setModal(null); notify('기존 클래스를 유지했어요.', 'info') }
@@ -356,7 +367,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     if (!replacementRentalId) return
     const result = replaceClassWithRental(game, replacementRentalId)
     if (result.error) { notify(result.error, 'error'); return }
-    setGame(result.state); setReplacementRentalId(null); setModal(null); playSound('select')
+    setGame(result.state); setReplacementRentalId(null); setModal(null); playSound('rental_approve')
     if (replacementRental) notify(`${ROOM_NAMES[replacementRental.room]} · ${BLOCKS[replacementRental.slot]} · ${replacementProgram?.shortName || '클래스'} 취소 → ${replacementRental.client} 대관 승인`)
     setSpeaker('jiseon'); setDialogue('선택한 시간의 클래스를 취소하고 대관을 승인했어요.')
   }
@@ -392,7 +403,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     <header className="topbar">
       <a href="#" className="brand" aria-label="저장하고 첫 화면으로" onClick={(e) => { e.preventDefault(); try { persistGameSave(localStorage, game); onHome?.() } catch { notify("저장하지 못했어요. 현재 화면을 유지합니다.", "error") } }}><span className="brand-symbol"><Icon name="home" size={25} /></span><span>센터장님,<br /><strong>다음 주는요?</strong></span></a>
       <div className="center-identity"><span className="tiny-dot" /> 늘봄 문화체육센터 <span className="identity-tag">센터 운영 일지</span></div>
-      <div className="top-actions"><span className={`save-state ${!saved ? 'unsaved' : ''}`}><Icon name={saved ? 'check' : 'help'} size={13} />{saved ? '자동 저장됨' : '저장 공간 확인'}</span><button className="icon-button" aria-label={music ? '음악 끄기' : '음악 켜기'} title="음악 · 초기 합성 스케치" onClick={() => { updateMusic(!music); setMusic(!music) }}><Icon name={music ? 'volume' : 'mute'} /></button><button className="icon-button" aria-label="도움말과 설정" onClick={() => setModal('help')}><Icon name="help" /></button></div>
+      <div className="top-actions"><span className={`save-state ${!saved ? 'unsaved' : ''}`}><Icon name={saved ? 'check' : 'help'} size={13} />{saved ? '자동 저장됨' : '저장 공간 확인'}</span><AudioControls/><button className="icon-button" aria-label="도움말과 설정" onClick={() => setModal('help')}><Icon name="help" /></button></div>
     </header>
 
     <main className="game-layout">
@@ -514,12 +525,12 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
 
     {modal === 'rivals' && <Modal title="각자의 방식으로, 함께 성장 중" onClose={() => setModal(null)} wide><div className="rivals-layout"><div className="ranking-list"><div className="ranking-label"><span>{game.phase === 'ending' ? `${MAX_YEARS}년 종합 최종 성적` : `${game.year}년 차 공개 성적`}</span><span>종합 점수</span></div>{standings.map((inst, index) => <button key={inst.id} className={`ranking-row ${inst.id === game.player.id ? 'is-player' : ''} ${rival.id === inst.id ? 'viewing' : ''}`} onClick={() => setRivalId(inst.id)}><span className="rank-number">{index + 1}</span><span className="rank-avatar"><Icon name={inst.id === game.player.id ? 'home' : ['leaf', 'music', 'sport', 'brush', 'bolt'][index % 5]!} size={19} /></span><span className="rank-name">{inst.name}<small>{game.phase === 'ending' && ceremonyAward(index + 1, true) ? `${ceremonyAward(index + 1, true)} · ` : ''}{inst.id === game.player.id ? '우리 센터' : inst.archetype}</small></span><b>{inst.history.length ? (game.phase === 'ending' ? finalScore(inst) : inst.score).toFixed(1) : '—'}</b></button>)}</div><div className="rival-profile"><div className="rival-building"><img key={rivalExterior} src={rivalExterior} alt={`${rival.name} 외관`} onError={(event) => { if (!event.currentTarget.src.endsWith('/center/building-v2/exterior.webp')) event.currentTarget.src = '/center/building-v2/exterior.webp' }} /><span>{rival.name}</span></div><span className="pill">운영 스타일</span><h3>{rivalIsPlayer ? '나만의 운영' : rival.archetype}</h3><p>최근 투자<br /><b>{legacyMoneyText(rival.lastPurchase || '첫 계획을 준비하고 있어요').replace(/이용 만족도 \+6/g, '이용 환경 개선')}</b></p><div className="rival-programs">{[...new Set(Object.values(rival.plan).flat().filter(Boolean))].slice(0, 3).map((id) => <span key={id}>{PROGRAMS.find((p) => p.id === id)?.shortName}</span>)}</div><div className="rival-metrics"><span>주민 신뢰<b>{Math.round(rival.trust)}</b></span><span>개방한 공간<b>{rival.rooms.filter((r) => r.open).length}</b></span><span>보유 장비<b>{rival.inventory.length}</b></span></div><small>같은 예산과 운영 규칙으로 매주 계산되는 기관입니다.</small></div></div></Modal>}
 
-    {modal === 'season-start' && <Modal title={`${game.year}년 차 ${SEASONS[game.season]} 시작`} onClose={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} wide><SeasonOpening key={seasonIntroKey(game)} game={game} onContinue={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} /></Modal>}
+    {modal === 'season-start' && <Modal title={`${game.year}년 차 ${SEASONS[game.season]} 시작`} onClose={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} wide><SeasonOpening key={seasonIntroKey(game)} game={game} onEventSound={setComicEvent} onContinue={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} /></Modal>}
     {modal === 'review' && game.lastReport && <Modal title={game.phase === 'ending' ? ceremonyTitle(MAX_YEARS) : game.lastReport.evaluation ? ceremonyTitle(game.lastReport.year) : `${game.lastReport.year}년 차 ${SEASONS[game.lastReport.season]} 운영 결산`} onClose={() => setModal(null)} wide><SeasonReview key={`${game.year}-${game.season}-${game.phase}`} game={game} report={game.lastReport} onRivals={() => setModal('rivals')} onContinue={continueGame} onReset={() => setModal('reset')} /></Modal>}
 
     {modal === 'demand' && <Modal title="이런 활동을 기다리고 있어요" onClose={() => setModal(null)} wide><p className="demand-intro">한 그룹은 한 주에 한 번 방문해요. 원하는 시간과 요금을 맞춰 보세요.</p><div className="demand-list">{demand.map((group) => <div key={group.id}><span className="demand-icon"><Icon name={PROGRAM_ICONS[group.programs[0]!] || 'people'} size={22} /></span><div><strong>{group.title}</strong><small>{group.slots.map((slot) => BLOCKS[slot]).join(' · ')}</small></div><span>{group.people}명<small>{group.maxFee === 0 ? '무료 이용 희망' : ['P05','P08','P10'].includes(group.programs[0]!) ? `그룹 ${wonAmount(group.maxFee)}원까지` : `1인 ${wonAmount(group.maxFee)}원까지`}</small></span></div>)}</div></Modal>}
 
-    {modal === 'help' && <Modal title="센터장님의 작은 안내서" onClose={() => setModal(null)}>{saveIssue && <p className="save-issue-note" role="status">{saveIssue}</p>}{Boolean(game.migrationNotices?.length) && <section className="migration-notice-panel" aria-label="저장 이관 안내"><h3>전용 클래스 배치가 바뀌었어요</h3><p>진행과 자금, 과거 성적은 유지했습니다. 이번 변경 내역을 확인해 주세요.</p><ul>{game.migrationNotices!.map((message, index) => <li key={index}>{message}</li>)}</ul><button className="secondary-button" onClick={() => { const next = { ...game }; delete next.migrationNotices; setGame(next); notify('변경 내역을 확인했어요.', 'info') }}>확인했어요</button></section>}<div className="help-steps"><p><b>1. 대관을 먼저 골라요</b><span>공간별 신청을 승인하면 그 시간이 예약돼요. 전부 받을 필요는 없어요.</span></p><p><b>2. 남은 시간에 클래스를 열어요</b><span>시간과 클래스는 어느 쪽부터 골라도 돼요. 생활안전 교실은 별도 설비 없이 무료로 열 수 있어요.</span></p><p><b>3. 운영 수입과 명성을 키워요</b><span>대관으로 운영비를 벌고, 강좌로 명성을 키워요. 공공서비스는 접근성 50%·교육 참여 50%예요. 유·무료 강좌 모두 실제 참여를 인정해요.</span></p></div><p className="help-note">대관 운영원가는 첫 2년 지원 기간에 대관료의 48%, 3년 차부터 60%에 공간 기본비를 더해요. 기존 승인 건은 유지하며 새 신청의 비용에 표시돼요. 명성이 높아질수록 추가 상승은 완만해져요.</p><p className="help-note">{MAX_YEARS}년 · {MAX_TURNS}턴 동안 운영하며 {EVALUATION_INTERVAL}년마다 종합평가를 받아요. 한 턴은 13주. 운영을 시작하기 전에는 대관을 다시 검토할 수 있어요. 조달 물품은 첫 운영 때 설치됩니다. 설치 완료 후 다음 계획에서 클래스를 열 수 있어요. 현금은 원, 평가점수는 점으로 표시합니다. 예산은 공개 가격을 참고한 게임용 설정이며 실제 기관의 전체 인건비·시설원가를 재현하지 않습니다.</p><label className="setting-line"><span>움직임 줄이기</span><input type="checkbox" checked={reducedMotion} onChange={(e) => setReducedMotion(e.target.checked)} /></label><label className="setting-line"><span>음악과 효과음 <small>초기 합성 스케치</small></span><input type="checkbox" checked={music} onChange={(e) => { updateMusic(e.target.checked); setMusic(e.target.checked) }} /></label><button className="danger-text" onClick={() => setModal('reset')}><Icon name="reset" size={15} />저장한 게임을 새로 시작</button></Modal>}
+    {modal === 'help' && <Modal title="센터장님의 작은 안내서" onClose={() => setModal(null)}>{saveIssue && <p className="save-issue-note" role="status">{saveIssue}</p>}{Boolean(game.migrationNotices?.length) && <section className="migration-notice-panel" aria-label="저장 이관 안내"><h3>전용 클래스 배치가 바뀌었어요</h3><p>진행과 자금, 과거 성적은 유지했습니다. 이번 변경 내역을 확인해 주세요.</p><ul>{game.migrationNotices!.map((message, index) => <li key={index}>{message}</li>)}</ul><button className="secondary-button" onClick={() => { const next = { ...game }; delete next.migrationNotices; setGame(next); notify('변경 내역을 확인했어요.', 'info') }}>확인했어요</button></section>}<div className="help-steps"><p><b>1. 대관을 먼저 골라요</b><span>공간별 신청을 승인하면 그 시간이 예약돼요. 전부 받을 필요는 없어요.</span></p><p><b>2. 남은 시간에 클래스를 열어요</b><span>시간과 클래스는 어느 쪽부터 골라도 돼요. 생활안전 교실은 별도 설비 없이 무료로 열 수 있어요.</span></p><p><b>3. 운영 수입과 명성을 키워요</b><span>대관으로 운영비를 벌고, 강좌로 명성을 키워요. 공공서비스는 접근성 50%·교육 참여 50%예요. 유·무료 강좌 모두 실제 참여를 인정해요.</span></p></div><p className="help-note">대관 운영원가는 첫 2년 지원 기간에 대관료의 48%, 3년 차부터 60%에 공간 기본비를 더해요. 기존 승인 건은 유지하며 새 신청의 비용에 표시돼요. 명성이 높아질수록 추가 상승은 완만해져요.</p><p className="help-note">{MAX_YEARS}년 · {MAX_TURNS}턴 동안 운영하며 {EVALUATION_INTERVAL}년마다 종합평가를 받아요. 한 턴은 13주. 운영을 시작하기 전에는 대관을 다시 검토할 수 있어요. 조달 물품은 첫 운영 때 설치됩니다. 설치 완료 후 다음 계획에서 클래스를 열 수 있어요. 현금은 원, 평가점수는 점으로 표시합니다. 예산은 공개 가격을 참고한 게임용 설정이며 실제 기관의 전체 인건비·시설원가를 재현하지 않습니다.</p><label className="setting-line"><span>움직임 줄이기</span><input type="checkbox" checked={reducedMotion} onChange={(e) => setReducedMotion(e.target.checked)} /></label><AudioControls/><button className="danger-text" onClick={() => setModal('reset')}><Icon name="reset" size={15} />저장한 게임을 새로 시작</button></Modal>}
     {modal === 'reset' && <Modal title="새 센터장으로 다시 시작할까요?" onClose={() => setModal(null)}><p className="reset-copy">이 브라우저의 현재 진행 기록이 새 게임으로 바뀝니다.</p><div className="review-actions"><button className="secondary-button" onClick={() => setModal(null)}>현재 게임 계속하기</button><button className="primary-button" onClick={() => { const fresh=createGame(); try { replaceGameSave(localStorage,fresh) } catch { notify("기존 기록을 백업하지 못해 새 게임을 시작하지 않았어요.","error"); return } setGame(fresh); setRoom('A'); setInsideRoom(false); setSelectedByRoom({}); setFeedback(null); setPlaying(false); setModal('welcome'); setSpeaker('jiseon'); setDialogue('새로운 센터의 첫 페이지를 열어 볼까요?') }}>새로 시작하기</button></div></Modal>}
   </div>
 }

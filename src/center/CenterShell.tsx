@@ -1,3 +1,5 @@
+import AudioControls from './AudioControls'
+import { useAudioBoot, setTrack, playSound } from './audio'
 import { useEffect, useRef, useState } from 'react'
 import CenterGame from './CenterGame'
 import GameTutorial from './GameTutorial'
@@ -11,7 +13,9 @@ import './CenterShell.css'
 
 function snapshot(){try{const raw=localStorage.getItem(SAVE_KEY);return {raw,game:raw?parseSaveFile(raw):null,error:''}}catch{return {raw:null,game:null,error:'저장 기록을 읽지 못했어요. 기존 데이터는 그대로 보존됩니다.'}}}
 export default function CenterShell(){
+ useAudioBoot()
  const [screen,setScreen]=useState<'home'|'game'|'hall'|'tutorial'>('home')
+ useEffect(()=>{if(screen!=='game')setTrack('title')},[screen])
  const [tutorialGame,setTutorialGame]=useState<GameState|null>(null)
  const [save,setSave]=useState(snapshot),[message,setMessage]=useState('')
  const [pending,setPending]=useState<{game:GameState;label:string;newGame?:boolean}|null>(null)
@@ -20,12 +24,12 @@ export default function CenterShell(){
  useEffect(()=>{if(!pending&&screen!=='hall')return;const before=document.activeElement as HTMLElement|null;const old=document.body.style.overflow;document.body.style.overflow='hidden';const dialog=document.querySelector<HTMLElement>('.title-dialog');const items=()=>[...(dialog?.querySelectorAll<HTMLElement>('button:not([disabled]),input')||[])];items()[0]?.focus();const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){setPending(null);setScreen('home')}if(e.key==='Tab'){const all=items(),first=all[0],last=all.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}};document.addEventListener('keydown',key);return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',key);before?.focus()}},[pending,screen])
  function home(){setSave(snapshot());setScreen('home')}
  function replace(game:GameState){try{replaceGameSave(localStorage,game);setPending(null);setSave(snapshot());setMessage('');setScreen('game')}catch(e){setMessage(e instanceof Error?e.message:'저장하지 못했어요.')}}
- function exportSave(){try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)throw new Error('내보낼 저장 기록이 없어요.');const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='센터장님-게임저장-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setMessage('저장 파일을 내려받았어요. 다른 기기의 파일 불러오기로 이어갈 수 있어요.')}catch(e){setMessage(e instanceof Error?e.message:'내보내지 못했어요.')}}
+ function exportSave(){try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)throw new Error('내보낼 저장 기록이 없어요.');const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='센터장님-게임저장-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);playSound('save_complete');setMessage('저장 파일을 내려받았어요. 다른 기기의 파일 불러오기로 이어갈 수 있어요.')}catch(e){setMessage(e instanceof Error?e.message:'내보내지 못했어요.')}}
  if(screen==='game')return <CenterGame onHome={home} skipWelcome/>
  if(screen==='tutorial')return <GameTutorial replay={!tutorialGame} error={message} onCancel={()=>{setTutorialGame(null);setMessage('');home()}} onFinish={()=>{if(tutorialGame)replace(tutorialGame);else home()}}/>
  return <main className="center-title-screen">
   <img className="title-art" src={save.game?campusExteriorPath(save.game.player):'/center/campus-v3/exterior-0.webp'} alt="햇살이 비치는 우리 동네 문화체육센터"/>
-  <section className="title-panel">
+  <section className="title-panel"><AudioControls/>
    <span className="title-kicker">우리 동네를 키우는 7년</span>
    <h1>센터장님,<br/>다음 주는요?</h1>
    <p>나라장터에서 물품을 고르고, 수업을 열고,<br/>주민과 함께 센터의 내일을 만드세요.</p>

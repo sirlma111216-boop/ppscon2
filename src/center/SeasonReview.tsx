@@ -1,3 +1,4 @@
+import { playSound } from './audio'
 import { ceremonyAward, ceremonyDetails } from './ceremony'
 import SeasonBriefing from './SeasonBriefing'
 import { wonAmount, signedWonAmount } from './currency'
@@ -47,7 +48,7 @@ export default function SeasonReview({ game, report, onRivals, onContinue, onRes
         <p>{ceremonyStep===2?'주민의 배움과 만남을 지켜 온 센터장님의 시간을 기억하겠습니다.':honors.message}</p>
         {ceremonyStep===1&&<div className="ceremony-reasons"><span>{honors.reasonLabel}</span><b>{honors.reason}</b>{honors.category&&<p><strong>부문상 · {honors.category.title}</strong><br/>{honors.category.reason}</p>}</div>}
       </>}
-      <button className="primary-button" onClick={()=>setCeremonyStep(v=>v+1)}>{ceremonyStep===0?'평가 결과 발표':ending&&ceremonyStep===1?'우리 센터의 마지막 인사':'종합 성적과 운영 기록 보기'}</button>
+      <button className="primary-button" onClick={()=>{if(ceremonyStep===0&&honors.awarded)playSound('award_reveal');setCeremonyStep(v=>v+1)}}>{ceremonyStep===0?'평가 결과 발표':ending&&ceremonyStep===1?'우리 센터의 마지막 인사':'종합 성적과 운영 기록 보기'}</button>
       <small className="ceremony-fiction">게임 속 가상 평가·시상 제도입니다.</small>
     </div></section>
   return <div className={`season-review ${evaluation ? 'has-evaluation' : ''}`}>

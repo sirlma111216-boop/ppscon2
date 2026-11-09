@@ -1,0 +1,132 @@
+{
+  "source": "User-provided ElevenLabs exports, Downloads folder",
+  "date": "2026-11-10",
+  "totalBytes": 23221223,
+  "files": [
+    {
+      "name": "bgm_comic_event.mp3",
+      "bytes": 737916,
+      "sha256": "be1e8093e3dd512a02ff14dde278a4077b057aafa1b1de4919f098fd00385c11"
+    },
+    {
+      "name": "bgm_evaluation.mp3",
+      "bytes": 1457642,
+      "sha256": "593e559a3f77b20effae1f2944ac8624f783744f95b220d094cc910c2056f6a0"
+    },
+    {
+      "name": "bgm_final_awarded.mp3",
+      "bytes": 2177995,
+      "sha256": "99e699c3276bf0e605db6d8fc0e796754ac453603002427afc2abc56f71ac64d"
+    },
+    {
+      "name": "bgm_final_unawarded.mp3",
+      "bytes": 2177995,
+      "sha256": "aef9d60fd96744c4c8a4ede093fb4d25e6f42546580bcd5eb4b39b5f5c044a75"
+    },
+    {
+      "name": "bgm_operation.mp3",
+      "bytes": 2177995,
+      "sha256": "4cc77e63fbcabf591c058a6ad8fb74d759b341c6330f87858a86353b48059b47"
+    },
+    {
+      "name": "bgm_planning_autumn_winter.mp3",
+      "bytes": 2897720,
+      "sha256": "f73b24bff394955be0196b02f09a335f05ee2e15aa7c446f4d5064cce4214dc8"
+    },
+    {
+      "name": "bgm_planning_spring_summer.mp3",
+      "bytes": 2897720,
+      "sha256": "bcfd2e06dca78000d1385e667f5d22a1c9b81329b93350e05a689b47edd10fcd"
+    },
+    {
+      "name": "bgm_procurement.mp3",
+      "bytes": 2177995,
+      "sha256": "23fc0086037cad31948e69e561a4737c3fa51619b88df6fdc28a28dc7ef0355f"
+    },
+    {
+      "name": "bgm_title.mp3",
+      "bytes": 2176741,
+      "sha256": "2ffd82a4fd5e4e96054583fdbb28a8888358957febd4011a842715f1f5150f1c"
+    },
+    {
+      "name": "sfx_award_reveal.wav",
+      "bytes": 576078,
+      "sha256": "754b2426a8acba9317cedc529d70be314ab09b74c1f01024f48f904a6b90fe35"
+    },
+    {
+      "name": "sfx_event_comic.wav",
+      "bytes": 230478,
+      "sha256": "95030f401b74217a24bbf781a21ffe7a5430727f60f9e1139338c83d4e065298"
+    },
+    {
+      "name": "sfx_event_negative.wav",
+      "bytes": 284238,
+      "sha256": "7ccc266d720c1630ad3cbe00b31773c4a2ef4b1e9964882c26d9c67e9c69f195"
+    },
+    {
+      "name": "sfx_event_positive.wav",
+      "bytes": 384078,
+      "sha256": "e785cfe659bea95d4aac5b44a89d3a1b4cf67f2771e04727339f2fd150ed44d9"
+    },
+    {
+      "name": "sfx_install_complete.wav",
+      "bytes": 245838,
+      "sha256": "28d67de175b2d837151228a04edc1d43683f2462a84e18d4fefcef122a65abdf"
+    },
+    {
+      "name": "sfx_notice.wav",
+      "bytes": 93486,
+      "sha256": "7dd67aa65f4bb9068e0d97a373c62d1e319f1c7fdc8a2e48721759a0598ecc86"
+    },
+    {
+      "name": "sfx_procurement_order.wav",
+      "bytes": 154926,
+      "sha256": "eb33c7bdb2c5be45b08edd0aef189c271fea2e5a68a71afc271cbb3425bb4b46"
+    },
+    {
+      "name": "sfx_rental_approve.wav",
+      "bytes": 93486,
+      "sha256": "fb8e87eafcdb300ec3b48fef9c0aa1e4cf812a936fd98096be04dcf48d215770"
+    },
+    {
+      "name": "sfx_room_enter.wav",
+      "bytes": 116526,
+      "sha256": "6cebab5a20af224ce92dcf3ad5ca23a565130a413049544952123d568b44e037"
+    },
+    {
+      "name": "sfx_save_complete.wav",
+      "bytes": 116526,
+      "sha256": "d0d5b4b1ac4d6e4397a0881f022b1a334f6cb0b481596a2b2827c0ed7402d519"
+    },
+    {
+      "name": "sfx_schedule_place.wav",
+      "bytes": 960078,
+      "sha256": "1af6e382d84433a62f7c36eb621358cf66a4d1e6fe651479b893eedbe2bcf160"
+    },
+    {
+      "name": "sfx_schedule_remove.wav",
+      "bytes": 93486,
+      "sha256": "0d1ee6818b65065fc8b1d5bd2b1bc7c8cc5f21bc18a25d8516130c9cfe6838b9"
+    },
+    {
+      "name": "sfx_season_open.wav",
+      "bytes": 284238,
+      "sha256": "4d0d9f79dc33bdba68e9c1b52b738822001a7b026a12882bd31ab03bde2b13ad"
+    },
+    {
+      "name": "sfx_settlement.wav",
+      "bytes": 230478,
+      "sha256": "a31420b888350ab2ef885e049a9c616c2191522e0ebc1c8b8742a37f95c26bcc"
+    },
+    {
+      "name": "sfx_tender_contract.wav",
+      "bytes": 384078,
+      "sha256": "4f09b1886f03c840a4b71feaa05a9dea8b71e61984f71b959f1d14ea1cffb999"
+    },
+    {
+      "name": "sfx_ui_click.wav",
+      "bytes": 93486,
+      "sha256": "bd9a2724ea4805f9874c583091093916249c44ddb2e7b9b31b61462af8f5dbd0"
+    }
+  ]
+}

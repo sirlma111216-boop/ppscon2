@@ -17,7 +17,7 @@ The active game lives in `src/center`. Read `docs/center-growth/SPACE_AND_RENTAL
 - Premium classes have distinct income/reputation roles, their own demand and a center-wide weekly limit. Storage does not expand room slots or remove owned-equipment maintenance. Reinstallation costs time and money; affected classes require explicit clearing confirmation and accepted rentals must be cancelled separately before equipment is stored or moved.
 - New game assets belong under `public/center`. Use optimized WebP in the main UI, preserve source artwork/provenance, and do not recolor or distort supplied official logos/characters.
 - Preserve existing save progress. Before upgrading version, rival roster or evaluation schema, back up the original stored JSON. Migration does not rerun completed seasons.
-- Final recorded audio and external human playtesting remain unfinished. Use current engine/IMPLEMENTATION_STATUS for events and implemented scope.
+- User-provided recorded audio is integrated; external human playtesting remains unfinished. Use current engine/IMPLEMENTATION_STATUS for events and implemented scope.
 - Work on `feat/center-growth-reboot`. Main deploys the existing public game; do not push main as part of routine local development.
 - Run `npm run check`, `npm test`, and `npm run build` for relevant changes. Inspect actual desktop/mobile flows. Old-game tests included by `npm test` are not proof of center-game coverage.
 - Record only observed validation results in `docs/center-growth/IMPLEMENTATION_STATUS.md`; do not invent current test totals or completed browser checks.
