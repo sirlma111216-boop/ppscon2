@@ -34,7 +34,14 @@ await build({
   root, base: './', logLevel: 'warn',
   build: {
     outDir: out, emptyOutDir: true, cssCodeSplit: false, modulePreload: false,
-    rollupOptions: { output: { format: 'iife', inlineDynamicImports: true, entryFileNames: 'assets/game.js', assetFileNames: 'assets/[name][extname]' } },
+    // One script on purpose, so its size is expected.
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      // Vite's chunk-loading helper mentions import.meta; with everything in one classic script it is never used.
+      onwarn(warning, warn) { if (warning.code !== 'EMPTY_IMPORT_META') warn(warning) },
+      // A classic (IIFE) script cannot be split, so the lazily loaded parts are folded into the one file.
+      output: { format: 'iife', entryFileNames: 'assets/game.js', assetFileNames: 'assets/[name][extname]' },
+    },
   },
 })
 
