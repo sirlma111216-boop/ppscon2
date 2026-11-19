@@ -42,6 +42,6 @@ npm run submission
 
 Cloudflare Pages에서 이 저장소를 Git 연동하면 main에 push할 때 자동으로 빌드·배포됩니다. GitHub Actions는 별도로 타입 검사·테스트·빌드를 검증합니다. 이 README의 설정 안내 자체가 Cloudflare 연결 완료를 의미하지는 않습니다.
 
-기존 ppscon 저장소의 서비스와 브랜치는 별도로 유지합니다. 현재 게임은 `src/center`, 그림은 `public/center`에 있습니다. 이전 게임 코드는 역사적 참고용으로 남아 있습니다. 자세한 구현·검증 결과는 `docs/center-growth/IMPLEMENTATION_STATUS.md`, 밸런스 보고서는 `reports/center-balance/BALANCE_REVIEW_20261107.html`을 참조하세요.
+기존 ppscon 저장소의 서비스와 브랜치는 별도로 유지합니다. 게임은 `src/center`, 그림과 소리는 `public/center`에 있습니다. 이전 게임 《내일을 여는 상자》의 소스·그림·문서는 2026-11-19에 이 저장소에서 지웠습니다(커밋 b132ebe까지의 이력에 남아 있습니다). 자세한 구현·검증 결과는 `docs/center-growth/IMPLEMENTATION_STATUS.md`, 밸런스 보고서는 `reports/center-balance/BALANCE_REVIEW_20261107.html`을 참조하세요.
 
 화폐·평가·조달 절차는 게임을 위한 모델이며 실제 나라장터와 연결되지 않습니다.

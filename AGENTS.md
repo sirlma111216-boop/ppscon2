@@ -1,6 +1,6 @@
 # Center growth game
 
-The active game lives in `src/center`. Read `docs/center-growth/SPACE_AND_RENTALS.md` for current rules and `IMPLEMENTATION_STATUS.md` for implemented scope. Earlier `GAME_DESIGN_DRAFT.md`, economy/art drafts and the old game are historical planning references where they disagree with the current rules.
+The active game lives in `src/center`. Read `docs/center-growth/SPACE_AND_RENTALS.md` for current rules and `IMPLEMENTATION_STATUS.md` for implemented scope. Earlier `GAME_DESIGN_DRAFT.md` and economy/art drafts are historical planning references where they disagree with the current rules. The earlier game's source, assets and documents were removed from this repository on 2026-11-19 at the creator's request (they remain in history up to commit b132ebe).
 
 - Korean, picture-first interface with short contextual dialogue. Start with the exterior; show a room's controls only after entering it. Avoid text-heavy dashboards.
 - Read `DESIGN.md` before UI work. The original Oura analysis in `docs/references/DESIGN-oura.md` is reference data; the game-specific rules and user instructions take precedence.
@@ -19,7 +19,7 @@ The active game lives in `src/center`. Read `docs/center-growth/SPACE_AND_RENTAL
 - Preserve existing save progress. Before upgrading version, rival roster or evaluation schema, back up the original stored JSON. Migration does not rerun completed seasons.
 - User-provided recorded audio is integrated; external human playtesting remains unfinished. Use current engine/IMPLEMENTATION_STATUS for events and implemented scope.
 - Work on `feat/center-growth-reboot`. Main deploys the existing public game; do not push main as part of routine local development.
-- Run `npm run check`, `npm test`, and `npm run build` for relevant changes. Inspect actual desktop/mobile flows. Old-game tests included by `npm test` are not proof of center-game coverage.
+- Run `npm run check`, `npm test`, and `npm run build` for relevant changes. Inspect actual desktop/mobile flows. `npm test` runs the center-game tests in `tests/center`.
 - Record only observed validation results in `docs/center-growth/IMPLEMENTATION_STATUS.md`; do not invent current test totals or completed browser checks.
 
 - Activity equipment limits: C auditorium 4, every other room 3. Common/supporting equipment keeps its existing counting rules.

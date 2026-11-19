@@ -146,4 +146,4 @@ Use case: style-transfer / companion character portrait. The supplied image is t
 
 `room-upgrades-v1/provenance.json`과 `schedule-icons-v1/provenance.json`은 게임과 함께 배포되던 기록 파일이라 `docs/center-growth/ROOM_UPGRADES_PROVENANCE.json`, `SCHEDULE_ICONS_PROVENANCE.json`으로 옮겼다.
 
-지우지 않은 것: 첫 번째 게임(《내일을 여는 상자》)의 소스·테스트·그림(`src/App.tsx` 등, `public/assets/`)은 현재 게임이 쓰지 않지만 빌드에서 이미 빠지며, 통째로 지울지는 제작자가 정할 일이라 그대로 두었다. `.preview/`의 생성 원본 보관본과 `reports/`의 밸런스 기록도 그대로다.
+첫 번째 게임(《내일을 여는 상자》)은 위 정리 때는 남겨 두었다가, 같은 날 제작자의 다음 지시("이 게임과 관련이 없는 건 모두 지워 달라")로 지웠다: 소스(`src/App.tsx`, `src/game` 등), 테스트 4개, 그림 원본과 파생본(`public/assets/`), 문서(GAME_SPEC, IMAGE_ASSETS, IMAGE_PROMPTS, AUDIO_ELEVENLABS 등)와 사용자가 제공했던 Zapier 디자인 참고본, 전용 스크립트 3개, 모두 91개 파일. 커밋 b132ebe까지의 이력에 남아 있다. `.preview/`의 생성 원본 보관본과 `reports/`의 밸런스 기록은 그대로다.

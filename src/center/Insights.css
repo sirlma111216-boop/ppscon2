@@ -123,13 +123,13 @@
 .center-game .scene-footer--room .footer-equipment > svg:last-child { margin-left: auto; flex: none; }
 .center-game .scene-footer--room .footer-care { display: inline-flex; flex: none; width: auto; margin-left: auto; white-space: nowrap; }
 
-/* Compact adviser line (2026-11-19): a small round portrait beside the line, no tall empty panel. */
-.center-game .character-dialogue { grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 0; margin-top: 10px; padding: 10px 14px; }
-.center-game .character-dialogue .dialogue-portrait { width: 64px; height: 64px; align-self: center; border-radius: 50%; background: #6a544a; }
-.center-game .character-dialogue .dialogue-copy { display: grid; gap: 3px; padding: 0; }
-.center-game .character-dialogue .dialogue-copy > span { display: flex; align-items: baseline; gap: 8px; font-size: 14px; }
-.center-game .character-dialogue .dialogue-copy small { display: inline; margin: 0; }
-.center-game .character-dialogue .dialogue-copy p { margin: 0; font-size: 14px; line-height: 1.6; }
+/* Staff line (2026-11-19, enlarged the same day): joined to the bottom of the room picture, above the timetable it talks about. A small strip at the foot of the page went unread; here the face and the words are large enough to be met on entering the room. */
+.center-game .character-dialogue { grid-template-columns: 88px minmax(0, 1fr); align-items: center; gap: 16px; min-height: 0; margin-top: 0; padding: 14px 18px 14px 14px; border-radius: 0 0 3px 3px; } .center-game .scene-card:has(+ .character-dialogue) { border-radius: 3px 3px 0 0; }
+.center-game .character-dialogue .dialogue-portrait { width: 88px; height: 88px; align-self: center; border-radius: 50%; background: #6a544a; box-shadow: 0 0 0 2px #bc924c; }
+.center-game .character-dialogue .dialogue-copy { display: grid; gap: 6px; padding: 0; animation: staff-line-in .26s ease-out; }
+.center-game .character-dialogue .dialogue-copy > span { display: flex; align-items: baseline; gap: 8px; font-size: 15px; color: #f0c98a; }
+.center-game .character-dialogue .dialogue-copy small { display: inline; margin: 0; font-size: 13px; color: #d6bfaa; }
+.center-game .character-dialogue .dialogue-copy p { margin: 0; font-size: 17px; line-height: 1.55; color: #fffdf8; } @keyframes staff-line-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } } @media (prefers-reduced-motion: reduce) { .center-game .character-dialogue .dialogue-copy { animation: none; } } @media (max-width: 600px) { .center-game .character-dialogue { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 12px 14px 12px 12px; } .center-game .character-dialogue .dialogue-portrait { width: 64px; height: 64px; } .center-game .character-dialogue .dialogue-copy p { font-size: 15px; } }
 .standing-badge strong { font-size: 30px; }
 .center-game:not(.is-exploring) .page-heading .standing-badge strong { font-size: 26px; }
 .standing-changes { font-size: 14px; }
@@ -203,3 +203,8 @@
 .scene-instruction.is-call { padding: 3px 10px; background: #fffdf8; border-radius: 12px; color: #1d56ad; font-weight: 700; }
 /* On a narrow screen the call to review rentals gets the whole toolbar line. */
 @media (max-width: 600px) { .scene-toolbar:has(.scene-instruction.is-call) > span:first-child { display: none; } .scene-toolbar:has(.scene-instruction.is-call) > div { flex: 1; justify-content: center; } }
+/* An approved rental hour ends with its cancel button. On a phone that button is a full touch target and used to cover the fee and the label under it: the label gives way (the button says the same) and the hour leaves room for the button. */
+@media (max-width: 600px), (pointer: coarse) {
+  .center-game .schedule-slot:has(> .cancel-rental-slot) .rental-slot-label { display: none; }
+  .center-game .schedule-slot:has(> .cancel-rental-slot) .rental-slot-content { padding-bottom: 58px; }
+}

@@ -670,11 +670,9 @@ svg { vertical-align: middle; }
 
 /* Room workspaces keep the picture above their own planning information. */
 .main-grid.is-rental-room{grid-template-columns:minmax(260px,.37fr) minmax(0,.63fr);gap:24px}
-.main-grid.is-room-view{grid-template-columns:minmax(0,.55fr) minmax(330px,.45fr);grid-template-areas:"play decisions" "dialogue decisions";row-gap:18px}
-.main-grid.is-room-view.is-short-catalog{grid-template-areas:"play decisions" "play dialogue"}
+.main-grid.is-room-view{grid-template-columns:minmax(0,.55fr) minmax(330px,.45fr);grid-template-areas:"play decisions";row-gap:18px}
 .main-grid.is-room-view .play-column{grid-area:play}
 .main-grid.is-room-view .decision-column{grid-area:decisions}
-.main-grid.is-room-view .room-dialogue{grid-area:dialogue;margin-top:0}
 .main-grid:is(.is-rental-room,.is-room-view) .scene-instruction{display:none}
 .main-grid:is(.is-rental-room,.is-room-view) .scene-footer>span:first-child{display:none}
 .main-grid:is(.is-rental-room,.is-room-view) .scene-footer{justify-content:flex-start;flex-wrap:wrap}
@@ -733,7 +731,7 @@ svg { vertical-align: middle; }
 }
 @media(max-width:900px){
   .main-grid.is-rental-room,.main-grid.is-room-view{grid-template-columns:minmax(0,1fr);gap:18px}
-  .main-grid.is-room-view,.main-grid.is-room-view.is-short-catalog{grid-template-areas:"play" "decisions" "dialogue"}
+  .main-grid.is-room-view{grid-template-areas:"play" "decisions"}
   .main-grid.is-room-view .decision-column{padding-left:0}
 }
 @media(max-width:600px){

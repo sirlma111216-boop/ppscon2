@@ -28,3 +28,10 @@ test('files that were cleared out on 2026-11-19 have not come back into the ship
     assert.deepEqual(shipped.filter(file => pattern.test(file)), [], String(pattern))
   assert.ok(shipped.length > 250, 'the walk really covered the asset folder')
 })
+
+test('the repository holds this game only: the earlier game was removed on 2026-11-19', () => {
+  assert.deepEqual(readdirSync('src').sort(), ['center', 'main.tsx', 'vite-env.d.ts'])
+  assert.deepEqual(readdirSync('public').sort(), ['_headers', 'center'])
+  assert.deepEqual(readdirSync('tests'), ['center'])
+  assert.doesNotMatch(readFileSync('src/main.tsx', 'utf8'), /dev-assets|AssetGallery/)
+})
