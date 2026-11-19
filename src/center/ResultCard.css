@@ -1,0 +1,62 @@
+/* What each class or let changed. Up is teal, down is clay, and every figure also carries a sign. */
+.result-card { display: grid; gap: 10px; padding: 14px 16px; background: #fffdf8; border: 1px solid #d6cbbc; border-left: 4px solid #2d7a78; border-radius: 4px; }
+.result-card.is-rental { border-left-color: #6b5a3d; }
+.result-card header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.result-card header strong { font-size: 17px; }
+.result-card header small { color: #655e54; font-size: 13px; }
+.result-card-kind { padding: 2px 7px; background: #ece4d8; border-radius: 3px; font-size: 13px; }
+.result-mood { margin-left: auto; padding: 2px 8px; border-radius: 3px; font-style: normal; font-size: 13px; font-weight: 700; }
+.result-mood.is-hot { background: #dcefe9; color: #175c58; }
+.result-mood.is-cold { background: #f6e1d9; color: #8a3a22; }
+.result-deltas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.result-deltas > span { display: grid; gap: 2px; padding: 9px 10px; background: #f7f1e8; border-radius: 3px; min-width: 0; }
+.result-deltas small { color: #655e54; font-size: 13px; }
+.result-deltas b { font-size: 18px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.result-deltas i { color: #655e54; font-size: 13px; font-style: normal; overflow-wrap: anywhere; }
+.result-deltas .is-up b, .running-totals .is-up b { color: #175c58; }
+.result-deltas .is-down b, .running-totals .is-down b { color: #9a3d22; }
+.result-deltas .grade-good b { color: #175c58; }
+.result-deltas .grade-warn b { color: #9a3d22; }
+.result-tally { display: grid; gap: 5px; }
+.result-tally-bar { display: flex; height: 10px; overflow: hidden; border-radius: 5px; background: #ece4d8; }
+.result-tally-bar i { flex-basis: 0; }
+.result-tally-bar .is-great { background: #1f7d76; }
+.result-tally-bar .is-good { background: #7fb8ae; }
+.result-tally-bar .is-flat { background: #cbbfae; }
+.result-tally-bar .is-poor { background: #c0603f; }
+.result-tally-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: #4a4741; }
+.result-tally-legend span::before { content: ''; display: inline-block; width: 9px; height: 9px; margin-right: 5px; border-radius: 2px; background: #cbbfae; }
+.result-tally-legend .is-great::before { background: #1f7d76; }
+.result-tally-legend .is-good::before { background: #7fb8ae; }
+.result-tally-legend .is-poor::before { background: #c0603f; }
+.result-card.is-compact { padding: 10px 12px; gap: 7px; }
+.result-card.is-compact .result-deltas b { font-size: 15px; }
+.result-card.is-compact .result-deltas i { display: none; }
+.running-totals { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 9px 14px; background: #2b2926; color: #f4ecdf; border-radius: 4px; font-size: 14px; }
+.running-totals b { margin-left: 4px; font-size: 16px; font-variant-numeric: tabular-nums; }
+.running-totals .is-up b { color: #8fd8c8; }
+.running-totals .is-down b { color: #f3ad94; }
+.scene-result { display: grid; gap: 8px; padding: 10px 0 0; }
+.scene-result-empty { margin: 0; padding: 12px 14px; background: #f1e9dc; border-radius: 4px; color: #4a4741; font-size: 14px; }
+.result-card:not(.is-compact) .result-deltas b { animation: result-pop .45s ease-out both; }
+@keyframes result-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.reduce-motion .result-deltas b { animation: none; }
+@media (prefers-reduced-motion: reduce) { .result-deltas b { animation: none !important; } }
+@media (max-width: 620px) { .result-deltas { grid-template-columns: repeat(2, minmax(0, 1fr)); } .result-mood { margin-left: 0; } }
+
+/* Season totals against the season before, plus the two usually hidden grades. */
+.season-change { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 16px 0; }
+.season-change > div { display: grid; gap: 3px; padding: 11px 12px; background: #fffdf8; border: 1px solid #d6cbbc; border-radius: 4px; min-width: 0; }
+.season-change small { color: #655e54; font-size: 13px; }
+.season-change strong { font-size: 19px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.season-change em { font-style: normal; font-size: 13px; font-weight: 700; }
+.season-change .is-up em, .season-change .grade-good strong { color: #175c58; }
+.season-change .is-down em, .season-change .grade-warn strong { color: #9a3d22; }
+.season-change .is-flat em, .season-change .is-new em { color: #655e54; font-weight: 400; }
+.session-results { display: grid; gap: 8px; margin: 14px 0; }
+.session-results > h3 { margin: 0; font-size: 17px; }
+.session-results > p { margin: 0; color: #655e54; font-size: 13px; }
+.session-results-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.training-result { margin: 10px 0; padding: 11px 14px; background: #eef4ef; border-left: 4px solid #2d7a78; border-radius: 3px; font-size: 14px; }
+.training-result b { margin: 0 4px; }
+@media (max-width: 860px) { .season-change { grid-template-columns: repeat(2, minmax(0, 1fr)); } .session-results-list { grid-template-columns: 1fr; } }

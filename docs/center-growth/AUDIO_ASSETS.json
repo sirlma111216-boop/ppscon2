@@ -1,12 +1,21 @@
 {
   "source": "User-provided ElevenLabs exports, Downloads folder",
   "date": "2026-11-10",
-  "totalBytes": 23221223,
+  "totalBytes": 34004259,
   "files": [
     {
       "name": "bgm_comic_event.mp3",
       "bytes": 737916,
       "sha256": "be1e8093e3dd512a02ff14dde278a4077b057aafa1b1de4919f098fd00385c11"
+    },
+    {
+      "name": "bgm_decision.mp3",
+      "bytes": 1457642,
+      "sha256": "85639d5f713265cc5f946f263a8b709cf8ddebd66c33d7d4aa0da38d8cd80bdb",
+      "date": "2026-11-19",
+      "use": "사건 대응을 고르는 화면과 계절 중간 점검",
+      "source": "C:\\Users\\pc\\Downloads\\decision.mp3 (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Thoughtful decision music with a hint of suspense. Soft piano ostinato, muted plucked bass and a quiet clarinet line, 84 BPM. Calm and attentive, never tense or dramatic. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
     },
     {
       "name": "bgm_evaluation.mp3",
@@ -44,6 +53,15 @@
       "sha256": "23fc0086037cad31948e69e561a4737c3fa51619b88df6fdc28a28dc7ef0355f"
     },
     {
+      "name": "bgm_result_review.mp3",
+      "bytes": 1457642,
+      "sha256": "cbebad8ea76052d1443d31ad07e6c1f19b5f28d0d07fc3e9bcb2e6ba486f4855",
+      "date": "2026-11-19",
+      "use": "운영 뒤 활동별 결과 순회, 결과 둘러보기, 결산(종합평가 시상 제외)",
+      "source": "C:\\Users\\pc\\Downloads\\result_review.mp3 (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Light, curious review music for looking back at a season. Pizzicato strings, soft marimba and a walking upright bass, 96 BPM. Gently playful with small rises that suit numbers going up and down. Original instrumental only. No vocals, speech, lyrics or recognizable existing melody. Balanced game-ready mix, no loud transient peaks. Seamless loop, matched opening and ending harmony, no fade out."
+    },
+    {
       "name": "bgm_title.mp3",
       "bytes": 2176741,
       "sha256": "2ffd82a4fd5e4e96054583fdbb28a8888358957febd4011a842715f1f5150f1c"
@@ -52,6 +70,42 @@
       "name": "sfx_award_reveal.wav",
       "bytes": 576078,
       "sha256": "754b2426a8acba9317cedc529d70be314ab09b74c1f01024f48f904a6b90fe35"
+    },
+    {
+      "name": "sfx_briefing_open.wav",
+      "bytes": 960078,
+      "sha256": "6a8ac7ab9c4789c2948242c9a78c017beb2731c7405a9a44fffb9380b34acd3f",
+      "date": "2026-11-19",
+      "use": "결산 · 위에 해당하지 않는 계절의 브리핑",
+      "source": "C:\\Users\\pc\\Downloads\\briefing_open.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "A clipboard set down gently, one page turned, and a single soft piano note. Attentive and friendly. No voice."
+    },
+    {
+      "name": "sfx_delta_down.wav",
+      "bytes": 93486,
+      "sha256": "9234104ae6c1d0c9967dc30924127394d37e03dd3651fccf09383ccf5a950de0",
+      "date": "2026-11-19",
+      "use": "결과 순회 · 그 밖의 수업과 대관(순수입 적자)",
+      "source": "C:\\Users\\pc\\Downloads\\delta_down.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Tiny soft tick-down, two quick muted wooden clicks falling in pitch. Neutral, not alarming. Very short. No voice."
+    },
+    {
+      "name": "sfx_delta_up.wav",
+      "bytes": 93486,
+      "sha256": "522f3f1f76bc25ff0bfbadc71489ac70f4ced5f4d437deed178e8b2c96f4e507",
+      "date": "2026-11-19",
+      "use": "결과 순회 · 그 밖의 수업과 대관(순수입 0 이상)",
+      "source": "C:\\Users\\pc\\Downloads\\delta_up.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Tiny bright tick-up, two quick soft wooden clicks rising in pitch with a small coin-like chime. Very short, can repeat often without fatigue. No voice."
+    },
+    {
+      "name": "sfx_event_choice.wav",
+      "bytes": 576078,
+      "sha256": "9b59d597b1aea4708a612690a9c8f05e352b7dbaa74e596e5f54d9b69da959be",
+      "date": "2026-11-19",
+      "use": "사건 대응 확정, 계절 중간 점검 결정",
+      "source": "C:\\Users\\pc\\Downloads\\event_choice.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Decisive soft stamp on a paper form followed by a single warm marimba note. Confident and neat. No voice."
     },
     {
       "name": "sfx_event_comic.wav",
@@ -74,9 +128,54 @@
       "sha256": "28d67de175b2d837151228a04edc1d43683f2462a84e18d4fefcef122a65abdf"
     },
     {
+      "name": "sfx_level_up.wav",
+      "bytes": 768078,
+      "sha256": "a0c696a2c6aeea14a6df01fe26eb66f6fad3d2888879db009c7fc49e8a395599",
+      "date": "2026-11-19",
+      "use": "결산 · 교육 단계 승급",
+      "source": "C:\\Users\\pc\\Downloads\\level_up.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Rewarding level-up cue for a calm game. Ascending three-note felt piano and glockenspiel figure with a soft shimmer and a gentle final chord. Proud but modest. No voice, no speech."
+    },
+    {
+      "name": "sfx_mood_cold.wav",
+      "bytes": 1152078,
+      "sha256": "fd1eef085d38a71c0bdc831731a218c51f7abf6a1c7bb3058391e1f627527338",
+      "date": "2026-11-19",
+      "use": "결과 순회 · 부진한 계절의 수업",
+      "source": "C:\\Users\\pc\\Downloads\\mood_cold.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Soft falling clarinet phrase over a quiet room tone, calm and slightly wistful, not gloomy. No voice, no speech. Smooth tail."
+    },
+    {
+      "name": "sfx_mood_hot.wav",
+      "bytes": 1152078,
+      "sha256": "40c362cd1afa376a370978dca2e057675064c93194c57e9ad34e2db40927b086",
+      "date": "2026-11-19",
+      "use": "결과 순회 · 호조인 계절의 수업",
+      "source": "C:\\Users\\pc\\Downloads\\mood_hot.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Warm upward swell with light hand claps and a rising felt piano arpeggio, the feeling of a class catching on. No voice, no speech. Smooth tail."
+    },
+    {
       "name": "sfx_notice.wav",
       "bytes": 93486,
       "sha256": "7dd67aa65f4bb9068e0d97a373c62d1e319f1c7fdc8a2e48721759a0598ecc86"
+    },
+    {
+      "name": "sfx_outcome_great.wav",
+      "bytes": 576078,
+      "sha256": "6b906af28da7ed155a3b768075560da9543248ca0f4751a17785c859292692a8",
+      "date": "2026-11-19",
+      "use": "결과 순회 · 대호응이 많았던 수업",
+      "source": "C:\\Users\\pc\\Downloads\\outcome_great.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Bright short success sting for a cosy management game. Two rising marimba notes, a soft glockenspiel sparkle and a faint warm applause tail. Cheerful, not a fanfare. No voice, no speech. Clean start, natural short tail, no clipping."
+    },
+    {
+      "name": "sfx_outcome_poor.wav",
+      "bytes": 384078,
+      "sha256": "940b34528b49db3701b1beeb803c1d1ce7c91a13a17b830f3a8977d8e56e3707",
+      "date": "2026-11-19",
+      "use": "결과 순회 · 아쉬움이 많았던 수업",
+      "source": "C:\\Users\\pc\\Downloads\\outcome_poor.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Gentle comic stumble sting. A soft descending pizzicato pluck and a muted woodblock tap, like a small harmless slip. Wry, never harsh or sad. No voice, no speech. Clean start, short tail."
     },
     {
       "name": "sfx_procurement_order.wav",
@@ -87,6 +186,15 @@
       "name": "sfx_rental_approve.wav",
       "bytes": 93486,
       "sha256": "fb8e87eafcdb300ec3b48fef9c0aa1e4cf812a936fd98096be04dcf48d215770"
+    },
+    {
+      "name": "sfx_rental_stamp.wav",
+      "bytes": 768078,
+      "sha256": "5f533c9fa788b2b37167e98f6f12715c13a09571de9e37cc6ac4b9852b3064b0",
+      "date": "2026-11-19",
+      "use": "대관 빠른 승인(수입·명성·공공서비스 우선)",
+      "source": "C:\\Users\\pc\\Downloads\\rental_stamp.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Three quick rubber stamps on paper in a neat rhythm, then a short page flip. Office-like and satisfying. No voice."
     },
     {
       "name": "sfx_room_enter.wav",
@@ -124,9 +232,61 @@
       "sha256": "4f09b1886f03c840a4b71feaa05a9dea8b71e61984f71b959f1d14ea1cffb999"
     },
     {
+      "name": "sfx_training_done.wav",
+      "bytes": 576078,
+      "sha256": "c1878ae8ab58505b54090fa236484b8cd31df607dce43d3bd750ab9b50d23e18",
+      "date": "2026-11-19",
+      "use": "결산 · 직원 교육 성과(승급 없음)",
+      "source": "C:\\Users\\pc\\Downloads\\training_done.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Short satisfied completion cue, a pencil check stroke on paper followed by two warm vibraphone notes. Tidy and encouraging. No voice."
+    },
+    {
+      "name": "sfx_trust_milestone.wav",
+      "bytes": 768078,
+      "sha256": "a2986ebff5e0c169957d1b44df1ba86d144d4499b8393cc2e7956de1c31d67c5",
+      "date": "2026-11-19",
+      "use": "결산 · 신뢰 100·150·200 달성",
+      "source": "C:\\Users\\pc\\Downloads\\trust_milestone.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
+      "prompt": "Warm community cue, a small group of hand claps with a rising acoustic guitar strum and a soft bell. Heartfelt, not grand. No voice, no cheering words."
+    },
+    {
       "name": "sfx_ui_click.wav",
       "bytes": 93486,
       "sha256": "bd9a2724ea4805f9874c583091093916249c44ddb2e7b9b31b61462af8f5dbd0"
+    }
+  ],
+  "additions": [
+    {
+      "date": "2026-11-19",
+      "files": [
+        "bgm_decision.mp3",
+        "bgm_result_review.mp3"
+      ],
+      "tool": "제작자가 알려 주지 않았다. 프롬프트는 ElevenLabs Music용 서식으로 작성했다(NEXT_ASSETS_AND_PROMPTS.md A-8).",
+      "measured": "브라우저 디코딩으로 잰 값: 두 곡 모두 60.03초, 스테레오 48kHz. decision 최대 0.94·평균 -17.2dB, result_review 최대 0.69·평균 -22.2dB. 끝의 무음은 4ms. 앞의 25ms는 기존 곡과 같은 디코더 지연이다. decision은 요청한 45초보다 길다.",
+      "processing": "파일은 손대지 않았다. result_review는 다른 곡보다 4~8dB 작아 재생 음량만 1.5배로 올린다(audio.ts의 BGM_GAIN, 최대 음량은 넘지 않음).",
+      "review": "사람이 들어 보지 않았다. Claude Code는 소리를 들을 수 없어 길이·음량·무음 구간만 수치로 확인했다. 반복 이음매, 가사·음성 유무, 곡의 분위기는 확인하지 못했다."
+    },
+    {
+      "date": "2026-11-19",
+      "files": [
+        "sfx_outcome_great.wav",
+        "sfx_outcome_poor.wav",
+        "sfx_mood_hot.wav",
+        "sfx_mood_cold.wav",
+        "sfx_delta_up.wav",
+        "sfx_delta_down.wav",
+        "sfx_training_done.wav",
+        "sfx_level_up.wav",
+        "sfx_event_choice.wav",
+        "sfx_rental_stamp.wav",
+        "sfx_trust_milestone.wav",
+        "sfx_briefing_open.wav"
+      ],
+      "tool": "제작자가 알려 주지 않았다. 프롬프트는 ElevenLabs Sound Effects용 서식으로 작성했다(NEXT_ASSETS_AND_PROMPTS.md A-7).",
+      "measured": "모두 48kHz·16비트·스테레오 WAV. 파일 길이는 0.49~6초로 요청(0.5~2.2초)보다 길고 뒤쪽은 대부분 무음이다. 소리가 60ms 넘게 늦게 시작하는 5개(briefing_open, event_choice, mood_cold, training_done, trust_milestone)는 잘라 낸 사본을 재생한다(SFX_TRIMMED.json). mood_cold는 최대 0.10으로 가장 작고 서서히 커진다. rental_stamp는 도장 소리가 3.7초에 걸쳐 띄엄띄엄 난다. briefing_open은 0.1초의 첫 소리 뒤 1.7~2.3초에 다음 소리가 난다.",
+      "processing": "전달받은 파일은 손대지 않았다. 음량 보정은 하지 않았다.",
+      "review": "사람이 들어 보지 않았다. Claude Code는 소리를 들을 수 없어 형식·길이·시작 시점·음량만 수치로 확인했다. 음색, 음성 유무, 장면과 어울리는지는 확인하지 못했다."
     }
   ]
 }

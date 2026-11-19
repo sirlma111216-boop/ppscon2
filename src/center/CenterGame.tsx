@@ -1,4 +1,7 @@
 import RoomCareControls from './RoomCareControls'
+import { SessionResultCard, RunningTotals } from './ResultCard'
+import { RENTAL_PRIORITY_LABELS, autoPickRentals, replacementComparison, sessionAt, sessionSound, sessionsInTourOrder } from './resultInsights'
+import type { RentalPriority } from './resultInsights'
 import ConditionBadge from './ConditionBadge'
 import AudioControls from './AudioControls'
 import { ceremonyAward, ceremonyTitle, ceremonyDetails } from './ceremony'
@@ -8,9 +11,9 @@ import { scheduleClass } from './classPlacement'
 import { shortOperationReason } from './operationReason'
 import OperationIssues from './OperationIssues'
 import { ClassEconomicsCard, ClassEconomicsDetail } from './ClassEconomics'
-import { wonAmount, legacyMoneyText } from './currency'
+import { wonAmount, legacyMoneyText, signedWonAmount } from './currency'
 import SeasonOpening from './SeasonOpening'
-import { seasonIntroKey, getSeasonEvent } from './seasonEvents'
+import { seasonIntroKey, getSeasonEvent, applyEventChoice } from './seasonEvents'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import CenterScene from './CenterScene'
@@ -32,8 +35,12 @@ import { getRoomEquipmentUsage } from './equipmentUsage'
 import { SAVE_KEY, SaveBackupError, backupExclusiveSave, persistGameSave, replaceGameSave } from './savePersistence'
 import Icon from './Icon'
 import { playSound, playOnce, setTrack } from './audio'
-import { BLOCKS, EVALUATION_INTERVAL, MAX_TURNS, MAX_YEARS, OFFERS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, SEASONS, buyEquipment, canRunProgram, createGame, decideRental, finalScore, finishRentalReview, freeCash,  getDemand, getFinalStandings, getLevel, getProgramRequirements, getProgramPlacementError, getProgramWeeklyCount, getStorageImpact, getRentalAt, getRoomManagement, isRentalProgram, migrateSave, moveEquipment, storeEquipment, reinstallEquipment, nextSeason, previewSeason, previewClass, reopenRentalReview, replaceClassWithRental, roomCapacity, roomSupportsProgram, runSeason, setPriceMode, setProgram } from './simulation'
+import { BLOCKS, EVALUATION_INTERVAL, MAX_TURNS, MAX_YEARS, OFFERS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, SEASONS, buyEquipment, adoptRules3, canPlaceProgram, chooseEventOption, staffLevel, trustDemandFactor, createGame, decideRental, finalScore, finishRentalReview, freeCash,  getDemand, getFinalStandings, getProgramRequirements, getProgramPlacementError, getProgramWeeklyCount, getStorageImpact, getRentalAt, getRoomManagement, isRentalProgram, migrateSave, moveEquipment, storeEquipment, reinstallEquipment, nextSeason, previewSeason, previewClass, reopenRentalReview, replaceClassWithRental, roomCapacity, roomSupportsProgram, runSeason, setPriceMode, setProgram } from './simulation'
 import type { GameState, ProgramId, RentalRequest, RoomId } from './simulation'
+import { previewMidseason, eventText } from './simulation'
+import type { MidseasonBrief, MidseasonChoice } from './simulation'
+import MidseasonMeeting from './MidseasonMeeting'
+import { musicTrackFor } from './musicTrack'
 
 const INTRO_KEY = 'ppscon2.intro.v1'
 const PROGRAM_ICONS: Record<string, string> = { P01: 'brush', P02: 'brush', P03: 'sport', P04: 'sport', P05: 'chat', P06: 'people', P07: 'screen', P08: 'music', P09: 'music', P10: 'screen', P11: 'sport', P12: 'brush', P13: 'screen', P14: 'music', P15: 'chat', P16: 'sport', P17: 'music', P18: 'bolt', P19: 'tools', P20: 'chat', P21: 'screen', P22: 'brush', P23: 'brush', P24: 'tools', P25: 'sport', P26: 'sport', P27: 'sport', P28: 'music', P29: 'screen', P30: 'brush', P31: 'chat', P32: 'chat', P33: 'chat', P34: 'leaf', P35: 'screen' }
@@ -42,12 +49,13 @@ function classStatus(requirements: ReturnType<typeof getProgramRequirements>, ro
   if (!roomOpen) return '시설 개방 필요'
   if (!requirements.spaceReady) return `${requirements.spaceRequired}㎡ 이상 필요`
   if (requirements.ready) return '개설 가능'
+  if (!requirements.missingFamilies.length && !requirements.wornFamilies.length && requirements.pendingFamilies.length) return '설치 주간 후 개설'
   if (requirements.missingFamilies.length) return '설비 조달 필요'
   if (requirements.pendingFamilies.length) return '설치 대기'
   return '설비 정비 필요'
 }
 const CAST = { jiseon: { name: '오지선', role: '운영팀장', file: 'jiseon' }, doyun: { name: '한도윤', role: '시설 담당', file: 'doyun' }, harin: { name: '윤하린', role: '문화강사', file: 'harin' } }
-type ModalName = 'season-start' | 'equipment' | 'welcome' | 'shop' | 'facility' | 'campus' | 'confirm-rentals' | 'confirm-empty' | 'store-equipment' | 'replace-class' | 'rivals' | 'review' | 'help' | 'reset' | 'demand' | null
+type ModalName = 'season-start' | 'equipment' | 'welcome' | 'shop' | 'facility' | 'campus' | 'confirm-rentals' | 'confirm-empty' | 'store-equipment' | 'replace-class' | 'rivals' | 'review' | 'help' | 'reset' | 'demand' | 'adopt-rules' | 'midseason' | null
 const money = (n: number) => n.toLocaleString('ko-KR', { maximumFractionDigits: 1 })
 function initialGame() {
   try {
@@ -64,6 +72,12 @@ function initialGame() {
     }
   } catch { /* A damaged save should not prevent starting. */ }
   return createGame()
+}
+const signedChange = (value: number, digits: number) => `${value > 0 ? '▲ +' : value < 0 ? '▼ −' : '─ '}${Math.abs(value).toLocaleString('ko-KR', { maximumFractionDigits: digits, minimumFractionDigits: value !== 0 && Math.abs(value) < 1 ? Math.max(1, digits) : 0 })}`
+/** Reputation or trust, large, with what the last season did to it and what the current plan is expected to do. */
+function StandingBadge({ label, icon, value, digits, last, planned, note, hint }: { label: string; icon: string; value: number; digits: number; last?: number; planned?: number; note?: string; hint: string }) {
+  const tone = (change: number) => change > 0 ? 'is-up' : change < 0 ? 'is-down' : 'is-flat'
+  return <div className="standing-badge" title={hint}><Icon name={icon} size={23} /><div><small>{label}{note && <em>{note}</em>}</small><strong>{value.toLocaleString('ko-KR', { maximumFractionDigits: digits })}</strong><span className="standing-changes">{last !== undefined && <span className={tone(last)}>지난 계절 {signedChange(last, 1)}</span>}{planned !== undefined && <span className={`is-planned ${tone(planned)}`}>이번 계획 예상 {signedChange(planned, 1)}</span>}{last === undefined && planned === undefined && <span className="is-flat">첫 계절</span>}</span></div></div>
 }
 function Modal({ title, onClose, children, wide = false, className = '' }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean; className?: string }) {
   const container = useRef<HTMLDivElement>(null)
@@ -101,11 +115,20 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     return needsSchemaUpgrade ? migrateSave(rawGame) || rawGame : rawGame
   }, [rawGame])
   useEffect(() => { if (game !== rawGame) setGame(game) }, [game, rawGame])
+  // Development only: lets the screen demo-play script hand over a state it built with the public game actions.
+  // Vite removes this branch from production builds.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+    const target = window as unknown as { __centerDemo?: { get: () => GameState; set: (next: GameState) => boolean } }
+    target.__centerDemo = { get: () => game, set: (next) => { const checked = migrateSave(next); if (checked) setGame(checked); return Boolean(checked) } }
+    return () => { delete target.__centerDemo }
+  }, [game])
   const [room, setRoom] = useState<RoomId>('A')
   const [insideRoom, setInsideRoom] = useState(false)
   const [selectedByRoom, setSelectedByRoom] = useState<Partial<Record<RoomId, ProgramId | null>>>({})
   const selected = selectedByRoom[room] ?? null
   const [slotSelection, setSlotSelection] = useState<{ room: RoomId; slot: number } | null>(null)
+  const [midseason, setMidseason] = useState<MidseasonBrief | null>(null)
   const [modal, setModal] = useState<ModalName>(() => {
     if(skipWelcome)return null
     try { return localStorage.getItem(INTRO_KEY) ? null : 'welcome' } catch { return 'welcome' }
@@ -126,6 +149,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   const [activeSlot, setActiveSlot] = useState(0)
   const [speed, setSpeed] = useState(1)
   const [comicEvent, setComicEvent] = useState(false)
+  const [eventShown, setEventShown] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const [saved, setSaved] = useState(true)
   const [saveIssue, setSaveIssue] = useState<string | null>(null)
@@ -166,7 +190,14 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   const cast = CAST[speaker]
   const turn = (game.year - 1) * 4 + game.season + 1
   const standings = game.phase === 'ending' ? getFinalStandings(game) : [...game.rivals, game.player].sort((a, b) => b.score - a.score || b.publicScore - a.publicScore || b.experienceScore - a.experienceScore || a.name.localeCompare(b.name))
-  const demand = useMemo(() => getDemand(game).filter((group) => group.programs.some((id) => !isRentalProgram(id))), [game.seed, game.year, game.season])
+  const demand = useMemo(() => getDemand(game, game.player).filter((group) => group.programs.some((id) => !isRentalProgram(id))), [game.seed, game.year, game.season, game.rules, game.player.trust])
+  const tourSessions = useMemo(() => sessionsInTourOrder(game.lastReport), [game.lastReport])
+  const activeSession = viewingResult && insideRoom ? sessionAt(game.lastReport, room, activeSlot) : undefined
+  const replacementCost = replacementRental ? replacementComparison(game, replacementRental) : null
+  const trustBoost = Math.round((trustDemandFactor(game.player.trust) - 1) * 100)
+  const roomGear = game.player.inventory.filter(item => !item.stored && item.room === room)
+  const lastSettled = game.phase === 'planning' ? game.history.at(-1) : game.lastReport ?? undefined
+  const seasonEvent = getSeasonEvent(game), seasonChoice = seasonEvent?.choices ? Math.min(1, Math.max(0, game.eventChoices?.[seasonIntroKey(game)] ?? 0)) : 0
   const selectedDemand = demand.filter((group) => selected && group.programs.includes(selected))
   const rival = [game.player, ...game.rivals].find((r) => r.id === rivalId) || game.player
   const rivalIsPlayer = rival.id === game.player.id
@@ -180,7 +211,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   useEffect(() => {
     if (!saveIssue && migrationNoticeSignature && migrationNoticeShown.current !== migrationNoticeSignature) {
       migrationNoticeShown.current = migrationNoticeSignature
-      notify('전용 클래스 규칙 반영 · 변경 내역 ' + game.migrationNotices!.length + '건. 도움말에서 확인해 주세요.', 'info')
+      notify('저장에 반영된 변경 내역 ' + game.migrationNotices!.length + '건. 도움말에서 확인해 주세요.', 'info')
     }
   }, [migrationNoticeSignature, saveIssue])
   useEffect(() => { if (saveIssue) notify(saveIssue, 'error') }, [saveIssue])
@@ -199,16 +230,26 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
         if(last)setActiveSlot(last.slot)
 
       }else setTourIndex(index=>index+1)
-    },1500/speed)
+    },(tourSessions.length?2600:1500)/speed)
     return ()=>clearTimeout(timer)
   },[playing,operationPaused,tourIndex,operationTour,speed,game.lastReport])
+  // Each stop of the tour sounds like its result card reads: a hot or cold season, a run of good or bad weeks, or money up or down.
+  useEffect(()=>{
+    if(!playing)return
+    const frame=operationTour[tourIndex],session=frame&&sessionAt(game.lastReport,frame.room,frame.slot)
+    if(!session)return
+    // A beat after the card appears, so it does not land on top of the sounds of starting the season.
+    const timer=setTimeout(()=>playSound(sessionSound(session)),350/speed)
+    return ()=>clearTimeout(timer)
+  },[playing,tourIndex,operationTour,game.lastReport])
   useEffect(() => {
-    const track = modal==='season-start'&&comicEvent ? 'comic_event' : ['shop','facility','campus'].includes(modal||'') ? 'procurement' : modal==='review'&&game.lastReport?.evaluation ? game.phase==='ending' ? ceremonyDetails(game,game.lastReport).awarded?'final_awarded':'final_unawarded' : 'evaluation' : game.phase!=='planning'&&modal!=='review' ? 'operation' : game.season<2 ? 'planning_spring_summer':'planning_autumn_winter'
+    const evaluation = Boolean(game.lastReport?.evaluation)
+    const track = musicTrackFor({ modal, comicEvent, eventChoiceShown: eventShown && Boolean(seasonEvent?.choices), phase: game.phase, season: game.season, rules3: game.rules === 3, evaluation, awarded: evaluation && game.phase === 'ending' && ceremonyDetails(game, game.lastReport!).awarded })
     setTrack(track)
     if(modal==='season-start')playOnce('season-'+game.seed+'-'+game.year+'-'+game.season,'season_open')
     if(modal==='review')playOnce('review-'+game.seed+'-'+game.year+'-'+game.season,'settlement')
-  }, [modal,comicEvent,game.phase,game.year,game.season,game.seed,game.lastReport])
-  useEffect(()=>{if(modal!=='season-start')setComicEvent(false)},[modal])
+  }, [modal,comicEvent,eventShown,seasonEvent?.id,game.rules,game.phase,game.year,game.season,game.seed,game.lastReport])
+  useEffect(()=>{if(modal!=='season-start'){setComicEvent(false);setEventShown(false)}},[modal])
   const dismissWelcome = () => {
     try { localStorage.setItem(INTRO_KEY, 'seen') } catch { /* optional */ }
     setModal(null)
@@ -229,7 +270,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     if (!canEdit || !roomSupportsProgram(room, id)) return
     const program = PROGRAMS.find((p) => p.id === id)!
     setSelected(id); playSound('select')
-    if (!canRunProgram(game.player, room, id)) {
+    if (!canPlaceProgram(game.player, room, id)) {
       setSpeaker('doyun'); setDialogue(!roomState.open ? `${ROOM_NAMES[room]}을 먼저 개방해야 해요. 필요한 클래스 설비도 미리 살펴보세요.` : `${ROOM_NAMES[room]}에 필요한 설비를 갖춰야 ${program.shortName} 수업을 열 수 있어요.`)
       if (window.matchMedia('(max-width: 870px)').matches) requestAnimationFrame(() => document.querySelector('.class-requirements')?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' }))
       return
@@ -249,7 +290,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   function chooseSlot(slot: number) {
     if (!canEdit || !roomState.open || !Number.isInteger(slot) || slot < 0 || slot >= BLOCKS.length) return
     if (getRentalAt(game.player, room, slot)) { notify('승인한 대관 시간이에요. 대관을 취소한 뒤 편성할 수 있어요.', 'error'); return }
-    if (selected && canRunProgram(game.player, room, selected)) { place(slot, selected); return }
+    if (selected && canPlaceProgram(game.player, room, selected)) { place(slot, selected); return }
     if (selectedSlot === slot) { cancelSlotSelection(); return }
     setSelected(null); setSlotSelection({ room, slot }); playSound('select')
     setDialogue(`${BLOCKS[slot]}에 열 클래스를 골라 주세요.`)
@@ -329,16 +370,24 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   function start() {
     if (!canEdit) return
     if (emptySlotCount > 0 || preview?.operationIssues?.length || preview?.warnings.length || preview?.unpaidFixedCost || preview?.retiredSupportRefund) { setModal('confirm-empty'); return }
-    runPlannedSeason()
+    beginSeason()
   }
-  function runPlannedSeason() {
+  /** Rules 3 pauses before week 7 for one decision; older saves run straight through. */
+  function beginSeason() {
+    if (!canEdit) return
+    const brief = previewMidseason(game)
+    if (!brief) { runPlannedSeason('steady'); return }
+    setMidseason(brief); setModal('midseason'); playSound('select')
+  }
+  function runPlannedSeason(decision: MidseasonChoice) {
     if (!canEdit) return
     try {
-      const next = runSeason(game)
+      const next = runSeason(game, decision)
       const installed=next.player.inventory.some(e=>e.ready&&!game.player.inventory.find(p=>p.instanceId===e.instanceId)?.ready)
       const completed=next.player.facilityProjects.some(p=>p.stage==='complete'&&game.player.facilityProjects.find(old=>old.id===p.id)?.stage!=='complete')||next.player.campusProjects.some(p=>p.stage==='complete'&&game.player.campusProjects.find(old=>old.id===p.id)?.stage!=='complete')||next.player.rooms.some(r=>r.remodel?.remainingWeeks===0&&game.player.rooms.find(old=>old.id===r.id)?.remodel?.remainingWeeks!==0)
       if(installed||completed)playSound('install_complete')
-      const tour=buildOperationTour(next.player.rooms)
+      const visited=sessionsInTourOrder(next.lastReport).map(session=>({room:session.room,slot:session.slot}))
+      const tour=visited.length?visited:buildOperationTour(next.player.rooms)
       setOperationTour(tour);setTourIndex(0)
       if(tour[0]){setRoom(tour[0].room);setActiveSlot(tour[0].slot);setInsideRoom(true)}
       setGame(next); setOperationPaused(false); setPlaying(tour.length>0); setModal(null); setSpeaker('jiseon')
@@ -364,6 +413,20 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     setGame(result.state); playSound(status==='accepted'?'rental_approve':'schedule_remove')
     if (request) notify(`${ROOM_NAMES[request.room]} · ${BLOCKS[request.slot]} · ${request.client} ${status === 'accepted' ? '대관 승인' : status === 'declined' ? '신청 거절' : request.status === 'accepted' ? '승인 취소' : '다시 검토'}${status === 'accepted' ? ` · ${wonAmount(request.fee)}원/주` : ''}`)
   }
+  function quickPickRentals(priority: RentalPriority) {
+    const picked = autoPickRentals(game, priority)
+    if (!picked.approved) { notify(picked.skipped ? '클래스가 편성된 시간은 건너뛰었어요. 승인할 수 있는 빈 시간이 없어요.' : '승인할 신청이 남아 있지 않아요.', 'info'); return }
+    setGame(picked.state); playSound('rental_stamp')
+    notify(`${RENTAL_PRIORITY_LABELS[priority]}으로 대관 ${picked.approved}건 승인${picked.skipped ? ` · 클래스가 있는 ${picked.skipped}칸은 그대로` : ''}`)
+  }
+  function applyNewRules() {
+    const result = adoptRules3(game)
+    if (result.error) { notify(result.error, 'error'); return }
+    // Keeps a verified copy of the pre-conversion save before anything is replaced.
+    try { replaceGameSave(localStorage, result.state) } catch { notify('기존 저장을 백업하지 못해 새 규칙을 적용하지 않았어요.', 'error'); return }
+    setGame(result.state); setSlotSelection(null); setSelectedByRoom({}); setModal('help'); playSound('save_complete')
+    setSpeaker('jiseon'); setDialogue('새 규칙을 적용했어요. 직원 교육 단계와 이번 계절 대관 신청을 먼저 살펴볼까요?')
+  }
   function closeReplacement() { setReplacementRentalId(null); setModal(null); notify('기존 클래스를 유지했어요.', 'info') }
   function confirmReplacement() {
     if (!replacementRentalId) return
@@ -374,7 +437,8 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     setSpeaker('jiseon'); setDialogue('선택한 시간의 클래스를 취소하고 대관을 승인했어요.')
   }
   function finishRentals(confirmed=false) {
-    if(pendingRentals.length&&!confirmed){setModal('confirm-rentals');return}
+    // Requests that lost their hour to an approved let need no second confirmation.
+    if(pendingRentals.some(request=>!getRentalAt(game.player,request.room,request.slot))&&!confirmed){setModal('confirm-rentals');return}
     setModal(null)
     setGame(finishRentalReview(game)); setSpeaker('harin')
     setDialogue('대관 일정이 정해졌네요. 남은 시간에 주민을 위한 클래스를 열어 볼까요?')
@@ -409,7 +473,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     </header>
 
     <main className="game-layout">
-      <div className="page-heading"><div><div className="eyebrow">센터 운영 일지</div><h1>{game.phase === 'ending' ? `우리의 ${MAX_YEARS}년이 남긴 것` : playing ? '한 계절의 운영을 돌아봅니다' : reviewingRentals ? '센터의 문을 여는 순서' : '우리 동네의 다음 주'}</h1></div><div className="season-badge"><span className="season-symbol"><Icon name={game.season === 0 ? 'leaf' : game.season === 1 ? 'sun' : game.season === 2 ? 'leaf' : 'sparkle'} size={25} /></span><div><small>{game.year}년 차</small><strong>{SEASONS[game.season]} <span>· {turn}/{MAX_TURNS}</span></strong></div></div><div className="budget-badge" title={`총 현금 ${wonAmount(game.player.cash)} · 필수 운영비 유보 ${wonAmount(game.player.reserved)}`}><Icon name="coin" size={25} /><div><small>쓸 수 있는 예산</small><strong>{wonAmount(freeCash(game.player))}<span>원</span></strong></div></div></div>
+      <div className="page-heading"><div><div className="eyebrow">센터 운영 일지</div><h1>{game.phase === 'ending' ? `우리의 ${MAX_YEARS}년이 남긴 것` : playing ? '한 계절의 운영을 돌아봅니다' : reviewingRentals ? '센터의 문을 여는 순서' : '우리 동네의 다음 주'}</h1></div><div className="season-badge"><span className="season-symbol"><Icon name={game.season === 0 ? 'leaf' : game.season === 1 ? 'sun' : game.season === 2 ? 'leaf' : 'sparkle'} size={25} /></span><div><small>{game.year}년 차</small><strong>{SEASONS[game.season]} <span>· {turn}/{MAX_TURNS}</span></strong></div></div><StandingBadge label="명성" icon="trophy" value={game.player.reputation} digits={1} last={lastSettled?.reputationChange} planned={canEdit ? preview?.reputationChange : undefined} hint="만족도가 높은 수업일수록 크게 오르고, 운영을 쉬거나 아쉬운 주가 많으면 내려가요." /><StandingBadge label="신뢰" icon="heart" value={game.player.trust} digits={0} last={lastSettled?.trustChange} planned={canEdit ? preview?.trustChange : undefined} note={game.rules === 3 ? `수업 신청 ${trustBoost >= 0 ? '+' : '−'}${Math.abs(trustBoost)}%` : undefined} hint={game.rules === 3 ? '상한이 없어요. 높아질수록 더 높은 만족도를 유지해야 오르고, 못 미치면 내려가요.' : '주민이 센터를 얼마나 믿는지 보여 줘요.'} /><div className="budget-badge" title={`총 현금 ${wonAmount(game.player.cash)} · 필수 운영비 유보 ${wonAmount(game.player.reserved)}`}><Icon name="coin" size={25} /><div><small>쓸 수 있는 예산</small><strong>{wonAmount(freeCash(game.player))}<span>원</span></strong></div></div></div>
 
       <div className="planning-steps" aria-label="계절 운영 순서">
         <span className={reviewingRentals ? 'is-current' : 'is-done'}><b>01</b> 대관 신청 검토</span><Icon name="arrow" size={13} />
@@ -431,10 +495,13 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
                 {playing ? <><button className="text-button" onClick={() => setOperationPaused(!operationPaused)} aria-pressed={operationPaused}>{operationPaused ? '운영 계속' : '운영 멈춤'}</button><button className="text-button" onClick={() => setSpeed(speed === 1 ? 2 : 1)}>{speed}× 속도</button><button className="text-button" onClick={() => { setPlaying(false); setModal('review') }}>건너뛰기 · 결과 <Icon name="arrow" size={13} /></button></> : <span className="scene-instruction">{viewingResult ? insideRoom && !roomHasActualClass ? '이 방에서 실제 진행된 클래스가 없어요' : '시간표를 눌러 운영 기록 보기' : insideRoom ? '공간 안에서 다음 계획을 세워요' : '방 이름을 눌러 들어가세요'} <Icon name="arrow" size={12} /></span>}
               </div>
             </div>
+            {playing && tourSessions.length > 0 && <RunningTotals sessions={tourSessions} upTo={tourIndex} />}
             <div className="scene-stage"><CenterScene selectedRoom={room} view={insideRoom ? 'room' : 'exterior'} onSelectRoom={selectRoom} onBack={leaveRoom} onManageEquipment={() => setModal('equipment')} campusExterior={playerExterior} onOpenCampus={() => setModal('campus')} rooms={sceneRooms} facilityProjects={game.player.facilityProjects} plan={game.player.plan} viewingResult={viewingResult} activeSlot={activeSlot} season={game.season} report={viewingResult ? game.lastReport : null} reducedMotion={reducedMotion} /></div>
-            {insideRoom && <div className="scene-footer"><span><Icon name="people" size={15} /> 주민과 함께 자라는 공간</span><span><Icon name="heart" size={14} /> 신뢰 {Math.round(game.player.trust)} <i /> 명성 {Math.round(game.player.reputation)} <i /> <ConditionBadge value={getRoomManagement(game.player, room)} /></span></div>}
+            {insideRoom && viewingResult && roomState.open && Boolean(game.lastReport?.sessions) && <div className="scene-result" aria-live="polite">{activeSession ? <SessionResultCard key={`${room}-${activeSlot}`} session={activeSession} /> : <p className="scene-result-empty">{BLOCKS[activeSlot]}에는 운영한 활동이 없어 달라진 것이 없어요.</p>}</div>}
+            {insideRoom && <div className="scene-footer scene-footer--room">{roomState.open ? <button type="button" className="footer-equipment" onClick={() => setModal('equipment')} aria-label="설치 물품 관리 · 다른 실 이전 또는 창고 보관"><Icon name="box" size={15} />{roomGear.length ? roomGear.map(item => <span key={item.instanceId} className={item.ready ? '' : 'is-pending'}>{OFFERS.find(offer => offer.id === item.id)?.name || item.id}{!item.ready && <em> 설치 대기</em>}</span>) : <span className="is-empty">설치한 장비가 없어요</span>}<Icon name="arrow" size={12} /></button> : <span className="footer-equipment is-locked"><Icon name="lock" size={14} />개방 전 공간</span>}<span className="footer-care"><ConditionBadge value={getRoomManagement(game.player, room)} /></span></div>}
           </div>
 
+          {reviewingRentals && game.rules === 3 && pendingRentals.length > 0 && <div className="rental-quick-pick" role="group" aria-label="대관 한 번에 고르기"><span><b>한 번에 고르기</b><small>비어 있는 시간마다 기준에 가장 맞는 신청 하나를 승인해요. 이후 하나씩 바꿀 수 있어요.</small></span>{(Object.keys(RENTAL_PRIORITY_LABELS) as RentalPriority[]).map(priority => <button key={priority} type="button" onClick={() => quickPickRentals(priority)}>{RENTAL_PRIORITY_LABELS[priority]}</button>)}</div>}
           {(!insideRoom || reviewingRentals) && <RoomScheduleSummary game={game} selectedRoom={insideRoom ? room : undefined} overview={!insideRoom} onSelectRoom={selectRoom} />}
           {insideRoom && !reviewingRentals && <section className="schedule-panel" aria-label={`${ROOM_NAMES[room]} ${viewingResult ? '운영 기록' : '주간 계획'}`}>
             <div className="section-heading"><div><span className="small-overline">{viewingResult ? '03 · 마지막 주의 실제 운영 기록' : '02 · 남은 시간에 클래스 편성'}</span><h2>{ROOM_NAMES[room]}의 한 주</h2></div><span className="schedule-hint">{canEdit && currentProgram ? <><Icon name={PROGRAM_ICONS[currentProgram.id]!} size={15} /><b>{currentProgram.shortName}</b> {currentRequirements?.ready ? '선택 중' : '개설 조건 확인'}</> : viewingResult ? '시간을 눌러 마지막 주 기록 확인' : '이 계획으로 13주를 운영해요'}</span></div>
@@ -446,7 +513,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
               const recorded = viewingResult ? game.lastReport?.activity.find(activity => activity.room === room && activity.slot === index) : undefined
               const id = viewingResult ? recorded?.program : game.player.plan[room][index]
               const p = PROGRAMS.find((program) => program.id === id)
-              const available = viewingResult || !id || canRunProgram(game.player, room, id)
+              const available = viewingResult || !id || canPlaceProgram(game.player, room, id)
               return <div key={block} className={`schedule-slot ${viewingResult && activeSlot === index ? 'is-active' : ''} ${selectedSlot === index ? 'is-selected-time' : ''} ${rental ? 'kind-rental' : p ? `kind-${p.kind}` : 'empty'} ${available ? '' : 'unavailable'}`} onDragOver={(event) => { if (canEdit && !rental) event.preventDefault() }} onDrop={(event) => { event.preventDefault(); if (rental) return; const value = event.dataTransfer.getData('text/plain') as ProgramId; if (PROGRAMS.some((program) => program.id === value && !isRentalProgram(program.id))) place(index, value) }}>
                 <span className="slot-day">{block}<small>{rental ? '대관' : index < 3 ? '평일' : '주말'}</small></span>
                 {viewingResult ? <button className="slot-content result-slot-content" aria-label={`${block}: ${p?.name || '실제 운영 기록 없음'}${recorded ? ' · ' + recorded.attendees + '명' : ''}. 운영 기록 보기`} aria-pressed={activeSlot === index} onClick={() => viewRecordedSlot(index)} disabled={!roomState.open}><span className="slot-icon">{p ? <ScheduleProgramIcon program={p.id} /> : <Icon name="calendar" size={25} />}</span><strong>{p?.shortName || PROGRAMS.find(value=>value.id===game.player.plan[room][index])?.shortName || '빈 시간'}</strong><small>{recorded ? `${recorded.attendees}명 · 운영 기록` : game.lastReport?.operationIssues?.filter(issue=>issue.room===room&&issue.slot===index&&issue.lastWeek).map(issue=>shortOperationReason(issue.reason)).join(' · ') || (game.player.plan[room][index]?'미운영 · 이전 기록에 사유 없음':'편성 없음')}</small></button> : rental ? <><div className="slot-content rental-slot-content"><span className="slot-icon"><ScheduleProgramIcon program={rental.program} /></span><strong>{rental.client}</strong><small>{rental.attendees}명 · {wonAmount(rental.fee)}원/주</small><span className="rental-slot-label">승인한 대관</span>{scheduleIssues.length>0&&<span className="schedule-warning">! {shortOperationReason(scheduleIssues[0]!.reason)} · {interruptedWeeks}/13주 휴강</span>}</div>{canEdit && <button className="cancel-rental-slot" onClick={() => editRentals(rental.id)} aria-label={`${block} ${rental.client} 대관 승인 취소`}>승인 취소</button>}</> : <><button className="slot-content" aria-label={`${block}: ${p?.name || '빈 시간'}. 시간 선택 또는 클래스 편성`} aria-pressed={selectedSlot === index} onClick={() => chooseSlot(index)} disabled={!canEdit || !roomState.open}><span className="slot-icon">{p ? <ScheduleProgramIcon program={p.id} /> : <Icon name="plus" size={25} />}</span><strong>{p?.shortName || (selectedSlot === index ? '선택한 시간' : '시간 선택')}</strong><small>{!available ? '장비 확인 필요' : selectedSlot === index ? '클래스를 골라 주세요' : p ? `${roomCapacity(room, p.id)}명 · 강사·진행비 포함` : '비워 두어도 괜찮아요'}</small>{scheduleIssues.length>0&&<span className="schedule-warning">! {shortOperationReason(scheduleIssues[0]!.reason)} · {interruptedWeeks}/13주 휴강</span>}</button>{p && canEdit && <button className="clear-slot" aria-label={`${block} 클래스 비우기`} onClick={() => place(index, null)}><Icon name="close" size={12} /></button>}</>}
@@ -465,10 +532,10 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
             <button className="procurement-button" disabled={!canEdit} onClick={openShop}><span><Icon name="box" size={21} /><span>나라장터로 물품 조달<small>기능 · 운영비 · 설치 기간 비교</small></span></span><Icon name="arrow" size={16} /></button>
             <>{currentProgram && <button className="demand-peek" onClick={() => setModal('demand')}><Icon name="people" size={17} /><span>{currentProgram?.shortName || '주민'} 신청 <b>{selectedDemand.reduce((sum, group) => sum + group.people, 0)}명</b></span><Icon name="arrow" size={13} /></button>}<div className="activity-heading"><span>어떤 클래스를 열까요?</span><small>금액은 주 1회 기준 · 선택하면 상세</small></div>
             <div className="activity-grid">{roomPrograms.map((p) => {
-              const requirements = getProgramRequirements(game.player, room, p.id)
-              return <button key={p.id} className={`activity-chip class-card ${selected === p.id ? 'chosen' : ''} ${!requirements.ready ? 'locked' : ''}`} disabled={!canEdit} aria-pressed={selected === p.id} aria-label={`${p.name} · ${p.difficulty}${p.exclusiveRoom ? ' · ' + ROOM_NAMES[p.exclusiveRoom] + ' 전용' : ''} · ${ROOM_NAMES[room]} ${classStatus(requirements, roomState.open)}`} draggable={canEdit && requirements.ready} onDragStart={(e) => { if (!canEdit || !requirements.ready) { e.preventDefault(); return } e.dataTransfer.setData('text/plain', p.id); setSelected(p.id) }} onClick={() => chooseProgram(p.id)}>
+              const requirements = getProgramRequirements(game.player, room, p.id), placeable = roomState.open && canPlaceProgram(game.player, room, p.id)
+              return <button key={p.id} className={`activity-chip class-card ${selected === p.id ? 'chosen' : ''} ${!placeable ? 'locked' : ''}`} disabled={!canEdit} aria-pressed={selected === p.id} aria-label={`${p.name} · ${p.difficulty}${p.exclusiveRoom ? ' · ' + ROOM_NAMES[p.exclusiveRoom] + ' 전용' : ''} · ${ROOM_NAMES[room]} ${classStatus(requirements, roomState.open)}`} draggable={canEdit && placeable} onDragStart={(e) => { if (!canEdit || !placeable) { e.preventDefault(); return } e.dataTransfer.setData('text/plain', p.id); setSelected(p.id) }} onClick={() => chooseProgram(p.id)}>
                 <span className="class-card-art"><img src={courseSymbolPath(p.id)} alt="" draggable={false} loading="lazy" /></span>
-                <span className="class-card-name"><b>{p.shortName}</b>{p.exclusiveRoom ? <span className="class-premium-mark" title={ROOM_NAMES[p.exclusiveRoom] + ' 전용 클래스'} aria-label={ROOM_NAMES[p.exclusiveRoom] + ' 전용'}>전용</span> : p.specialty && <span className="class-premium-mark" title={p.specialty + ' 특화 클래스'}>특화</span>}{!requirements.ready && <Icon name="lock" size={13} />}{selected === p.id && <span className="class-card-selected"><Icon name="check" size={12} /></span>}</span>
+                <span className="class-card-name"><b>{p.shortName}</b>{p.exclusiveRoom ? <span className="class-premium-mark" title={ROOM_NAMES[p.exclusiveRoom] + ' 전용 클래스'} aria-label={ROOM_NAMES[p.exclusiveRoom] + ' 전용'}>전용</span> : p.specialty && <span className="class-premium-mark" title={p.specialty + ' 특화 클래스'}>특화</span>}{!placeable && <Icon name="lock" size={13} />}{selected === p.id && <span className="class-card-selected"><Icon name="check" size={12} /></span>}</span>
                 <ClassEconomicsCard value={classOutlooks[p.id]}/>
               </button>
             })}</div>
@@ -486,13 +553,13 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
               })}</ul> : <p className="class-ready-note">강사가 이끄는 무료 수업 · 별도 설비 없음</p>}
               {!roomState.open ? <div className="class-space-warning"><Icon name="lock" size={14} />시설 개방 후 편성 가능<button className="text-button" onClick={() => setModal('facility')}>시설 입찰 확인 <Icon name="arrow" size={12} /></button></div> : !currentRequirements.spaceReady ? <p className="class-space-warning"><Icon name="home" size={14} />{currentRequirements.spaceRequired}㎡ 이상인 방을 골라 주세요. 현재 {roomDefinition.area}㎡</p> : <>
                 {currentRequirements.missingFamilies.length > 0 && <button className="class-requirement-action" disabled={!canEdit} onClick={() => openRequiredShop()}><Icon name="box" size={15} />필요 물품 조달<Icon name="arrow" size={13} /></button>}
-                {currentRequirements.pendingFamilies.length > 0 && <p className="class-install-note"><Icon name="box" size={13} />{currentRequirements.missingFamilies.length || currentRequirements.wornFamilies.length ? '주문한 설비는 이번 운영 때 설치돼요.' : '설치 대기 · 이번 운영 후 개설 가능'}</p>}
+                {currentRequirements.pendingFamilies.length > 0 && <p className="class-install-note"><Icon name="box" size={13} />{currentRequirements.missingFamilies.length || currentRequirements.wornFamilies.length ? '주문한 설비는 이번 운영 때 설치돼요.' : '설치 주간이 지나면 바로 운영해요 · 지금 편성할 수 있어요'}</p>}
                 {currentRequirements.wornFamilies.length > 0 && <button className="class-requirement-action" disabled={!canEdit} onClick={() => { setDetail(true); requestAnimationFrame(() => document.querySelector('.room-details')?.scrollIntoView({ block: 'nearest', behavior: reducedMotion ? 'auto' : 'smooth' })) }}><Icon name="tools" size={15} />시설 관리 열기<Icon name="arrow" size={13} /></button>}
                 {currentRequirements.ready && <p className="class-ready-note"><Icon name="check" size={13} />빈 시간에 놓기 · 정원 {roomCapacity(room, currentProgram.id)}명<span>{currentProgram.id === 'P06' ? '무료 안전교육 · 공공서비스' : (currentProgram.income > 0 ? '수강료 수입' : '무료 운영') + ' · 교육 참여·명성 성장'}</span></p>}
               </>}
               {acceptedRentals.some((request) => request.room === room) && <div className="class-rental-tradeoff"><span>이 방 대관 {acceptedRentals.filter((request) => request.room === room).length}건 · {wonAmount(acceptedRentals.filter((request) => request.room === room).reduce((sum, request) => sum + request.fee, 0))}원/주</span><button className="text-button" disabled={!canEdit} onClick={() => editRentals()}>클래스 시간 확보 <Icon name="arrow" size={12} /></button></div>}
             </section>}
-            <button className="room-details-toggle text-button" aria-expanded={detail} aria-controls="room-management-details" onClick={() => setDetail(!detail)}>{detail ? '시설 관리 접기' : `시설 관리 · 활동 ${roomEquipmentUsage.used}/${roomEquipmentUsage.capacity} · 창고 ${game.player.inventory.filter(item => item.stored).length}개`} <Icon name="arrow" size={12} /></button>{detail && <div className="room-details" id="room-management-details">{facilityProject && <button className="text-button" onClick={() => setModal('facility')}>시설 사업 기록 <Icon name="arrow" size={12} /></button>}<EquipmentStoragePanel game={game} room={room} canEdit={canEdit} onMove={requestEquipmentMove} onStore={requestEquipmentStorage} onReinstall={(instanceId, target) => act(reinstallEquipment(game, instanceId, target), ROOM_NAMES[target] + ' 보관 장비 재설치 예약 · 다음 운영 때 설치')} /><div className="room-expertise"><span>운영 숙련</span><b>문화 {getLevel(game.player.xp.culture)}</b><b>체육 {getLevel(game.player.xp.sport)}</b><b>행사 {getLevel(game.player.xp.event)}</b></div><div className="operating-options"><label>강좌 요금<select disabled={!canEdit} value={game.player.priceMode} onChange={(e) => { const next = setPriceMode(game, e.target.value as 'discount' | 'standard' | 'premium'); setGame(next); notify('강좌 요금 · ' + ({ discount: '할인', standard: '표준', premium: '지원 강화' })[next.player.priceMode] + ' 적용') }}><option value="discount">할인 · 85%</option><option value="standard">표준 · 100%</option><option value="premium">지원 강화 · 숙련 2부터</option></select></label></div></div>}</>
+            <button className="room-details-toggle text-button" aria-expanded={detail} aria-controls="room-management-details" onClick={() => setDetail(!detail)}>{detail ? '시설 관리 접기' : `시설 관리 · 활동 ${roomEquipmentUsage.used}/${roomEquipmentUsage.capacity} · 창고 ${game.player.inventory.filter(item => item.stored).length}개`} <Icon name="arrow" size={12} /></button>{detail && <div className="room-details" id="room-management-details">{facilityProject && <button className="text-button" onClick={() => setModal('facility')}>시설 사업 기록 <Icon name="arrow" size={12} /></button>}<EquipmentStoragePanel game={game} room={room} canEdit={canEdit} onMove={requestEquipmentMove} onStore={requestEquipmentStorage} onReinstall={(instanceId, target) => act(reinstallEquipment(game, instanceId, target), ROOM_NAMES[target] + ' 보관 장비 재설치 예약 · 다음 운영 때 설치')} /><div className="room-expertise"><span>운영 숙련</span><b>문화 {staffLevel(game.player.xp.culture, game.rules)}</b><b>체육 {staffLevel(game.player.xp.sport, game.rules)}</b><b>행사 {staffLevel(game.player.xp.event, game.rules)}</b></div><div className="operating-options"><label>강좌 요금<select disabled={!canEdit} value={game.player.priceMode} onChange={(e) => { const next = setPriceMode(game, e.target.value as 'discount' | 'standard' | 'premium'); setGame(next); notify('강좌 요금 · ' + ({ discount: '할인', standard: '표준', premium: '지원 강화' })[next.player.priceMode] + ' 적용') }}><option value="discount">할인 · 85%</option><option value="standard">표준 · 100%</option><option value="premium">지원 강화 · 숙련 2부터</option></select></label></div></div>}</>
           </div>
         </aside>}
         {insideRoom && !reviewingRentals && <div className="character-dialogue room-dialogue"><span className="dialogue-portrait"><img src={`/center/${cast.file}-portrait.webp`} alt={`${cast.role} ${cast.name}`} onError={(e) => { e.currentTarget.src = '/center/jiseon-portrait.webp' }} /></span><div className="dialogue-copy"><span>{cast.name}<small>{cast.role}</small></span><p>{dialogue}</p></div></div>}
@@ -500,14 +567,14 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
 
       <footer className={`action-bar ${reviewingRentals ? 'rental-action-bar' : ''} ${canEdit ? 'planning-action-bar' : ''} ${playing ? 'operating-action-bar' : ''}`}>
         <button className="rival-button" aria-label="이웃 센터 비교" onClick={() => setModal('rivals')}><Icon name="trophy" size={21} /><span>이웃 센터<small>{game.rivals.length}곳의 서로 다른 도전</small></span><Icon name="arrow" size={14} /></button>
-        <div className="forecast">{reviewingRentals ? <><span><Icon name="calendar" size={17} /><span>대관 {acceptedRentals.length}건 승인 · {game.player.rooms.filter((item) => item.open).length * BLOCKS.length - acceptedRentals.length}칸에 클래스 편성 가능</span></span><small>미결정 {pendingRentals.length}건은 확정할 때 거절됩니다.</small></> : <><span>{preview?.warnings[0] ? <><Icon name="help" size={17} /><span>{preview.warnings[0]}</span></> : <><Icon name="leaf" size={17} /><span>대관으로 운영하고, 클래스로 이름을 알려요.</span></>}</span><small>예상 이용 {preview?.visits || 0}회 · 영업 {preview ? `${preview.profit >= 0 ? '+' : ''}${wonAmount(preview.profit)}` : '0'}원 · 명성 {Math.round(game.player.reputation)}</small></>}</div>
+        <div className="forecast">{reviewingRentals ? <><span><Icon name="calendar" size={17} /><span>대관 {acceptedRentals.length}건 승인 · {game.player.rooms.filter((item) => item.open).length * BLOCKS.length - acceptedRentals.length}칸에 클래스 편성 가능</span></span><small>{pendingRentals.some(request=>!getRentalAt(game.player,request.room,request.slot))?`미결정 ${pendingRentals.filter(request=>!getRentalAt(game.player,request.room,request.slot)).length}건은 확정할 때 거절됩니다.`:pendingRentals.length?'같은 시간에 겹친 신청은 자동으로 정리돼요.':'모든 신청을 검토했어요.'}</small></> : <><span>{preview?.warnings[0] ? <><Icon name="help" size={17} /><span>{preview.warnings[0]}</span></> : <><Icon name="leaf" size={17} /><span>대관으로 운영하고, 클래스로 이름을 알려요.</span></>}</span><small>예상 이용 {preview?.visits || 0}회 · 영업 {preview ? `${preview.profit >= 0 ? '+' : ''}${wonAmount(preview.profit)}` : '0'}원 · 명성 {Math.round(game.player.reputation)}</small></>}</div>
         <div className="actionbar-actions">
           {playing && <button className="secondary-button actionbar-skip" onClick={() => { setPlaying(false); setOperationPaused(false); setModal('review') }}>빠르게 넘기기 <Icon name="arrow" size={16}/></button>}
           {canEdit && <button className="secondary-button actionbar-back" onClick={() => editRentals()} aria-label="대관 검토로 돌아가기 · 기존 클래스 편성 유지" title="기존 클래스 편성을 유지하며 대관을 다시 검토합니다."><span className="actionbar-back-full">대관 검토로 돌아가기</span><span className="actionbar-back-short">대관 다시 검토</span></button>}
           {reviewingRentals ? <button className="primary-button run-button" onClick={()=>finishRentals()}>대관 확정 · 클래스 편성 <Icon name="arrow" size={17} /></button> : game.phase === 'ending' ? <button className="primary-button run-button" onClick={() => setModal('review')}><Icon name="trophy" />{MAX_YEARS}년의 기록 보기</button> : playing ? <button className="primary-button run-button operation-busy" disabled aria-busy="true"><span className={`operation-spinner ${operationPaused?'is-paused':''}`} aria-hidden="true" />{operationPaused?'운영 일시정지':'운영 중'}<small>{ROOM_NAMES[room]} · {tourIndex+1}/{operationTour.length}</small></button> : game.phase === 'review' ? <button className="primary-button run-button" onClick={() => { setPlaying(false); setModal('review') }}>계절 결과 보기 <Icon name="arrow" /></button> : <button className="primary-button run-button" disabled={!canEdit} onClick={start}><Icon name={playing ? 'pause' : 'play'} size={19} />{playing ? '시설 운영을 확인하고 있어요' : '이번 계절 시작'}<small>빈 시간도 그대로 실행</small></button>}
         </div>
       </footer>
-      <div className="build-note">{getSeasonEvent(game) ? `이번 계절 소식: ${getSeasonEvent(game)!.title} · ${getSeasonEvent(game)!.effect} / ` : ''}게임 속 기관·예산·평가는 창작 설정입니다.</div>
+      <div className="build-note">{seasonEvent ? <>이번 계절 소식: {eventText(seasonEvent.title, game)} · {seasonEvent.choices ? `${seasonEvent.choices[seasonChoice]!.label} → ` : ''}{applyEventChoice(seasonEvent, seasonChoice).effect}{seasonEvent.choices && canPlan && <button type="button" className="event-recap-button" onClick={() => setModal('season-start')}>대응 바꾸기</button>} / </> : ''}게임 속 기관·예산·평가는 창작 설정입니다.</div>
     </main>
 
     <ToastFeedback notice={feedback} onDismiss={() => setFeedback(null)} />
@@ -516,24 +583,27 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
       <ul className="storage-impact-list">{storageImpact.slots.map(slot => <li key={slot}><span>{storageImpact.room && ROOM_NAMES[storageImpact.room]} · {BLOCKS[slot]}</span><b>{PROGRAMS.find(program => program.id === game.player.plan[storageImpact.room!][slot])?.name}</b><small>{storageTargetRoom ? '이전하면 편성 취소' : '보관하면 편성 취소'}</small></li>)}{storageImpact.rentalIds.map(id => { const request = game.player.rentalRequests.find(value => value.id === id)!; return <li key={id}><span>{ROOM_NAMES[request.room]} · {BLOCKS[request.slot]}</span><b>{request.client}</b><small>승인 대관 · 먼저 직접 취소 필요</small></li> })}</ul>
       <div className="review-actions"><button className="secondary-button" onClick={closeEquipmentConfirmation}>장비와 일정 유지</button>{storageImpact.rentalIds.length ? <button className="primary-button" onClick={() => { closeEquipmentConfirmation(); editRentals() }}>대관 검토로 이동</button> : <button className="primary-button" onClick={confirmEquipmentStorage}>{storageTargetRoom ? '클래스를 비우고 이전 · 80,000원' : '클래스를 비우고 보관 · 80,000원'}</button>}</div>
     </Modal>}
-    {modal === 'confirm-rentals' && <Modal title="미결정 대관을 거절하고 넘어갈까요?" onClose={()=>setModal(null)}><p>승인 {acceptedRentals.length}건은 유지하고, 미결정 {pendingRentals.length}건은 거절합니다. 클래스 편성 중에도 대관 검토로 돌아올 수 있어요.</p><div className="review-actions"><button className="secondary-button" onClick={()=>setModal(null)}>계속 검토</button><button className="primary-button" onClick={()=>finishRentals(true)}>거절하고 클래스 편성</button></div></Modal>}
-    {modal === 'confirm-empty' && <Modal title="운영 전에 계획을 확인해 주세요" onClose={() => setModal(null)}>{preview&&<OperationIssues report={preview} forecast/>}<p className="empty-schedule-summary"><strong>빈 일정 {emptySlotCount}칸 · {emptyRoomSchedules.length}개 공간</strong><span>대관이나 클래스가 없는 시간이에요. 비워 두어도 운영할 수 있습니다.</span></p><div className="empty-schedule-rooms">{emptyRoomSchedules.map(value => <span key={value.room}>{ROOM_NAMES[value.room]} <b>{value.slots.length}칸</b></span>)}</div><div className="review-actions"><button className="secondary-button" onClick={() => setModal(null)}>계획 계속하기</button><button className="primary-button" onClick={runPlannedSeason}>확인한 계획으로 운영 <Icon name="play" size={15} /></button></div></Modal>}
+    {modal === 'confirm-rentals' && <Modal title="미결정 대관을 거절하고 넘어갈까요?" onClose={()=>setModal(null)}><p>승인 {acceptedRentals.length}건은 유지하고, 미결정 {pendingRentals.filter(request=>!getRentalAt(game.player,request.room,request.slot)).length}건은 거절합니다. 클래스 편성 중에도 대관 검토로 돌아올 수 있어요.</p><div className="review-actions"><button className="secondary-button" onClick={()=>setModal(null)}>계속 검토</button><button className="primary-button" onClick={()=>finishRentals(true)}>거절하고 클래스 편성</button></div></Modal>}
+    {modal === 'confirm-empty' && <Modal title="운영 전에 계획을 확인해 주세요" onClose={() => setModal(null)}>{preview&&<OperationIssues report={preview} forecast/>}<p className="empty-schedule-summary"><strong>빈 일정 {emptySlotCount}칸 · {emptyRoomSchedules.length}개 공간</strong><span>대관이나 클래스가 없는 시간이에요. 비워 두어도 운영할 수 있습니다.</span></p><div className="empty-schedule-rooms">{emptyRoomSchedules.map(value => <span key={value.room}>{ROOM_NAMES[value.room]} <b>{value.slots.length}칸</b></span>)}</div><div className="review-actions"><button className="secondary-button" onClick={() => setModal(null)}>계획 계속하기</button><button className="primary-button" onClick={beginSeason}>확인한 계획으로 운영 <Icon name="play" size={15} /></button></div></Modal>}
     {modal === 'welcome' && <Modal title="어서 오세요, 센터장님." onClose={dismissWelcome} wide><div className="welcome-layout"><div className="welcome-portrait"><img src="/center/jiseon-portrait.webp" alt="운영팀장 오지선" /><span>오지선 · 운영팀장</span></div><div className="welcome-copy"><span className="eyebrow">일곱 공간, 센터장님의 첫 계절</span><h3>빌려 주는 시간.<br />함께 배우는 시간.</h3><p>대관으로 운영비를 벌고,<br />남은 시간의 클래스로 센터 명성을 키워요.</p><div className="welcome-turn-steps"><span><b>01</b>대관 신청 승인</span><span><b>02</b>물품 조달 · 클래스 편성</span><span><b>03</b>13주 운영 · 결과 확인</span></div><div className="starter-options"><button onClick={dismissWelcome}><Icon name="calendar" size={24} /><span>도착한 대관 신청 보기<small>일곱 공간 중 어디부터 열어 볼까요?</small></span><Icon name="arrow" size={16} /></button></div></div></div></Modal>}
 
     {modal === 'equipment' && <Modal title={ROOM_NAMES[room] + ' · 설치 물품과 창고'} onClose={() => setModal(null)}><EquipmentStoragePanel game={game} room={room} canEdit={canEdit} onMove={requestEquipmentMove} onStore={requestEquipmentStorage} onReinstall={(instanceId, target) => act(reinstallEquipment(game, instanceId, target), ROOM_NAMES[target] + ' 재설치 예약')} />{!canEdit && <p>물품 이동은 다음 계절 계획에서 할 수 있어요.</p>}</Modal>}
     {modal === 'shop' && <Modal title="나라장터 · 물품 조달" onClose={() => setModal(null)} wide className="procurement-modal"><ProcurementDesk game={game} room={room} onRoomChange={setRoom} onBuy={buy} onNotify={notify} onManageEquipment={() => { setModal(null); setDetail(true); requestAnimationFrame(() => document.querySelector('.room-details')?.scrollIntoView({ block: 'start', behavior: reducedMotion ? 'auto' : 'smooth' })) }} onClose={() => setModal(null)} initialFilter={shopFilter} /></Modal>}
     {modal === 'facility' && <Modal title="나라장터 · 시설 조성 입찰" onClose={() => setModal(null)} wide className="facility-modal"><FacilityDesk game={game} room={room} onChange={setGame} onNotify={notify} onClose={() => setModal(null)} /></Modal>}
     {modal === 'campus' && <Modal title="나라장터 · 센터 환경 개선" onClose={() => setModal(null)} wide className="facility-modal"><CampusDesk game={game} onChange={setGame} onNotify={notify} onClose={() => setModal(null)} /></Modal>}
-    {modal === 'replace-class' && replacementRental && <Modal title="기존 클래스를 취소하겠습니까?" onClose={closeReplacement}><div className="class-replacement-summary"><span>{ROOM_NAMES[replacementRental.room]} · {BLOCKS[replacementRental.slot]}</span><div><strong>{replacementProgram?.name || '기존 클래스'}</strong><Icon name="arrow" size={19} /><strong>{replacementRental.client}<small>대관 · {wonAmount(replacementRental.fee)}원/주</small></strong></div></div><p className="class-replacement-note">승인하면 이 시간의 클래스가 대관으로 바뀝니다.</p><div className="review-actions"><button className="secondary-button" onClick={closeReplacement}>기존 클래스 유지</button><button className="primary-button" onClick={confirmReplacement}>클래스를 취소하고 대관 승인</button></div></Modal>}
+    {modal === 'replace-class' && replacementRental && <Modal title="기존 클래스를 취소하겠습니까?" onClose={closeReplacement}><div className="class-replacement-summary"><span>{ROOM_NAMES[replacementRental.room]} · {BLOCKS[replacementRental.slot]}</span><div><strong>{replacementProgram?.name || '기존 클래스'}</strong><Icon name="arrow" size={19} /><strong>{replacementRental.client}<small>대관 · {wonAmount(replacementRental.fee)}원/주</small></strong></div></div>{replacementCost && <table className="replacement-compare"><caption>폐강하면 달라지는 것 · 주 1회 기준{replacementCost.assumed ? ' (수업은 정원 70% 가정)' : ' (수업은 현재 수요 기준 예상)'}</caption><thead><tr><th>항목</th><th>기존 클래스</th><th>대관</th></tr></thead><tbody><tr><th>순수입</th><td>{signedWonAmount(replacementCost.classProfit)}원</td><td>{signedWonAmount(replacementCost.rentalNet)}원</td></tr><tr><th>명성</th><td>+{replacementCost.classReputation.toFixed(2)}</td><td>+{replacementCost.rentalReputation.toFixed(2)}</td></tr><tr><th>교육 참여</th><td>{replacementCost.classAttendees}명{replacementCost.classPublic ? ' · 무료 공익' : ''}</td><td>{replacementRental.trait === 'education' ? '절반 인정' : '실적 없음'}</td></tr></tbody><tfoot><tr><th>바꾸면</th><td colSpan={2} className={replacementCost.weeklyDifference >= 0 ? 'is-up' : 'is-down'}>주 {signedWonAmount(replacementCost.weeklyDifference)}원 · 한 계절 {signedWonAmount(replacementCost.seasonDifference)}원{replacementCost.classAttendees > 0 ? ` · 수강생 ${replacementCost.classAttendees}명의 자리가 없어져요` : ''}</td></tr></tfoot></table>}
+      <p className="class-replacement-note">승인하면 이 시간의 클래스가 대관으로 바뀝니다.</p><div className="review-actions"><button className="secondary-button" onClick={closeReplacement}>기존 클래스 유지</button><button className="primary-button" onClick={confirmReplacement}>클래스를 취소하고 대관 승인</button></div></Modal>}
 
     {modal === 'rivals' && <Modal title="각자의 방식으로, 함께 성장 중" onClose={() => setModal(null)} wide><div className="rivals-layout"><div className="ranking-list"><div className="ranking-label"><span>{game.phase === 'ending' ? `${MAX_YEARS}년 종합 최종 성적` : `${game.year}년 차 공개 성적`}</span><span>종합 점수</span></div>{standings.map((inst, index) => <button key={inst.id} className={`ranking-row ${inst.id === game.player.id ? 'is-player' : ''} ${rival.id === inst.id ? 'viewing' : ''}`} onClick={() => setRivalId(inst.id)}><span className="rank-number">{index + 1}</span><span className="rank-avatar"><Icon name={inst.id === game.player.id ? 'home' : ['leaf', 'music', 'sport', 'brush', 'bolt'][index % 5]!} size={19} /></span><span className="rank-name">{inst.name}<small>{game.phase === 'ending' && ceremonyAward(index + 1, true) ? `${ceremonyAward(index + 1, true)} · ` : ''}{inst.id === game.player.id ? '우리 센터' : inst.archetype}</small></span><b>{inst.history.length ? (game.phase === 'ending' ? finalScore(inst) : inst.score).toFixed(1) : '—'}</b></button>)}</div><div className="rival-profile"><div className="rival-building"><img key={rivalExterior} src={rivalExterior} alt={`${rival.name} 외관`} onError={(event) => { if (!event.currentTarget.src.endsWith('/center/building-v2/exterior.webp')) event.currentTarget.src = '/center/building-v2/exterior.webp' }} /><span>{rival.name}</span></div><span className="pill">운영 스타일</span><h3>{rivalIsPlayer ? '나만의 운영' : rival.archetype}</h3><p>최근 투자<br /><b>{legacyMoneyText(rival.lastPurchase || '첫 계획을 준비하고 있어요').replace(/이용 만족도 \+6/g, '이용 환경 개선')}</b></p><div className="rival-programs">{[...new Set(Object.values(rival.plan).flat().filter(Boolean))].slice(0, 3).map((id) => <span key={id}>{PROGRAMS.find((p) => p.id === id)?.shortName}</span>)}</div><div className="rival-metrics"><span>주민 신뢰<b>{Math.round(rival.trust)}</b></span><span>개방한 공간<b>{rival.rooms.filter((r) => r.open).length}</b></span><span>보유 장비<b>{rival.inventory.length}</b></span></div><small>같은 예산과 운영 규칙으로 매주 계산되는 기관입니다.</small></div></div></Modal>}
 
-    {modal === 'season-start' && <Modal title={`${game.year}년 차 ${SEASONS[game.season]} 시작`} onClose={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} wide><SeasonOpening key={seasonIntroKey(game)} game={game} onEventSound={setComicEvent} onContinue={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} /></Modal>}
+    {modal === 'midseason' && midseason && <Modal title={`${game.year}년 차 ${SEASONS[game.season]} · 계절 중간 점검`} onClose={() => setModal(null)} wide><MidseasonMeeting brief={midseason} onDecide={runPlannedSeason} /></Modal>}
+    {modal === 'season-start' && <Modal title={`${game.year}년 차 ${SEASONS[game.season]} 시작`} onClose={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} wide><SeasonOpening key={seasonIntroKey(game)} game={game} onChoose={(index) => setGame(chooseEventOption(game, index))} onEventSound={(comic) => { setComicEvent(comic); setEventShown(true) }} onContinue={() => {setGame({...game,seasonIntroSeen:seasonIntroKey(game)});setModal(null)}} /></Modal>}
     {modal === 'review' && game.lastReport && <Modal title={game.phase === 'ending' ? ceremonyTitle(MAX_YEARS) : game.lastReport.evaluation ? ceremonyTitle(game.lastReport.year) : `${game.lastReport.year}년 차 ${SEASONS[game.lastReport.season]} 운영 결산`} onClose={() => setModal(null)} wide><SeasonReview key={`${game.year}-${game.season}-${game.phase}`} game={game} report={game.lastReport} onRivals={() => setModal('rivals')} onContinue={continueGame} onReset={() => setModal('reset')} /></Modal>}
 
     {modal === 'demand' && <Modal title="이런 활동을 기다리고 있어요" onClose={() => setModal(null)} wide><p className="demand-intro">한 그룹은 한 주에 한 번 방문해요. 원하는 시간과 요금을 맞춰 보세요.</p><div className="demand-list">{demand.map((group) => <div key={group.id}><span className="demand-icon"><Icon name={PROGRAM_ICONS[group.programs[0]!] || 'people'} size={22} /></span><div><strong>{group.title}</strong><small>{group.slots.map((slot) => BLOCKS[slot]).join(' · ')}</small></div><span>{group.people}명<small>{group.maxFee === 0 ? '무료 이용 희망' : ['P05','P08','P10'].includes(group.programs[0]!) ? `그룹 ${wonAmount(group.maxFee)}원까지` : `1인 ${wonAmount(group.maxFee)}원까지`}</small></span></div>)}</div></Modal>}
 
-    {modal === 'help' && <Modal title="센터장님의 작은 안내서" onClose={() => setModal(null)}>{saveIssue && <p className="save-issue-note" role="status">{saveIssue}</p>}{Boolean(game.migrationNotices?.length) && <section className="migration-notice-panel" aria-label="저장 이관 안내"><h3>전용 클래스 배치가 바뀌었어요</h3><p>진행과 자금, 과거 성적은 유지했습니다. 이번 변경 내역을 확인해 주세요.</p><ul>{game.migrationNotices!.map((message, index) => <li key={index}>{message}</li>)}</ul><button className="secondary-button" onClick={() => { const next = { ...game }; delete next.migrationNotices; setGame(next); notify('변경 내역을 확인했어요.', 'info') }}>확인했어요</button></section>}<div className="help-steps"><p><b>1. 대관을 먼저 골라요</b><span>공간별 신청을 승인하면 그 시간이 예약돼요. 전부 받을 필요는 없어요.</span></p><p><b>2. 남은 시간에 클래스를 열어요</b><span>시간과 클래스는 어느 쪽부터 골라도 돼요. 생활안전 교실은 별도 설비 없이 무료로 열 수 있어요.</span></p><p><b>3. 운영 수입과 명성을 키워요</b><span>대관으로 운영비를 벌고, 강좌로 명성을 키워요. 공공서비스는 접근성 50%·교육 참여 50%예요. 유·무료 강좌 모두 실제 참여를 인정해요.</span></p></div><p className="help-note">대관 운영원가는 첫 2년 지원 기간에 대관료의 48%, 3년 차부터 60%에 공간 기본비를 더해요. 기존 승인 건은 유지하며 새 신청의 비용에 표시돼요. 명성이 높아질수록 추가 상승은 완만해져요.</p><p className="help-note">{MAX_YEARS}년 · {MAX_TURNS}턴 동안 운영하며 {EVALUATION_INTERVAL}년마다 종합평가를 받아요. 한 턴은 13주. 운영을 시작하기 전에는 대관을 다시 검토할 수 있어요. 조달 물품은 첫 운영 때 설치됩니다. 설치 완료 후 다음 계획에서 클래스를 열 수 있어요. 현금은 원, 평가점수는 점으로 표시합니다. 예산은 공개 가격을 참고한 게임용 설정이며 실제 기관의 전체 인건비·시설원가를 재현하지 않습니다.</p><label className="setting-line"><span>움직임 줄이기</span><input type="checkbox" checked={reducedMotion} onChange={(e) => setReducedMotion(e.target.checked)} /></label><AudioControls/><button className="danger-text" onClick={() => setModal('reset')}><Icon name="reset" size={15} />저장한 게임을 새로 시작</button></Modal>}
+    {modal === 'help' && <Modal title="센터장님의 작은 안내서" onClose={() => setModal(null)}>{saveIssue && <p className="save-issue-note" role="status">{saveIssue}</p>}{Boolean(game.migrationNotices?.length) && <section className="migration-notice-panel" aria-label="저장 이관 안내"><h3>이 저장에 반영된 변경 내역</h3><p>진행과 자금, 과거 성적은 유지했습니다. 이번 변경 내역을 확인해 주세요.</p><ul>{game.migrationNotices!.map((message, index) => <li key={index}>{message}</li>)}</ul><button className="secondary-button" onClick={() => { const next = { ...game }; delete next.migrationNotices; setGame(next); notify('변경 내역을 확인했어요.', 'info') }}>확인했어요</button></section>}<div className="help-steps"><p><b>1. 대관을 먼저 골라요</b><span>공간별 신청을 승인하면 그 시간이 예약돼요. 전부 받을 필요는 없어요.</span></p><p><b>2. 남은 시간에 클래스를 열어요</b><span>시간과 클래스는 어느 쪽부터 골라도 돼요. 생활안전 교실은 별도 설비 없이 무료로 열 수 있어요.</span></p><p><b>3. 운영 수입과 명성을 키워요</b><span>대관으로 운영비를 벌고, 강좌로 명성을 키워요. 공공서비스는 접근성 50%·교육 참여 50%예요. 유·무료 강좌 모두 실제 참여를 인정해요.</span></p></div><p className="help-note">대관 운영원가는 첫 2년 지원 기간에 대관료의 48%, 3년 차부터 60%에 공간 기본비를 더해요. 기존 승인 건은 유지하며 새 신청의 비용에 표시돼요. 명성이 높아질수록 추가 상승은 완만해져요.</p><p className="help-note">{MAX_YEARS}년 · {MAX_TURNS}턴 동안 운영하며 {EVALUATION_INTERVAL}년마다 종합평가를 받아요. 한 턴은 13주. 운영을 시작하기 전에는 대관을 다시 검토할 수 있어요. 조달 물품은 첫 운영 주에 설치됩니다. 주문한 계절에 바로 편성할 수 있고, 설치 시간과 겹친 첫 주 수업만 쉬어요. 현금은 원, 평가점수는 점으로 표시합니다. 예산은 공개 가격을 참고한 게임용 설정이며 실제 기관의 전체 인건비·시설원가를 재현하지 않습니다.</p>{game.rules === 3 && <p className="help-note">같은 수업도 주마다 대호응·순조·평범·아쉬움으로 결과가 달라지고, 계절에 따라 호조나 부진을 타요. 직원 교육 단계(분야별 Lv.0~5)가 높을수록 잘 풀릴 확률이 오르지만 결과는 매번 달라요. 대관 신청은 수입·명성·공공서비스·시설 부담이 서로 달라요. 카드의 예상 수치는 평범한 주 기준이에요.</p>}{game.rules === 3 && <p className="help-note">명성은 만족도가 높은 수업일수록 크게 오르고, 공공서비스를 소홀히 하면 더디게 올라요. 운영을 쉬거나 아쉬운 주가 많으면 내려가요. 신뢰는 상한이 없지만, 높아질수록 그 신뢰를 지키는 데 더 높은 만족도가 필요해요. 신뢰가 높으면 수업 신청 주민이 늘어요.</p>}{game.rules === 3 && <p className="help-note">계절마다 찾아오는 사건 39종 가운데 21종은 센터장이 대응을 골라요. 13주 운영은 7주 차에 한 번 멈춰 홍보 강화·긴급 정비·그대로 진행 가운데 하나를 정해요. 한 수업을 네 계절 쉬지 않고 이어 가면 수강생 이야기가 생기고 명성과 신뢰가 조금 올라요.</p>}{game.rules !== 3 && game.phase !== 'ending' && <section className="adopt-rules-panel" aria-label="새 규칙 적용"><h3>이 저장은 예전 규칙으로 진행 중이에요</h3><p>새 규칙에서는 같은 수업도 주마다 결과가 달라지고, 직원 교육 단계가 잘 풀릴 확률을 올려요. 대관 신청에는 수입·명성·공공서비스의 상충이 생겨요.</p><button className="secondary-button" onClick={() => setModal('adopt-rules')}>이 저장에 새 규칙 적용하기</button></section>}<label className="setting-line"><span>움직임 줄이기</span><input type="checkbox" checked={reducedMotion} onChange={(e) => setReducedMotion(e.target.checked)} /></label><AudioControls/><button className="danger-text" onClick={() => setModal('reset')}><Icon name="reset" size={15} />저장한 게임을 새로 시작</button></Modal>}
+    {modal === 'adopt-rules' && <Modal title="이 저장에 새 규칙을 적용할까요?" onClose={() => setModal('help')}><ul className="adopt-rules-list"><li>지난 계절 기록과 평가, 자금, 장비는 그대로 두고 다시 계산하지 않아요.</li><li>운영 숙련은 직원 교육 단계로 바뀌어요(모든 센터 같은 기준, 최대 Lv.2에서 시작해 Lv.5까지 교육).</li><li>이번 계절에 이미 검토한 대관은 그대로 두고, 아직 검토하지 않았다면 성격이 있는 신청으로 다시 받아요.</li><li>적용 전 저장은 이 브라우저에 따로 백업해요. 적용한 뒤에는 게임 안에서 예전 규칙으로 되돌릴 수 없어요.</li></ul><div className="review-actions"><button className="secondary-button" onClick={() => setModal('help')}>예전 규칙으로 계속</button><button className="primary-button" onClick={applyNewRules}>새 규칙 적용</button></div></Modal>}
     {modal === 'reset' && <Modal title="새 센터장으로 다시 시작할까요?" onClose={() => setModal(null)}><p className="reset-copy">이 브라우저의 현재 진행 기록이 새 게임으로 바뀝니다.</p><div className="review-actions"><button className="secondary-button" onClick={() => setModal(null)}>현재 게임 계속하기</button><button className="primary-button" onClick={() => { const fresh=createGame(); try { replaceGameSave(localStorage,fresh) } catch { notify("기존 기록을 백업하지 못해 새 게임을 시작하지 않았어요.","error"); return } setGame(fresh); setRoom('A'); setInsideRoom(false); setSelectedByRoom({}); setFeedback(null); setPlaying(false); setModal('welcome'); setSpeaker('jiseon'); setDialogue('새로운 센터의 첫 페이지를 열어 볼까요?') }}>새로 시작하기</button></div></Modal>}
   </div>
 }

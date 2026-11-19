@@ -1,0 +1,187 @@
+/* Trade-offs, odds and advice added with rules 3. Signs and words carry the meaning; colour only reinforces it. */
+.rental-request-row.has-trait { grid-template-columns: minmax(0, 1fr) auto auto; row-gap: 8px; }
+.rental-trait-tag { margin-left: 8px; padding: 2px 7px; border-radius: 3px; background: #ece4d8; color: #3c3833; font-size: 13px; font-weight: 700; }
+.trait-commercial .rental-trait-tag { background: #efe2c4; }
+.trait-community .rental-trait-tag { background: #dcefe9; }
+.trait-culture .rental-trait-tag { background: #e7ddf0; }
+.trait-education .rental-trait-tag { background: #dde7f3; }
+.rental-tradeoffs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.rental-tradeoffs li { display: grid; gap: 1px; padding: 6px 8px; background: #f7f1e8; border-radius: 3px; min-width: 0; }
+.rental-tradeoffs small { color: #655e54; font-size: 13px; }
+.rental-tradeoffs b { font-size: 14px; overflow-wrap: anywhere; }
+.rental-tradeoffs .is-up b::before { content: '▲ '; color: #175c58; font-size: 11px; }
+.rental-tradeoffs .is-down b::before { content: '▼ '; color: #9a3d22; font-size: 11px; }
+.rental-tradeoffs .is-up b, .rental-tradeoffs .is-good b { color: #175c58; }
+.rental-tradeoffs .is-warn b { color: #9a3d22; }
+.rental-tradeoffs .is-down b { color: #9a3d22; }
+.rental-quick-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 12px 0; padding: 12px 14px; background: #fffdf8; border: 1px solid #d6cbbc; border-radius: 4px; }
+.rental-quick-pick > span { display: grid; gap: 2px; flex: 1 1 100%; }
+.rental-quick-pick button { flex: 1 1 0; }
+.rental-request-row.has-trait .rental-request-actions { grid-column: 1 / -1; justify-self: end; }
+.rental-quick-pick small { color: #655e54; font-size: 13px; }
+.rental-quick-pick button { min-height: 44px; padding: 8px 14px; background: #fffaf1; border: 1px solid #4a4741; border-radius: 3px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.rental-quick-pick button:hover { background: #4a4741; color: #fffaf1; }
+.replacement-compare { width: 100%; margin: 12px 0; border-collapse: collapse; font-size: 14px; }
+.replacement-compare caption { margin-bottom: 6px; text-align: left; color: #4a4741; font-size: 13px; }
+.replacement-compare th, .replacement-compare td { padding: 8px 10px; border-bottom: 1px solid #d6cbbc; text-align: right; font-variant-numeric: tabular-nums; }
+.replacement-compare th:first-child { text-align: left; font-weight: 400; color: #4a4741; }
+.replacement-compare thead th { font-weight: 700; color: #1c1b1a; }
+.replacement-compare tfoot td { font-weight: 700; text-align: left; }
+.replacement-compare .is-up { color: #175c58; }
+.replacement-compare .is-down { color: #9a3d22; }
+.trust-effect { margin-left: 3px; color: #175c58; font-size: 13px; }
+.staff-training { grid-column: 1 / -1; }
+.staff-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.room-care-item .staff-levels button { display: grid; gap: 3px; justify-items: center; min-height: 56px; padding: 7px 4px; background: #fffaf1; color: #1c1b1a; border: 1px solid #b9ab97; font-size: 14px; }
+.room-care-item .staff-levels button.is-current { background: #2b2926; color: #fffaf1; border-color: #2b2926; }
+.staff-levels b { font-size: 16px; }
+.staff-pips { display: flex; gap: 3px; }
+.staff-pips i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid currentColor; opacity: .55; }
+.staff-pips i.is-on { background: currentColor; opacity: 1; }
+.staff-progress { height: 6px; overflow: hidden; background: #e7dfd3; border-radius: 3px; }
+.staff-progress i { display: block; height: 100%; background: #2d7a78; }
+.staff-odds { width: 100%; border-collapse: collapse; font-size: 13px; }
+.staff-odds caption { margin-bottom: 4px; text-align: left; color: #4a4741; }
+.staff-odds th, .staff-odds td { padding: 5px 4px; border-bottom: 1px solid #e0d6c8; text-align: right; font-variant-numeric: tabular-nums; }
+.staff-odds th:first-child { text-align: left; font-weight: 400; }
+.staff-odds .is-next { color: #175c58; font-weight: 700; }
+.class-odds-line { color: #3c3833; }
+.class-odds-detail { padding: 8px 10px; background: #f1e9dc; border-radius: 3px; }
+.briefing-profile { display: grid; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #d6cbbc; }
+.briefing-profile h4 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0; font-size: 15px; }
+.briefing-profile h4 b { padding: 2px 9px; background: #2b2926; color: #fffaf1; border-radius: 3px; font-size: 15px; }
+.briefing-profile h4 span { padding: 2px 8px; background: #ece4d8; border-radius: 3px; font-size: 13px; font-weight: 400; }
+.briefing-profile p { margin: 0; font-size: 14px; }
+.briefing-balance { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.briefing-balance li { display: grid; gap: 2px; padding: 8px 10px; background: #fffdf8; border: 1px solid #d6cbbc; border-radius: 3px; min-width: 0; }
+.briefing-balance small { color: #655e54; font-size: 13px; }
+.briefing-balance b { font-size: 16px; }
+.briefing-balance .grade-good b { color: #175c58; }
+.briefing-balance .grade-warn b { color: #9a3d22; }
+.briefing-balance em { font-style: normal; font-size: 13px; color: #9a3d22; font-weight: 700; }
+.briefing-balance em.is-strong { color: #175c58; }
+.briefing-balance .is-weakest { border-color: #c0603f; }
+.briefing-strategies { display: grid; gap: 6px; margin: 0; padding-left: 20px; font-size: 14px; }
+.season-choices { display: grid; gap: 8px; margin: 12px 0; padding: 0; border: 0; min-width: 0; }
+.season-choices legend { padding: 0; margin-bottom: 4px; font-weight: 700; font-size: 15px; }
+.season-choices label { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; min-height: 44px; padding: 11px 12px; background: #fffdf8; border: 1px solid #b9ab97; border-radius: 4px; cursor: pointer; }
+.season-choices label.is-picked { border-color: #2d7a78; box-shadow: inset 0 0 0 1px #2d7a78; background: #eef6f3; }
+.season-choices input { width: 18px; height: 18px; margin: 2px 0 0; }
+.season-choices label > span { display: grid; gap: 2px; }
+.season-choices label small { color: #4a4741; font-size: 13px; }
+.season-choices label em { font-style: normal; font-size: 14px; font-weight: 700; color: #3c3833; }
+.season-choices > small { color: #655e54; font-size: 13px; }
+/* Keep both answers and the confirm button on one laptop screen. */
+.game-modal .season-opening:has(.season-choices) > img { max-height: min(30vh, 240px); width: 100%; object-fit: cover; object-position: center 35%; }
+@media (min-width: 761px) {
+  /* Wide screens: the whole scene sits beside the two answers, so picking a response visibly changes the picture. */
+  .game-modal .season-opening:has(.season-choices) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 22px; align-items: start; }
+  .game-modal .season-opening:has(.season-choices) > img { max-height: none; height: auto; aspect-ratio: 3 / 2; }
+  .game-modal .season-opening:has(.season-choices) .season-opening-copy { padding-top: 0; }
+}
+.event-recap-button { margin-left: 6px; padding: 2px 8px; background: none; border: 1px solid currentColor; border-radius: 3px; color: inherit; font: inherit; cursor: pointer; }
+@media (max-width: 720px) {
+  .rental-tradeoffs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .briefing-balance { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rental-request-row.has-trait { grid-template-columns: minmax(0, 1fr) auto; }
+}
+.adopt-rules-panel { display: grid; gap: 8px; margin: 12px 0; padding: 12px 14px; background: #eef4ef; border-left: 4px solid #2d7a78; border-radius: 3px; }
+.adopt-rules-panel h3 { margin: 0; font-size: 15px; }
+.adopt-rules-panel p { margin: 0; font-size: 14px; }
+.adopt-rules-panel button { justify-self: start; min-height: 44px; }
+.adopt-rules-list { display: grid; gap: 8px; margin: 0 0 14px; padding-left: 20px; font-size: 14px; }
+
+/* Standing badges (2026-11-19): reputation and trust sit in the page heading, large, with their changes. */
+.standing-badge { display: flex; align-items: center; gap: 10px; padding-left: 20px; border-left: 1px solid var(--line); min-height: 48px; }
+.standing-badge > svg { color: var(--gold); flex: none; }
+.standing-badge small { display: flex; align-items: baseline; gap: 6px; margin-bottom: 2px; font-size: 13px; color: var(--muted); }
+.standing-badge small em { font-style: normal; color: #175c58; font-size: 13px; }
+.standing-badge strong { display: block; font-size: 27px; font-weight: 500; line-height: 1.05; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+.standing-changes { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 3px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.standing-changes .is-up { color: #175c58; }
+.standing-changes .is-down { color: #9a3d22; }
+.standing-changes .is-flat { color: var(--muted); font-weight: 400; }
+.standing-changes .is-planned { font-weight: 400; }
+.center-game:not(.is-exploring) .page-heading .standing-badge { min-height: 34px; padding-left: 14px; }
+.center-game:not(.is-exploring) .page-heading .standing-badge strong { font-size: 22px; }
+@media (max-width: 1180px) { .standing-badge > svg { display: none; } .standing-badge { padding-left: 14px; } }
+@media (max-width: 900px) {
+  .center-game .page-heading { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .center-game .page-heading > div:first-child { grid-column: 1 / -1; }
+  .center-game .page-heading .standing-badge { border-left: 0; padding-left: 0; }
+}
+
+/* Scene footer in a room: installed equipment on the left, room condition at the far right. Nothing covers the picture. */
+.center-game .scene-footer.scene-footer--room { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 6px 12px; }
+.center-game .scene-footer--room .footer-equipment { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: center; gap: 3px 8px; min-width: 0; min-height: 32px; padding: 4px 8px; background: transparent; border: 1px solid #8c817366; border-radius: 3px; color: #f1e8da; font-size: 13px; text-align: left; cursor: pointer; }
+.center-game .scene-footer--room button.footer-equipment:hover { background: #ffffff14; }
+.center-game .scene-footer--room button.footer-equipment:focus-visible { outline: 2px solid #9cc4ff; outline-offset: 2px; }
+.center-game .scene-footer--room .footer-equipment > span + span::before { content: '·'; margin-right: 8px; color: #b9a98f; }
+.center-game .scene-footer--room .footer-equipment .is-pending em { font-style: normal; color: #f0c98a; }
+.center-game .scene-footer--room .footer-equipment .is-empty { color: #cdbfa9; }
+.center-game .scene-footer--room .footer-equipment.is-locked { border-style: dashed; cursor: default; }
+.center-game .scene-footer--room .footer-equipment > svg:last-child { margin-left: auto; flex: none; }
+.center-game .scene-footer--room .footer-care { display: inline-flex; flex: none; width: auto; margin-left: auto; white-space: nowrap; }
+
+/* Compact adviser line (2026-11-19): a small round portrait beside the line, no tall empty panel. */
+.center-game .character-dialogue { grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 0; margin-top: 10px; padding: 10px 14px; }
+.center-game .character-dialogue .dialogue-portrait { width: 64px; height: 64px; align-self: center; border-radius: 50%; background: #6a544a; }
+.center-game .character-dialogue .dialogue-copy { display: grid; gap: 3px; padding: 0; }
+.center-game .character-dialogue .dialogue-copy > span { display: flex; align-items: baseline; gap: 8px; font-size: 14px; }
+.center-game .character-dialogue .dialogue-copy small { display: inline; margin: 0; }
+.center-game .character-dialogue .dialogue-copy p { margin: 0; font-size: 14px; line-height: 1.6; }
+.standing-badge strong { font-size: 30px; }
+.center-game:not(.is-exploring) .page-heading .standing-badge strong { font-size: 26px; }
+.standing-changes { font-size: 14px; }
+
+/* Illustrations for rental traits and staff training (2026-11-19). */
+.rental-request-row.has-trait { grid-template-columns: 96px minmax(0, 1fr) auto; }
+.rental-trait-art { display: block; width: 96px; height: 64px; object-fit: cover; border-radius: 3px; border: 1px solid #d6cbbc; background: #ece4d8; }
+.staff-training-intro { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: center; }
+.staff-training-intro img { display: block; width: 150px; height: 100px; object-fit: cover; border-radius: 3px; border: 1px solid #d6cbbc; background: #ece4d8; }
+.training-result { display: flex; align-items: center; gap: 12px; }
+.training-result img { flex: none; width: 108px; height: 72px; object-fit: cover; border-radius: 3px; border: 1px solid #c7d6cb; background: #dfe9e1; }
+@media (max-width: 720px) {
+  .rental-request-row.has-trait { grid-template-columns: 72px minmax(0, 1fr) auto; }
+  .rental-trait-art { width: 72px; height: 48px; }
+  .staff-training-intro { grid-template-columns: 108px minmax(0, 1fr); }
+  .staff-training-intro img { width: 108px; height: 72px; }
+  .training-result img { width: 84px; height: 56px; }
+}
+
+/* Outcome scenes, Jiseon's briefing faces and trust milestones (2026-11-19). */
+.result-card.has-art { grid-template-columns: 132px minmax(0, 1fr); column-gap: 14px; }
+.result-card.has-art .result-art { grid-row: 1 / span 2; align-self: start; display: block; width: 132px; height: 88px; object-fit: cover; border-radius: 3px; border: 1px solid #d6cbbc; background: #ece4d8; }
+.result-card.has-art .result-tally { grid-column: 1 / -1; }
+.result-card.is-compact.has-art { grid-template-columns: 84px minmax(0, 1fr); column-gap: 10px; }
+.result-card.is-compact.has-art .result-art { width: 84px; height: 56px; }
+.briefing-speaker img.is-mood { height: 133px; object-fit: cover; object-position: center top; border-radius: 6px; border: 1px solid #d6cbbc; }
+.trust-milestone { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: center; margin: 16px 0; padding: 14px; background: #eef4ef; border: 1px solid #c7d6cb; border-left: 4px solid #2d7a78; border-radius: 4px; text-align: left; }
+.trust-milestone img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 3px; }
+.trust-milestone h3 { margin: 6px 0 8px; font-family: var(--display); font-size: clamp(18px, 2vw, 23px); line-height: 1.45; }
+.trust-milestone p { margin: 0; font-size: 14px; line-height: 1.65; }
+@media (max-width: 620px) {
+  .result-card.has-art { grid-template-columns: 84px minmax(0, 1fr); column-gap: 10px; }
+  .result-card.has-art .result-art { width: 84px; height: 56px; grid-row: 1; }
+  .result-card.has-art .result-deltas { grid-column: 1 / -1; }
+  .briefing-speaker img.is-mood { height: 86px; }
+  .trust-milestone { grid-template-columns: 1fr; }
+}
+
+/* Mid-season meeting and blocked answers (rules 3, 2026-11-19) */
+.midseason-meeting { display: grid; gap: 16px; text-align: left; }
+.midseason-meeting > img { display: block; width: 100%; max-height: min(30vh, 240px); object-fit: cover; object-position: center 35%; border-radius: 4px; }
+.midseason-copy > p { margin: 6px 0 10px; font-size: 15px; line-height: 1.6; }
+.midseason-figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 10px; }
+.midseason-figures div { padding: 9px 11px; background: #fffdf8; border: 1px solid #d5c9b6; border-radius: 4px; }
+.midseason-figures dt { font-size: 13px; color: #5a544b; }
+.midseason-figures dd { margin: 2px 0 0; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.midseason-copy .midseason-tally { margin: 0 0 8px; font-size: 14px; color: #3c3833; }
+.midseason-advice { margin: 0 0 4px; padding-left: 18px; font-size: 14px; line-height: 1.6; }
+.season-choices label.is-blocked { cursor: not-allowed; background: #f1ece3; color: #6b655c; }
+.season-choices label .choice-blocked { color: #8a3b2c; font-weight: 700; }
+.story-scene { background: #f6f1e6; border-color: #dccfb6; border-left-color: #b9772f; }
+@media (min-width: 761px) {
+  .midseason-meeting { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 22px; align-items: start; }
+  .midseason-meeting > img { max-height: none; aspect-ratio: 3 / 2; }
+}

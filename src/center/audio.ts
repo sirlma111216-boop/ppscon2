@@ -1,8 +1,13 @@
 import { useEffect, useSyncExternalStore } from 'react'
-export const BGM = ['title','planning_spring_summer','planning_autumn_winter','procurement','operation','comic_event','evaluation','final_awarded','final_unawarded'] as const
+export const BGM = ['title','planning_spring_summer','planning_autumn_winter','procurement','operation','comic_event','evaluation','final_awarded','final_unawarded','decision','result_review'] as const
 export type MusicTrack = typeof BGM[number]
-export const SFX = ['ui_click','room_enter','schedule_place','schedule_remove','rental_approve','notice','procurement_order','tender_contract','install_complete','season_open','event_positive','event_negative','event_comic','settlement','award_reveal','save_complete'] as const
+export const SFX = ['ui_click','room_enter','schedule_place','schedule_remove','rental_approve','notice','procurement_order','tender_contract','install_complete','season_open','event_positive','event_negative','event_comic','settlement','award_reveal','save_complete',
+ // Delivered 2026-11-19: how a class went, what moved, and the moments of a season's settlement.
+ 'outcome_great','outcome_poor','mood_hot','mood_cold','delta_up','delta_down','training_done','level_up','event_choice','rental_stamp','trust_milestone','briefing_open'] as const
 export type Sound = typeof SFX[number]
+/** Effects whose delivered file starts with silence play from a trimmed copy made by scripts/trim-sfx.cjs. The delivered files stay in /center/audio. Remove a name here when its original is replaced by a file that starts at once. */
+export const SFX_TRIMMED:ReadonlySet<Sound>=new Set<Sound>(['schedule_place','tender_contract','season_open','event_positive','install_complete','event_comic','event_negative','save_complete','rental_approve','settlement','briefing_open','event_choice','mood_cold','training_done','trust_milestone'])
+export const sfxPath=(name:Sound):string=>`/center/${SFX_TRIMMED.has(name)?'audio-trimmed':'audio'}/sfx_${name}.wav`
 const KEY='ppscon2.audio.v1'
 type Settings={muted:boolean;bgm:number;sfx:number}
 let settings:Settings={muted:false,bgm:.3,sfx:.65}
@@ -12,14 +17,17 @@ let music:HTMLAudioElement|null=null,desired:MusicTrack='title',current:MusicTra
 const active=new Set<HTMLAudioElement>(),once=new Set<string>()
 let lastSound=0
 const audible=()=>unlocked&&!settings.muted&&!document.hidden
+/** A track delivered quieter than the rest plays a little louder so the level does not drop between scenes. Measured 2026-11-19: result_review averages about -22 dB against -14 to -18 dB for the others. The file itself is untouched. */
+export const BGM_GAIN:Partial<Record<MusicTrack,number>>={result_review:1.5}
+const level=(track:MusicTrack|null):number=>Math.min(1,settings.bgm*(track?BGM_GAIN[track]??1:1))
 function stopEffects(){for(const a of active){a.pause();a.removeAttribute('src');a.load()}active.clear()}
 function fade(to:number,ms:number,done?:()=>void){const id=++generation,a=music;if(!a)return;const from=a.volume,start=performance.now();function tick(now:number){if(id!==generation)return;const f=Math.max(0,Math.min(1,(now-start)/ms));a!.volume=Math.max(0,Math.min(1,from+(to-from)*f));if(f<1)requestAnimationFrame(tick);else done?.()}requestAnimationFrame(tick)}
 function sync(){
  if(!unlocked)return
  music??=new Audio();music.preload='none';music.loop=true
  if(!audible()||settings.bgm===0){generation++;music.pause();if(!audible())stopEffects();return}
- if(current===desired){void music.play().catch(()=>{});fade(settings.bgm,350);return}
- const swap=()=>{if(!music||!audible())return;current=desired;music.src=`/center/audio/bgm_${desired}.mp3`;music.volume=0;music.loop=!desired.startsWith('final_');void music.play().then(()=>fade(settings.bgm,500)).catch(()=>{})}
+ if(current===desired){void music.play().catch(()=>{});fade(level(current),350);return}
+ const swap=()=>{if(!music||!audible())return;current=desired;music.src=`/center/audio/bgm_${desired}.mp3`;music.volume=0;music.loop=!desired.startsWith('final_');void music.play().then(()=>fade(level(current),500)).catch(()=>{})}
  if(!music.paused)fade(0,220,swap);else swap()
 }
 export function setTrack(track:MusicTrack){if(desired===track&&current===track)return;desired=track;sync()}
@@ -31,10 +39,14 @@ export function playSound(kind:Sound|'select'|'buy'|'run'|'result'){
  const name=kind==='select'?'ui_click':kind==='buy'?'procurement_order':kind==='result'?'settlement':kind
  for(const previous of active){if(previous.src.endsWith(`/sfx_${name}.wav`)){previous.pause();active.delete(previous)}}
  if(active.size>=3){const oldest=active.values().next().value!;oldest.pause();active.delete(oldest)}
- const a=new Audio(`/center/audio/sfx_${name}.wav`);a.volume=settings.sfx;active.add(a)
+ const a=new Audio(sfxPath(name as Sound));a.volume=settings.sfx;active.add(a)
  const release=()=>active.delete(a);a.onended=release;a.onerror=release;void a.play().catch(release)
 }
 export function playOnce(key:string,sound:Sound){if(once.has(key)||!audible())return;once.add(key);playSound(sound)}
-export function mountAudio(){const unlock=()=>{if(!unlocked){unlocked=true;sync()}};const visibility=()=>{if(document.hidden)stopEffects();sync()};document.addEventListener('pointerdown',unlock,true);document.addEventListener('keydown',unlock,true);document.addEventListener('visibilitychange',visibility);return()=>{document.removeEventListener('pointerdown',unlock,true);document.removeEventListener('keydown',unlock,true);document.removeEventListener('visibilitychange',visibility);generation++;music?.pause();stopEffects()}}
+/** Short, frequent effects are fetched once after the first gesture so the first click is not late. */
+const WARM:Sound[]=['ui_click','room_enter','schedule_place','schedule_remove','rental_approve','notice','procurement_order','settlement','delta_up','delta_down']
+let warmed=false
+function warmEffects(){if(warmed||typeof fetch!=='function')return;warmed=true;for(const name of WARM){try{void fetch(sfxPath(name)).catch(()=>{})}catch{/* playback still loads on demand */}}}
+export function mountAudio(){const unlock=()=>{if(!unlocked){unlocked=true;sync();warmEffects()}};const visibility=()=>{if(document.hidden)stopEffects();sync()};document.addEventListener('pointerdown',unlock,true);document.addEventListener('keydown',unlock,true);document.addEventListener('visibilitychange',visibility);return()=>{document.removeEventListener('pointerdown',unlock,true);document.removeEventListener('keydown',unlock,true);document.removeEventListener('visibilitychange',visibility);generation++;music?.pause();stopEffects()}}
 export function useAudioBoot(){useEffect(mountAudio,[])}
 export const COMIC_EVENTS=new Set(['cat-director','balloons','robot-dance','rooster-mic','mascot-parade','umbrella-mixup'])

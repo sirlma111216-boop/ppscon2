@@ -1,0 +1,83 @@
+{
+  "purpose": "대관 신청 카드의 성격 삽화 5장과 직원 교육 장면 4장",
+  "appliedOn": "2026-11-19",
+  "tool": "ChatGPT 이미지 생성 (제작자가 알려 준 표기: 'chatgp imagen'. 정확한 모델명은 확인하지 못함)",
+  "sourceArchive": "C:\\Users\\pc\\Downloads\\community-program-scenes.zip (PNG 9장, 각 1536x1024)",
+  "style": "Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean slice-of-life management game, warm daylight, no text, no letters, no logos, no watermarks, complete heads safely framed, adults and seniors of varied ages in everyday Korean clothing.",
+  "processing": "원본 PNG는 수정하지 않음. sharp로 WebP(quality 84) 변환. 대관 성격 600x400, 직원 교육 900x600. 잘라내기·보정·글자 추가 없음.",
+  "review": "9장 모두 열어 확인: 지정한 장면과 일치, 읽히는 글자·로고 없음(화이트보드·수료증은 빈 면), 잘린 얼굴 없음. 사람이 아닌 Claude Code가 본 것임.",
+  "assets": [
+    {
+      "file": "public/center/rental-traits-v1/commercial.webp",
+      "use": "대관 성격 · 기업·상업 행사",
+      "source": "01-corporate-briefing.png",
+      "sourceSha256": "44817a309f7fab18d1a71fb7d8a6a0ce30fef7701b7e237af38c9e059f64a1e3",
+      "bytes": 62512,
+      "prompt": "A corporate product briefing in a rented community hall, presenters in business wear, rows of chairs, sample boxes on a table, efficient but impersonal mood, slightly scuffed floor."
+    },
+    {
+      "file": "public/center/rental-traits-v1/community.webp",
+      "use": "대관 성격 · 주민 공익 모임",
+      "source": "02-residents-meeting.png",
+      "sourceSha256": "09803201b87ea117b5f2a2213c4ef3dbad8bfc12ceaa0d7276f908862e29f294",
+      "bytes": 96850,
+      "prompt": "A neighborhood residents' association meeting in a cosy community room, seniors and parents seated in a circle sharing tea, a toddler playing on a mat, warm and familiar."
+    },
+    {
+      "file": "public/center/rental-traits-v1/culture.webp",
+      "use": "대관 성격 · 지역 예술 단체",
+      "source": "03-theatre-rehearsal.png",
+      "sourceSha256": "b8508dd0d0419c026b704ed7882479c9cd25bc2c0afa40446623b0392fc799e7",
+      "bytes": 82968,
+      "prompt": "A small local theatre troupe rehearsing on a modest stage in a community hall, actors mid-gesture, a director with a script, a few neighbors watching from the seats."
+    },
+    {
+      "file": "public/center/rental-traits-v1/education.webp",
+      "use": "대관 성격 · 교육·세미나",
+      "source": "04-adult-seminar.png",
+      "sourceSha256": "21318f3275dc7692a276d053872e60450193096978480f64d3b5d7811c39b0f1",
+      "bytes": 68916,
+      "prompt": "An adult learning seminar in a bright community classroom, a lecturer pointing at a blank whiteboard, attentive adults taking notes at desks."
+    },
+    {
+      "file": "public/center/rental-traits-v1/regular.webp",
+      "use": "대관 성격 · 정기 모임",
+      "source": "05-hobby-club.png",
+      "sourceSha256": "849c2e695bb2b337787bb56c6bb921165ad0a81f25c9abff4af970abd35a9359",
+      "bytes": 82932,
+      "prompt": "A relaxed weekly hobby club meeting in a multipurpose room, a handful of adults chatting around a table with board games and notebooks."
+    },
+    {
+      "file": "public/center/training-v1/training-culture.webp",
+      "use": "직원 교육 · 문화",
+      "source": "06-craft-workshop.png",
+      "sourceSha256": "dac4101bab7967311bf0941bfd562ac6c110ab386fe0c93d294bde062e006143",
+      "bytes": 203268,
+      "prompt": "Community center staff attending a workshop on running craft and arts classes, an instructor demonstrating at a table with clay and brushes, staff taking notes."
+    },
+    {
+      "file": "public/center/training-v1/training-sport.webp",
+      "use": "직원 교육 · 체육",
+      "source": "07-exercise-training.png",
+      "sourceSha256": "7f09554d588cbd67250205334fbf5bbea234fed753a9aa106f127f1f6b47dce9",
+      "bytes": 173852,
+      "prompt": "Community center staff in comfortable clothes practising safe exercise instruction on yoga mats, a trainer correcting posture, mirrors and wooden floor."
+    },
+    {
+      "file": "public/center/training-v1/training-event.webp",
+      "use": "직원 교육 · 행사",
+      "source": "08-event-rehearsal.png",
+      "sourceSha256": "bc1af3cc789ca69a6f8c3c9a3b6d46c6e15671633dc542d2eef3cce2d03cc36f",
+      "bytes": 168994,
+      "prompt": "Community center staff rehearsing event operations in an empty hall, checking seating layout with clipboards, one testing a microphone on a small stage."
+    },
+    {
+      "file": "public/center/training-v1/training-levelup.webp",
+      "use": "직원 교육 · 단계 승급",
+      "source": "09-training-celebration.png",
+      "sourceSha256": "6fc228edac1fc21dd4b9b06aefbabed1ddde288d3506cd6bb9358b74a9c6848f",
+      "bytes": 163234,
+      "prompt": "A staff team celebrating a training certificate with blank paper in a community center office, modest applause, proud smiles, a plant and tidy desks."
+    }
+  ]
+}

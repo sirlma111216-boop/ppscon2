@@ -1,6 +1,17 @@
 import { EVALUATION_COMPONENTS, ROOM_NAMES, BLOCKS } from './simulation.ts'
 import { shortOperationReason } from './operationReason.ts'
 import type { SeasonReport } from './simulation.ts'
+import { EVENT_CLOSURE_REASONS } from './seasonEvents.ts'
+/** Weeks lost to an event closure are nobody's failure, so the briefing does not count them as trouble. */
+const ownIssues=(report:SeasonReport)=>(report.operationIssues??[]).filter(issue=>!Object.values(EVENT_CLOSURE_REASONS).includes(issue.reason))
+/** Which face Jiseon brings to the briefing: glad for a top-three season, worried when something needs fixing, otherwise resolved. */
+export function briefingMood(report:SeasonReport):'glad'|'worried'|'resolved' {
+  const missed=ownIssues(report).reduce((n,i)=>n+i.weeks,0)
+  const rank=report.evaluation?.rank??report.contender?.rank??report.rank
+  if(report.profit<0||missed>=13||report.reputationChange<=-1||rank>=8)return 'worried'
+  if(rank<=3&&report.reputationChange>=0)return 'glad'
+  return 'resolved'
+}
 export function seasonBriefing(report:SeasonReport) {
   const peer=report.peerComparison,mix=report.serviceMix
   let good=report.visits>0?'주민들이 실제로 이용한 시간을 쌓았어요.':'이번 계절에는 실제 이용 실적이 없어요.'
@@ -9,7 +20,7 @@ export function seasonBriefing(report:SeasonReport) {
   if(peer&&report.reputationChange>peer.reputationChange&&report.reputationChange>0)good='이번 계절 명성 상승 폭이 다른 센터 평균보다 커요.'
   let improve='칸을 채우는 것뿐 아니라 실제 참여와 운영 결과도 살펴야 해요.'
   let action='대관으로 비용을 확보하면서 주민 수요가 있는 수업을 함께 운영해 보세요.'
-  const missed=report.operationIssues?.reduce((n,i)=>n+i.weeks,0)??0
+  const missed=ownIssues(report).reduce((n,i)=>n+i.weeks,0)
   if(mix&&peer){
     if(mix.rentalVisits>mix.classVisits&&mix.classVisits<peer.serviceMix.classVisits){
       improve='대관 이용이 수업보다 많고, 수업 참여는 다른 센터 평균보다 적어요.'
@@ -27,9 +38,9 @@ export function seasonBriefing(report:SeasonReport) {
   }
   if(report.profit<0){improve='이번 계절 지출이 수입보다 컸어요. 적자가 계속되면 운영 여력이 줄어요.';action='적자 수업을 모두 없애기보다 수요가 있는 대관과 수업차익이 좋은 강좌로 비용을 보완해 보세요.'}
   if(missed){
-    const issue=[...(report.operationIssues??[])].sort((a,b)=>b.weeks-a.weeks)[0]
+    const issue=ownIssues(report).sort((a,b)=>b.weeks-a.weeks)[0]!
     improve=`${ROOM_NAMES[issue.room]} ${BLOCKS[issue.slot]}에 ${issue.weeks}주 휴강했어요. 사유: ${shortOperationReason(issue.reason)}.`
-    action=issue.reason.includes('운영비')?'다음 계절 운영비를 먼저 남기고, 대관 수입으로 적자 공익수업의 비용을 보완하세요.':issue.reason.includes('배정')||issue.reason.includes('수요')?'휴강한 시간은 남은 신청 수요가 있는 수업이나 대관으로 바꿔 보세요.': '휴강 사유에 해당하는 설치·정비 일정을 먼저 해결하고 예상 운영 주수를 확인하세요.'
+    action=issue.reason.includes('관리상태')?`${ROOM_NAMES[issue.room]}의 관리상태가 20 아래로 내려가 운영을 쉬고 있어요. 그 방에 들어가 정비를 예약하면 다음 계절부터 다시 열려요.`:issue.reason.includes('운영비')?'다음 계절 운영비를 먼저 남기고, 대관 수입으로 적자 공익수업의 비용을 보완하세요.':issue.reason.includes('배정')||issue.reason.includes('수요')?'휴강한 시간은 남은 신청 수요가 있는 수업이나 대관으로 바꿔 보세요.': '휴강 사유에 해당하는 설치·정비 일정을 먼저 해결하고 예상 운영 주수를 확인하세요.'
   }
   if(report.evaluation){
     const weakest=[...EVALUATION_COMPONENTS].sort((a,b)=>(100-report.evaluation!.components[b.key])*b.weight-(100-report.evaluation!.components[a.key])*a.weight)[0]

@@ -1,7 +1,8 @@
 import ConditionBadge from './ConditionBadge'
-import { wonAmount } from './currency'
+import { wonAmount, signedWonAmount } from './currency'
+import { rentalForecast } from './resultInsights'
 import Icon from './Icon'
-import { BLOCKS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, getRoomManagement, isRentalProgram } from './simulation'
+import { BLOCKS, PROGRAMS, ROOM_DEFINITIONS, ROOM_NAMES, getRoomManagement, isRentalProgram, rentalTraitOf } from './simulation'
 import type { GameState, RentalRequest, RoomId } from './simulation'
 import { constructionTurns, getFacilityProject } from './facilityProjects'
 import './RentalReview.css'
@@ -29,16 +30,26 @@ export default function RentalReview({ game, room, onDecide, onClearClass, onOpe
           const existingClass = PROGRAMS.find((program) => program.id === game.player.plan[room][slot] && !isRentalProgram(program.id))
           return <div key={block} className="rental-time-group"><div className="rental-time-label"><Icon name="calendar" size={15} /><strong>{block}</strong><small>매주</small></div>{inSlot.length ? <div className="rental-time-requests">{existingClass && <div className="rental-class-conflict"><span>기존 {existingClass.shortName} 클래스 편성 중</span><button onClick={() => onClearClass(slot)}>클래스 비우기</button></div>}{inSlot.map((request) => {
             const conflict = accepted.find((other) => other.room === room && other.slot === slot && other.id !== request.id)
-            return <article className={`rental-request-row is-${request.status}`} key={request.id}>
-              <div className="rental-request-copy"><span className="rental-client">{request.client}</span><h4>{request.title}</h4><span className="rental-request-meta"><Icon name="people" size={13} />{request.attendees}명{request.status === 'accepted' ? <b>승인됨</b> : request.status === 'declined' ? <em>거절함</em> : conflict ? <em>같은 시간에 다른 대관 승인됨</em> : inSlot.length > 1 ? <em>같은 시간의 신청 중 선택</em> : null}</span></div>
+            const trait = rentalTraitOf(request), forecast = rentalForecast(request, game.player.reputation)
+            return <article className={`rental-request-row is-${request.status} ${trait ? 'has-trait trait-' + request.trait : ''}`} key={request.id}>
+              {trait && <img className="rental-trait-art" src={`/center/rental-traits-v1/${request.trait}.webp`} alt="" loading="lazy" draggable={false} />}
+              <div className="rental-request-copy"><span className="rental-client">{request.client}{trait && <b className="rental-trait-tag">{trait.label}</b>}</span><h4>{request.title}</h4><span className="rental-request-meta"><Icon name="people" size={13} />{request.attendees}명{request.status === 'accepted' ? <b>승인됨</b> : request.status === 'declined' ? <em>거절함</em> : conflict ? <em>같은 시간에 다른 대관 승인됨</em> : inSlot.length > 1 ? <em>같은 시간의 신청 중 선택</em> : null}</span></div>
               <div className="rental-request-fee"><strong>{wonAmount(request.fee)}<small>원 / 주</small></strong><span>운영비 {wonAmount(request.cost)}원</span></div>
+              {trait && <ul className="rental-tradeoffs" aria-label={`${trait.label} · ${trait.summary}`}>
+                {/* Arrows mean the figure itself rises or falls. A merely good or costly term gets colour only. */}
+                <li className={forecast.net >= 4 ? 'is-good' : ''}><small>순수입</small><b>{signedWonAmount(forecast.net)}원/주</b></li>
+                <li className={forecast.reputation > 0 ? 'is-up' : ''}><small>명성</small><b>{forecast.reputation > 0 ? `계절 +${forecast.reputation.toFixed(forecast.reputation < .095 ? 2 : 1)}` : '변화 없음'}</b></li>
+                <li className={forecast.publicService || forecast.learning ? 'is-up' : ''}><small>공공서비스</small><b>{forecast.publicService ? '접근성 기여' : forecast.learning ? '교육 실적 절반' : '기여 없음'}</b></li>
+                <li className={forecast.wear === '높음' ? 'is-warn' : forecast.wear === '낮음' ? 'is-good' : ''}><small>시설 부담</small><b>{forecast.wear}</b></li>
+                <li className={forecast.mood > 0 ? 'is-up' : forecast.mood < 0 ? 'is-down' : ''}><small>주민 만족</small><b>{forecast.mood > 0 ? '좋아짐' : forecast.mood < 0 ? '나빠짐' : '영향 없음'}</b></li>
+              </ul>}
               <div className="rental-request-actions">{request.status === 'accepted' ? <button className="rental-undo" onClick={() => onDecide(request.id, 'pending')}>승인 취소</button> : request.status === 'declined' ? <button className="rental-undo" onClick={() => onDecide(request.id, 'pending')}>다시 검토</button> : <><button className="rental-decline" onClick={() => onDecide(request.id, 'declined')}>거절</button><button className="rental-accept" disabled={Boolean(conflict)} onClick={() => onDecide(request.id, 'accepted')}><Icon name="check" size={14} />승인</button></>}</div>
             </article>
           })}</div> : <div className="rental-no-request">접수 없음 <span>{existingClass ? `${existingClass.shortName} 클래스 편성 중` : '클래스를 편성할 수 있어요'}</span></div>}</div>
         })}</div>}
       </section>
     <aside className="rental-advice" aria-label="대관 운영 안내">
-        <div className="rental-advisor"><span className="dialogue-portrait"><img src="/center/jiseon-portrait.webp" alt="운영팀장 오지선" /></span><div><strong>오지선 <small>운영팀장</small></strong><p>전부 받을 필요는 없어요. 클래스에 쓸 시간도 남겨 주세요.</p></div></div>
+        <div className="rental-advisor"><span className="dialogue-portrait"><img src="/center/jiseon-portrait.webp" alt="운영팀장 오지선" /></span><div><strong>오지선 <small>운영팀장</small></strong><p>{game.rules === 3 ? '돈이 되는 신청과 이름을 알리는 신청이 달라요. 지금 우리 센터에 부족한 것을 채워 줄 신청을 골라 주세요.' + (game.player.reputation >= 90 ? ' 명성이 이미 높아서 대관으로 더 오르는 폭은 작아요.' : '') : '전부 받을 필요는 없어요. 클래스에 쓸 시간도 남겨 주세요.'}</p></div></div>
         <p className="rental-finish-note"><Icon name="arrow" size={15} />대관 확정 후, 남은 시간에 클래스를 편성해요.</p>
     </aside>
   </section>

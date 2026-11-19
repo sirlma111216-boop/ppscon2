@@ -1,0 +1,137 @@
+{
+  "purpose": "운영 결과 연출 그림 8장, 신뢰 달성 기념 장면 3장, 오지선 브리핑 표정 3장",
+  "appliedOn": "2026-11-19",
+  "tool": "ChatGPT 이미지 생성 (제작자가 알려 준 표기: 'chatgp imagen'. 정확한 모델명은 확인하지 못함)",
+  "sourceArchive": "C:\\Users\\pc\\Downloads\\community-scenes-and-manager-portraits.zip (scenes 11장 각 1536x1024, portraits 3장 각 1086x1448)",
+  "style": "Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean slice-of-life management game, warm daylight, no text, no letters, no logos, no watermarks, complete heads safely framed, adults and seniors of varied ages in everyday Korean clothing.",
+  "processing": "원본 PNG는 수정하지 않음. sharp로 WebP(quality 84) 변환. 결과 연출 600x400, 신뢰 장면 1200x800, 초상 600x800. 잘라내기·보정·글자 추가 없음.",
+  "review": "14장 모두 열어 확인: 지정한 장면과 일치, 읽히는 글자·로고 없음(게시판·쪽지는 빈 면), 초상 3장은 기존 오지선 초상과 같은 인물(머리 모양·초록 카디건·사원증·클립보드). 제작 프롬프트의 카디건 색은 남색이었으나 기존 초상에 맞는 초록으로 나왔다. 사람이 아닌 Claude Code가 본 것임.",
+  "assets": [
+    {
+      "file": "public/center/outcomes-v1/great-culture.webp",
+      "use": "운영 결과 · 대호응이 많았던 계절",
+      "source": "scenes/01-full-craft-class.png",
+      "sourceSha256": "bbb0be5c27b060fb16f34914ffdf1da5b17fb498e56c4d7f2ad96f9b3768cf6d",
+      "bytes": 111984,
+      "size": "600x400",
+      "prompt": "A craft class at its best, every seat filled, participants laughing and holding up finished handmade works, the instructor delighted."
+    },
+    {
+      "file": "public/center/outcomes-v1/great-sport.webp",
+      "use": "운영 결과 · 대호응이 많았던 계절",
+      "source": "scenes/02-full-exercise-class.png",
+      "sourceSha256": "83ec5531cdeb992e25f8cc1ae0ad33e4a2d9429dd8cc5096e04b5ae66a86e2c6",
+      "bytes": 85982,
+      "size": "600x400",
+      "prompt": "A full and energetic community exercise class moving in sync, bright faces, an instructor giving a thumbs-up."
+    },
+    {
+      "file": "public/center/outcomes-v1/great-event.webp",
+      "use": "운영 결과 · 대호응이 많았던 계절",
+      "source": "scenes/03-performance-applause.png",
+      "sourceSha256": "c7ea9edcb1b607ad67495f6eb58c556e8bd4970dc3e72115e16b886000b87e1b",
+      "bytes": 85112,
+      "size": "600x400",
+      "prompt": "A packed small community hall giving warm applause after a neighborhood performance, performers bowing on a modest stage."
+    },
+    {
+      "file": "public/center/outcomes-v1/poor-culture.webp",
+      "use": "운영 결과 · 아쉬움이 많았던 계절",
+      "source": "scenes/04-craft-class-mishap.png",
+      "sourceSha256": "ee1f590aa26ed6388d5a75ca3a9826f5734bc1771004296ca51dc8b19046a051",
+      "bytes": 91106,
+      "size": "600x400",
+      "prompt": "An awkward craft class with several empty seats, spilled paint water on a table, an instructor apologising with a wry smile, gentle comedy, nobody upset."
+    },
+    {
+      "file": "public/center/outcomes-v1/poor-sport.webp",
+      "use": "운영 결과 · 아쉬움이 많았던 계절",
+      "source": "scenes/05-speaker-mishap.png",
+      "sourceSha256": "cefacf2b19207cdbc6197684ea0b21dc6a0fa51227c7d7f098352724c8a4db32",
+      "bytes": 73288,
+      "size": "600x400",
+      "prompt": "A sparsely attended exercise class where the music speaker has stopped, an instructor fiddling with it while three participants wait patiently, light comedy."
+    },
+    {
+      "file": "public/center/outcomes-v1/poor-event.webp",
+      "use": "운영 결과 · 아쉬움이 많았던 계절",
+      "source": "scenes/06-microphone-mishap.png",
+      "sourceSha256": "a68f11bc72a7aa31b70df40ae81c964bd3c8a0b5e80d99a94a809696e3567a15",
+      "bytes": 76474,
+      "size": "600x400",
+      "prompt": "A community hall event with a tangled microphone cable and half-empty rows, a staff member hurrying to fix it, mild and harmless mishap."
+    },
+    {
+      "file": "public/center/outcomes-v1/mood-hot.webp",
+      "use": "운영 결과 · 계절 분위기",
+      "source": "scenes/07-signup-queue.png",
+      "sourceSha256": "14d35fda544a7814d2c701b7ada75f53b6eec9242a7d0658ba8da6c4284a497e",
+      "bytes": 91306,
+      "size": "600x400",
+      "prompt": "A cheerful queue of residents signing up at a community center noticeboard with blank posters, word of mouth spreading, bright morning."
+    },
+    {
+      "file": "public/center/outcomes-v1/mood-cold.webp",
+      "use": "운영 결과 · 계절 분위기",
+      "source": "scenes/08-rainy-quiet-room.png",
+      "sourceSha256": "e9e7956f65ab03bc5d81f3a2c963bcaf31b4816290398490560a0144bcdab2f7",
+      "bytes": 82466,
+      "size": "600x400",
+      "prompt": "A quiet community room on a rainy day with only a couple of participants and many empty chairs, calm rather than sad."
+    },
+    {
+      "file": "public/center/trust-v1/trust-100.webp",
+      "use": "결산 · 신뢰 달성 기념",
+      "source": "scenes/09-vegetable-thanks.png",
+      "sourceSha256": "a21c1ed6c4b31ac7e83a3d2e878f758b10e61a5645895237d8ebfb0c7206751f",
+      "bytes": 317050,
+      "size": "1200x800",
+      "prompt": "Residents greeting staff by name at the community center entrance on a bright morning, a senior handing over a small bag of homegrown vegetables as thanks."
+    },
+    {
+      "file": "public/center/trust-v1/trust-150.webp",
+      "use": "결산 · 신뢰 달성 기념",
+      "source": "scenes/10-thank-you-wall.png",
+      "sourceSha256": "fbac26e8442cb609b7e756931c819492809c41e855f17679dd7b67cfef3fa2a6",
+      "bytes": 294552,
+      "size": "1200x800",
+      "prompt": "A community center lobby wall covered with handwritten thank-you notes shown as blank coloured cards and children's drawings, families passing by and pointing happily."
+    },
+    {
+      "file": "public/center/trust-v1/trust-200.webp",
+      "use": "결산 · 신뢰 달성 기념",
+      "source": "scenes/11-neighborhood-photo.png",
+      "sourceSha256": "4e53f8f514b0a30403a81611228a2909f14fa11bd2db4c184816dea2f26cd400",
+      "bytes": 325228,
+      "size": "1200x800",
+      "prompt": "A whole neighborhood gathered in front of the community center for a group photo, all generations, staff in the middle, festive but modest, late afternoon light."
+    },
+    {
+      "file": "public/center/jiseon-glad.webp",
+      "use": "결산 브리핑 · 오지선 표정",
+      "source": "portraits/01-relieved-proud.png",
+      "sourceSha256": "c361f49990fac4354c1bed612964dc1819eee9d188dc0e3b2e60bf978354da30",
+      "bytes": 80052,
+      "size": "600x800",
+      "prompt": "Portrait 3:4, upper body. The same Korean woman operations manager in her forties with a clipboard, navy cardigan and staff lanyard, smiling brightly with relief and pride, community center office background softly blurred."
+    },
+    {
+      "file": "public/center/jiseon-worried.webp",
+      "use": "결산 브리핑 · 오지선 표정",
+      "source": "portraits/02-thoughtful-concern.png",
+      "sourceSha256": "89402c0b0ca3f1bd629193e7af9a087001067546d0a3878ceb59ba060511f4cd",
+      "bytes": 74150,
+      "size": "600x800",
+      "prompt": "Portrait 3:4, upper body. The same operations manager looking thoughtfully concerned, one hand on her chin, reviewing her clipboard, kind eyes, not distressed."
+    },
+    {
+      "file": "public/center/jiseon-resolved.webp",
+      "use": "결산 브리핑 · 오지선 표정",
+      "source": "portraits/03-determined-encouraging.png",
+      "sourceSha256": "490c9c4e98eec357f5f91aa87615429300929cdabed50dd1cd2091d7f09bcf1d",
+      "bytes": 75630,
+      "size": "600x800",
+      "prompt": "Portrait 3:4, upper body. The same operations manager with a determined encouraging expression, holding her clipboard against her chest, ready to propose a plan."
+    }
+  ]
+}

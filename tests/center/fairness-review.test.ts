@@ -6,7 +6,7 @@ import {publicServiceScore} from '../../src/center/balanceRules.ts'
 import {seasonBriefing} from '../../src/center/briefingAnalysis.ts'
 
 test('unserved residents overflow into another class without duplicating any demand',()=>{
- let state=finishRentalReview(createGame(711))
+ let state=finishRentalReview(createGame(711,true)) // legacy rules keep exact head counts; rules 3 attendance varies
  const one=scheduleClass(state,'A',1,'P06');assert.equal(one.error,undefined)
  const before=previewSeason(one.state)
  const two=scheduleClass(one.state,'E',1,'P06');assert.equal(two.error,undefined)

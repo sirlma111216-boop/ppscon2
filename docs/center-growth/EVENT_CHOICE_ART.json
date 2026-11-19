@@ -1,0 +1,101 @@
+{
+  "purpose": "선택형 계절 이벤트에서 두 번째 대응을 골랐을 때 보여 주는 장면 10장",
+  "appliedOn": "2026-11-19",
+  "tool": "ChatGPT 이미지 생성 (제작자가 알려 준 표기: 'chatgp imagen'. 정확한 모델명은 확인하지 못함)",
+  "sourceArchive": "C:\\Users\\pc\\Downloads\\community-center-illustrations.zip (PNG 10장, 각 1536x1024)",
+  "style": "Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean slice-of-life management game, warm daylight, no text, no letters, no logos, no watermarks, complete heads safely framed, adults and seniors of varied ages in everyday Korean clothing.",
+  "processing": "원본 PNG는 수정하지 않음. sharp로 1200x800 WebP(quality 84)로 변환해 public/center/milestones-v1/<id>-b.webp 로 저장. 잘라내기·보정·글자 추가 없음.",
+  "review": "10장 모두 열어 확인: 지정한 장면과 일치, 읽히는 글자·로고 없음(안내판은 그림 기호만), 잘린 얼굴 없음. 사람이 아닌 Claude Code가 본 것임.",
+  "assets": [
+    {
+      "id": "star-concert-b",
+      "event": "인기 가수 하늘온의 깜짝 콘서트",
+      "choice": "무대·안전 인력 지원",
+      "source": "00-outdoor-stage.png",
+      "sourceSha256": "8de7c2ef12c7ece90e4a9292da6d8f2939100b3e464a13a3e56075be754b4a9c",
+      "bytes": 357594,
+      "prompt": "Community center staff in simple safety vests guide a cheerful crowd beside a small outdoor stage in a brick courtyard at dusk, a fictional singer performing in the background, string lights, calm and well organised."
+    },
+    {
+      "id": "culture-festival-b",
+      "event": "온 동네가 모이는 문화축제",
+      "choice": "체험 부스 직접 운영",
+      "source": "01-craft-booth.png",
+      "sourceSha256": "697c97c2d4a9daea540967833aa33e0b39951921ef1a5cf9bd3edd93e88bc672",
+      "bytes": 310228,
+      "prompt": "Community center staff run a hands-on craft booth at a small neighborhood festival, residents of all ages trying pottery painting and paper crafts at folding tables in front of a brick community center."
+    },
+    {
+      "id": "starlight-cinema-b",
+      "event": "돗자리 위의 별빛 영화제",
+      "choice": "야간 개방·간식 지원",
+      "source": "02-movie-night.png",
+      "sourceSha256": "35adc5de1a406363d89ea01edff798469d9e6bba30f47b1d6b568ceceb0986d5",
+      "bytes": 316456,
+      "prompt": "Evening outdoor movie night on picnic mats in a community center plaza, staff handing out paper cups of barley tea and snacks from a small table, warm lanterns, a blank glowing screen with no image."
+    },
+    {
+      "id": "residents-exhibition-b",
+      "event": "우리 동네 숨은 작가 작품축제",
+      "choice": "전시 도록 제작",
+      "source": "03-gallery-booklet.png",
+      "sourceSha256": "5a4683da7d89b80a93fc3a080ae454a11a7bcd21f318445e8fa0b8c0ed3d5411",
+      "bytes": 251036,
+      "prompt": "A staff member and two resident artists proudly looking through a freshly printed exhibition booklet with blank covers in a lobby gallery, framed paintings and ceramics displayed behind them."
+    },
+    {
+      "id": "donation-b",
+      "event": "작은 응원금이 도착했어요",
+      "choice": "감사 행사로 환원",
+      "source": "04-thank-you-gathering.png",
+      "sourceSha256": "040e775b59f2b4c2eba9818df72f758e4bd5b34e437976da81634a306b5740a4",
+      "bytes": 317298,
+      "prompt": "A small thank-you gathering in a community center lobby, residents sharing rice cakes and tea at a long table, staff bowing politely, handmade garlands, cosy and modest."
+    },
+    {
+      "id": "complaint-b",
+      "event": "안내가 조금 아쉬웠대요",
+      "choice": "안내문 전면 개편",
+      "source": "05-wayfinding.png",
+      "sourceSha256": "4ade75417bc3e3c610da471e7f9f2261e6665a4e3ae15a48dd0f0c99e569983e",
+      "bytes": 222258,
+      "prompt": "Two staff members installing clear new wayfinding boards with simple pictogram icons only in a bright community center corridor, an elderly resident nodding with relief."
+    },
+    {
+      "id": "repair-b",
+      "event": "로비 조명 긴급 교체",
+      "choice": "고효율 조명으로 교체",
+      "source": "06-ceiling-lights.png",
+      "sourceSha256": "2669e9ff8a7dc95afdc5e1a5f3dd8a8b6964ac5d1db57c8effec0b4ff37013ee",
+      "bytes": 213838,
+      "prompt": "A facility technician on a ladder fitting bright new ceiling lights in a community center lobby, the space visibly brighter on one side, a staff member looking up pleased."
+    },
+    {
+      "id": "queue-b",
+      "event": "접수대에 작은 대기줄",
+      "choice": "임시 접수 창구 운영",
+      "source": "07-reception-desk.png",
+      "sourceSha256": "79bc16ba349310954a386d1cb1e0a78f03fbf0db2fe15b1a8417646b507fb037",
+      "bytes": 241190,
+      "prompt": "A second temporary reception desk opened beside the main counter in a community center lobby, two short orderly lines, staff smiling and residents relaxed."
+    },
+    {
+      "id": "newsletter-b",
+      "event": "동네 소식지에 소개됐어요",
+      "choice": "특집 기사에 협조",
+      "source": "08-reporter-craft-class.png",
+      "sourceSha256": "22512991bfae5bc63635329cb368a3aa75f8b9c0d834a1bcd7ceb899ef1d233f",
+      "bytes": 263572,
+      "prompt": "A local reporter with a camera photographing a lively craft class in a community center, a staff member arranging residents' finished works on a table for the photo."
+    },
+    {
+      "id": "volunteer-b",
+      "event": "봉사자들의 작은 도움",
+      "choice": "봉사자 감사 모임",
+      "source": "09-volunteer-plants.png",
+      "sourceSha256": "e9fd3b14ca911d1104e710001fc09d0a26e5472d68f4536c97c30da827308f9a",
+      "bytes": 291668,
+      "prompt": "Staff presenting small potted plants to a group of resident volunteers in aprons in a sunny community room, warm applause, tidy shelves behind them."
+    }
+  ]
+}

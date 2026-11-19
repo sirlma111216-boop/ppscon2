@@ -141,7 +141,7 @@ test('financial evaluation caps wealth, penalizes operating deficits and records
 })
 
 test('operating actions enter the financial ledger once while capital procurement remains separate',()=>{
-  let game=createGame();game.player.cash=10000
+  let game=createGame(undefined,true);game.player.cash=10000 // legacy rules: fixed training price; rules 3 is in variable-outcomes.test.ts
   game.player.xp.culture=1 // A prior class unlocks staff training in this ledger fixture.
   game=buyEquipment(game,'E01','A').state
   game=collectFacilityBids(postFacilityTender(game,'C').state,'C').state
@@ -195,6 +195,8 @@ test('top and bottom three budget bands use the full ten-center ranking',()=>{
 
 test('equal evaluation scores receive unique reproducible ranks by institution identity',()=>{
   let game=createGame();game.year=2;game.season=3
+  // A choice event would let identical centres answer differently; this test is about breaking ties.
+  game.eventDeck![7]=null
   for(const inst of institutions(game)){
     inst.cash=0;inst.reserved=0;inst.rentalRequests=[];inst.evaluationStats.grants=0
   }

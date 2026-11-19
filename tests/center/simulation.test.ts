@@ -213,7 +213,7 @@ test('invalid moves never spend money or mutate the original state',()=>{
 })
 
 test('preview is deterministic and read-only, with duplicate settlement guards',()=>{
-  let state=completeInstallation(purchase(createGame(),'E01','A'))
+  let state=completeInstallation(purchase(createGame(undefined,true),'E01','A')) // legacy rules: settlement equals forecast
   assert.equal(runSeason(state),state,'rental review must finish before running')
   state=finishRentalReview(state)
   state=setProgram(setProgram(state,'A',0,'P01'),'A',1,'P02')
@@ -332,8 +332,8 @@ test('healthy management and reputation improve the next fixed rental offer set'
   assert.deepEqual(nextSeason(low).player.rentalRequests,fewer)
 })
 
-test('rentals earn cash while taught classes contribute substantially more reputation',()=>{
-  const base=completeInstallation(purchase(purchase(createGame(20261105),'E01','A'),'E02','B'))
+for(const legacy of [true,false])test(`rentals earn cash while taught classes contribute more reputation (${legacy?'legacy rules':'rules 3'})`,()=>{
+  const base=completeInstallation(purchase(purchase(createGame(20261105,legacy),'E01','A'),'E02','B'))
   const rentals=finishRentalReview(acceptAvailable(structuredClone(base)))
   let classes=finishRentalReview(structuredClone(base))
   for(let slot=0;slot<5;slot++){
@@ -347,7 +347,8 @@ test('rentals earn cash while taught classes contribute substantially more reput
   assert.ok(classReport.classRevenue>0)
   assert.equal(classReport.rentalRevenue,0)
   assert.ok(rentalReport.profit>classReport.profit)
-  assert.ok(classReport.reputationChange>rentalReport.reputationChange+1)
+  // Rules 3 ties a name to class quality, so untrained first-season classes lead by less than under the legacy cap.
+  assert.ok(classReport.reputationChange>rentalReport.reputationChange+(legacy?1:.25),`${classReport.reputationChange} vs ${rentalReport.reputationChange}`)
   assert.equal(rentalReport.revenue,Math.round((rentalReport.rentalRevenue+rentalReport.classRevenue+(rentalReport.eventImpact?.cash??0)+(rentalReport.eventImpact?.revenue??0))*100)/100)
 })
 

@@ -15,8 +15,8 @@ import type {CampusProjectId} from '../../src/center/campusProjects.ts'
 import {awardFacilityContract, collectFacilityBids, getFacilityProject, postFacilityTender} from '../../src/center/facilityProjects.ts'
 
 // Funded fixtures isolate contract/accounting behavior from the separate balance bot.
-function funded(seed=20261106):GameState {
-  const state=createGame(seed)
+function funded(seed=20261106,legacyRules=false):GameState {
+  const state=createGame(seed,legacyRules)
   // Isolate construction accounting from separately tested seasonal event effects.
   state.eventDeck=Array(28).fill(null)
   state.player.cash=20000
@@ -154,7 +154,8 @@ for(const [tier,weeks] of [[0,9],[1,18],[2,31]]){
 }
 
 test('independent campus projects award reputation exactly once and outside the class-growth cap',()=>{
-  let state=contract(funded(),'garden',0)
+  // Legacy rules: exact figures. Under rules 3 a name above 30 also fades a little each week.
+  let state=contract(funded(undefined,true),'garden',0)
   const garden=getCampusProject(state.player,'garden')!,gardenBid=garden.bids[0]
   const gardenGain=Math.round(CAMPUS_SCOPES[0].reputation*gardenBid.finalQuality/100)
   state=operate(state)
@@ -182,7 +183,8 @@ test('independent campus projects award reputation exactly once and outside the 
 })
 
 test('completed campus benefits still improve experience and fixed rental quotes at reputation 100',()=>{
-  let state=contract(funded(),'garden',0)
+  // Legacy rules: reputation holds at 100. Rules 3 fading is covered in variable-outcomes.test.ts.
+  let state=contract(funded(undefined,true),'garden',0)
   state.player.reputation=100
   state=operate(state)
   assert.equal(state.player.reputation,100)

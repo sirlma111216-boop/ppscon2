@@ -7,7 +7,8 @@ test('won formatting changes presentation only, including decimal balances and l
  assert.equal(legacyMoneyText('계약 · 1,800점'),'계약 · 18,000,000원')
 })
 test('class outlook is deterministic, read-only, and matches actual direct class receipts and costs',()=>{
- let game=buyEquipment(createGame(102),'E01','E').state
+ // Legacy rules: the forecast equals the settlement. Rules 3 varies week to week on purpose (variable-outcomes.test.ts).
+ let game=buyEquipment(createGame(102,true),'E01','E').state
  game=finishRentalReview(nextSeason(runSeason(finishRentalReview(game))))
  const before=JSON.stringify(game),a=previewClass(game,'E','P01',1),b=previewClass(game,'E','P01',1)
  assert.deepEqual(a,b);assert.equal(JSON.stringify(game),before);assert.equal(a.assumed,false)

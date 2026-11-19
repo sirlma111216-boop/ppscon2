@@ -1,0 +1,110 @@
+{
+  "purpose": "이웃 센터 접점 사건 3장, 계절 중간 점검 3장, 수강생 이야기 5장",
+  "appliedOn": "2026-11-19",
+  "tool": "ChatGPT 이미지 생성으로 추정 (제작자가 2026-11-19에 앞선 전달분을 두고 '그림을 만든 도구는 모두 chatgp imagen'이라고 알려 줌. 이 전달분은 따로 확인받지 않았고 정확한 모델명도 확인하지 못함)",
+  "sourceArchive": "C:\\Users\\pc\\Downloads\\community-midseason-rivals-stories.zip (WebP 11장, 각 1536x1024)",
+  "style": "Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean slice-of-life management game, warm daylight, no text, no letters, no logos, no watermarks, complete heads safely framed, adults and seniors of varied ages in everyday Korean clothing.",
+  "processing": "전달받은 WebP는 수정하지 않음. sharp로 WebP(quality 84)로 다시 저장: 사건 1200x800(public/center/milestones-v1/), 중간 점검과 이야기 900x600(public/center/midseason-v1/, public/center/stories-v1/). 잘라내기·보정·글자 추가 없음.",
+  "review": "11장 모두 축소판(장당 960x640)으로 열어 확인: 지정한 장면과 일치, 읽히는 글자·로고는 보이지 않음(포스터·전단·수료증·편지는 빈 면). joint-event, midseason-promotion, midseason-repair, story-contest 배경에 남산타워를 닮은 탑이 보인다. midseason-repair는 프롬프트의 빈 스튜디오와 달리 뒤쪽에 수강생이 있다. 사람이 아닌 Claude Code가 본 것임.",
+  "assets": [
+    {
+      "file": "public/center/milestones-v1/rival-visit.webp",
+      "source": "rival-visit.webp",
+      "sourceSha256": "48ace030417444db0957c0ef6bfa96567c1ea81a063759372a7129eb62beeaa2",
+      "bytes": 216920,
+      "size": "1200x800",
+      "use": "계절 사건 · 이웃 센터와의 접점",
+      "prompt": "A director from a neighboring community center visiting to look around, shaking hands with staff in a bright lobby, friendly rivalry in their smiles."
+    },
+    {
+      "file": "public/center/milestones-v1/joint-event.webp",
+      "source": "joint-event.webp",
+      "sourceSha256": "3f9537900c747f29ab35cfbf30f43519b053bfa864ea39e93b3895d0878d1f53",
+      "bytes": 294086,
+      "size": "1200x800",
+      "use": "계절 사건 · 이웃 센터와의 접점",
+      "prompt": "Two community center teams in different coloured staff lanyards co-hosting an outdoor neighborhood sports day, tug-of-war in the background."
+    },
+    {
+      "file": "public/center/milestones-v1/poached-instructor.webp",
+      "source": "poached-instructor.webp",
+      "sourceSha256": "4f62d440cdc6a7f577a6a3ce18323c64aac6de64613d56b33766176bf8da3ed9",
+      "bytes": 146326,
+      "size": "1200x800",
+      "use": "계절 사건 · 이웃 센터와의 접점",
+      "prompt": "A popular instructor apologetically telling a staff member about an offer from another center, both standing in a studio doorway, respectful and slightly awkward."
+    },
+    {
+      "file": "public/center/midseason-v1/meeting.webp",
+      "source": "midseason-meeting.webp",
+      "sourceSha256": "f1a3041d38e1ccd2815d31ff9effbedf08f22ba7bca9db67a5f87d11cb90a5df",
+      "bytes": 143586,
+      "size": "900x600",
+      "use": "계절 중간 점검 화면",
+      "prompt": "A short mid-season staff meeting around a small table in a community center office, a wall calendar with blank squares half filled with stickers, three staff discussing calmly."
+    },
+    {
+      "file": "public/center/midseason-v1/promotion.webp",
+      "source": "midseason-promotion.webp",
+      "sourceSha256": "38cd50e6ff6c5c9c32edc92ae45c42a53588473da52ac9f9473a71d00c0c0927",
+      "bytes": 187834,
+      "size": "900x600",
+      "use": "계절 중간 점검 화면",
+      "prompt": "Staff pinning colourful blank posters on a neighborhood noticeboard and handing blank flyers to passers-by on a sunny street corner."
+    },
+    {
+      "file": "public/center/midseason-v1/repair.webp",
+      "source": "midseason-repair.webp",
+      "sourceSha256": "0c03db3ab04c37c170af7eb6505d223dff32849f56347f1e1caae0acc1104943",
+      "bytes": 138340,
+      "size": "900x600",
+      "use": "계절 중간 점검 화면",
+      "prompt": "A facility staff member doing quick maintenance on exercise equipment in an empty studio between classes, toolbox open, tidy and efficient."
+    },
+    {
+      "file": "public/center/stories-v1/exhibition.webp",
+      "source": "story-exhibition.webp",
+      "sourceSha256": "bd1ff87ee8240ca398672c45cde8ca09aa691d6704a4a694a432e5d26e6fbb87",
+      "bytes": 158894,
+      "size": "900x600",
+      "use": "결산 · 수강생 이야기",
+      "prompt": "Adult craft class students nervously and proudly setting up their first small exhibition in a community center corridor."
+    },
+    {
+      "file": "public/center/stories-v1/graduation.webp",
+      "source": "story-graduation.webp",
+      "sourceSha256": "08236b11692c3b75ea6d13f9cf7aa3c42b8a7cf8dff99a44bc6218c1d0d3f2cc",
+      "bytes": 110328,
+      "size": "900x600",
+      "use": "결산 · 수강생 이야기",
+      "prompt": "A modest completion ceremony for a digital skills class, seniors holding certificates with blank paper, an instructor clapping."
+    },
+    {
+      "file": "public/center/stories-v1/contest.webp",
+      "source": "story-contest.webp",
+      "sourceSha256": "37eb832b98a8378ad7ced549e640397bddc28a7a2d218ffd2ab5edf273eba2bc",
+      "bytes": 135614,
+      "size": "900x600",
+      "use": "결산 · 수강생 이야기",
+      "prompt": "A community dance class returning with a small trophy from a local contest, hugging in the studio, the instructor wiping a happy tear."
+    },
+    {
+      "file": "public/center/stories-v1/new-friend.webp",
+      "source": "story-new-friend.webp",
+      "sourceSha256": "b4aade23a8945ed3cbec5f6bfd843c74a0902f696248f74984d32d8e1901800c",
+      "bytes": 162078,
+      "size": "900x600",
+      "use": "결산 · 수강생 이야기",
+      "prompt": "Two residents who met in a class chatting over tea in the community center lounge, one much older than the other, an easy friendship."
+    },
+    {
+      "file": "public/center/stories-v1/teacher-letter.webp",
+      "source": "story-teacher-letter.webp",
+      "sourceSha256": "ee70edbdc8a1af89d59a09c65665fa62177affa921848c706c5e21bff5784c00",
+      "bytes": 119908,
+      "size": "900x600",
+      "use": "결산 · 수강생 이야기",
+      "prompt": "An instructor reading a handwritten thank-you letter shown as a page with soft illegible strokes in a quiet classroom after class, touched."
+    }
+  ]
+}

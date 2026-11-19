@@ -4,11 +4,11 @@ import { createRoot } from 'react-dom/client'
 const root = document.getElementById('root')
 if (!root) throw new Error('앱을 표시할 영역을 찾지 못했습니다.')
 
-// 주소 끝에 #dev-assets 를 붙이면 개발용 이미지 자료실이 열린다. 게임과 스타일을 섞지 않도록 따로 불러온다.
-const isGallery = window.location.hash === '#dev-assets'
+// 개발 서버에서 주소 끝에 #dev-assets 를 붙이면 이미지 자료실이 열린다. 배포본에는 자료실과 원본 그림을 싣지 않는다.
+const isGallery = import.meta.env.DEV && window.location.hash === '#dev-assets'
 window.addEventListener('hashchange', () => window.location.reload())
 
-const Screen = isGallery
+const Screen = import.meta.env.DEV && isGallery
   ? lazy(() => import('./dev/AssetGallery'))
   : lazy(async () => {
       await import('./center/center.css')

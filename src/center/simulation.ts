@@ -2,7 +2,8 @@ import { wonAmount } from './currency.ts'
 import { advanceRoomRemodels, roomRemodelBonus, validateRoomRemodel, planRivalRemodel } from './roomRemodel.ts'
 import type { RoomRemodel } from './roomRemodel'
 import { publicServiceScore, seasonReputationGrowthLimit, rentalOperatingCostRate } from './balanceRules.ts'
-import { getSeasonEvent, createEventDeck, migrateEventDeck, SEASON_EVENTS } from './seasonEvents.ts'
+import { getSeasonEvent, createEventDeck, migrateEventDeck, expandEventDeck, SEASON_EVENTS, seasonIntroKey, applyEventChoice, EVENT_CLOSURE_REASONS, RIVAL_TOKEN } from './seasonEvents.ts'
+import type { SeasonEvent } from './seasonEvents.ts'
 import { advanceFacilityProjects, facilityUpkeep, getFacilityRentMultiplier, planRivalFacility, validateFacilityProjects } from './facilityProjects.ts'
 import type { FacilityProject } from './facilityProjects.ts'
 import {advanceCampusProjects,campusBenefits,campusUpkeep,migrateCampusProjects,planRivalCampus,validateCampusProjects} from './campusProjects.ts'
@@ -130,7 +131,7 @@ export interface Room { remodel?:RoomRemodel; id:RoomId; open:boolean; equipment
 export interface Equipment { id:string; instanceId:string; room:RoomId|null; condition:number; ready:boolean; stored?:boolean }
 export interface Task { kind:'install'|'maintain'|'train'|'open'; room:RoomId; remaining:number; equipment?:string; expertise?:Expertise }
 interface RawStats { publicServed:number; publicRequested:number; experienceSum:number; experienceWeight:number; use:number; weeks:number; learningServed?:number; learningWeeks?:number }
-export interface EvaluationStats extends RawStats { revenue:number; cost:number; grants:number; seasons:number; reputationSum:number }
+export interface EvaluationStats extends RawStats { revenue:number; cost:number; grants:number; seasons:number; reputationSum:number; /** Points an administrative inspection added to the financial score. */ financeBonus?:number }
 export type EvaluationComponent = 'reputation'|'financial'|'satisfaction'|'publicService'
 export interface EvaluationRecord {
   year:number; score:number; rank:number; participants:number
@@ -148,6 +149,7 @@ export const EVALUATION_COMPONENTS:{key:EvaluationComponent;label:string;weight:
 export interface RentalRequest {
   id:string; room:RoomId; slot:number; client:string; title:string; program:ProgramId
   attendees:number; fee:number; cost:number; status:'pending'|'accepted'|'declined'
+  trait?:RentalTrait
 }
 export interface Institution {
   id:string; name:string; archetype:string; cash:number; reserved:number; plan:Plan
@@ -155,18 +157,43 @@ export interface Institution {
   score:number; publicScore:number; experienceScore:number; utilization:number
   history:number[]; lastPurchase:string; pendingTasks:Task[]; baseReserve:number
   yearStats:RawStats; supportContract:boolean; priceMode:'discount'|'standard'|'premium'
-  guideMode:'fast'|'welcome'; trained:boolean; annualScores:number[]; rentalRequests:RentalRequest[]; facilityProjects:FacilityProject[]; campusProjects:CampusProject[]
+  guideMode:'fast'|'welcome'; trained:boolean; streaks?:Partial<Record<ProgramId,ClassStreak>>; annualScores:number[]; rentalRequests:RentalRequest[]; facilityProjects:FacilityProject[]; campusProjects:CampusProject[]
   annualBudget:number; evaluations:EvaluationRecord[]; evaluationStats:EvaluationStats
 }
-export interface Activity { room:RoomId; slot:number; program:ProgramId; attendees:number; capacity:number; experience:number }
+export type Outcome = 'great'|'good'|'flat'|'poor'
+export const OUTCOMES:Outcome[] = ['great','good','flat','poor']
+export const OUTCOME_LABELS:Record<Outcome,string> = {great:'대호응',good:'순조',flat:'평범',poor:'아쉬움'}
+/** Display-only season totals for one weekly session; never read back by the simulation. */
+export type SeasonMood='hot'|'steady'|'cold'
+export const MOOD_LABELS:Record<SeasonMood,string>={hot:'호조',steady:'평소',cold:'부진'}
+/** A class catches on or falls flat for a whole season; trained staff make a cold season rarer. */
+export function moodOdds(level:number):{hot:number;cold:number} { const l=Math.max(0,Math.min(5,level)); return {hot:Math.round((.15+.03*l)*100)/100,cold:Math.round((.25-.04*l)*100)/100} }
+export interface SessionSummary { mood?:SeasonMood; room:RoomId; slot:number; program:ProgramId; rental:boolean; weeks:number; attendees:number; revenue:number; cost:number; reputation:number; satisfaction:number; tally:[number,number,number,number] }
+export interface TrainingResult { kind:Expertise; gain:number; level:number; leveledUp:boolean; grade:'우수'|'보통'|'미흡' }
+export interface Activity { room:RoomId; slot:number; program:ProgramId; attendees:number; capacity:number; experience:number; outcome?:Outcome; revenue?:number; reputation?:number }
 export interface OperationIssue {room:RoomId;slot:number;program:ProgramId;reason:string;weeks:number;lastWeek:boolean}
 export interface ServiceMix {classVisits:number; freeClassVisits:number; paidClassVisits:number; rentalVisits:number}
 export interface PeerComparison {count:number; visits:number; profit:number; reputationChange:number; serviceMix:ServiceMix}
+export type StoryKind='exhibition'|'graduation'|'contest'|'new-friend'|'teacher-letter'
+/** Seasons a class has run without a break, and how many of its stories have been told. */
+export interface ClassStreak { seasons:number; told:number }
+export interface StoryRecord { program:ProgramId; kind:StoryKind; seasons:number; reputation:number; trust:number }
+export type MidseasonChoice='steady'|'promotion'|'repair'
+export interface MidseasonRecord { choice:MidseasonChoice; cost:number; joined?:number; restored?:number }
+export interface EventImpact {
+  id:string; cash:number; revenue:number; cost:number; reputation:number
+  trust?:number; closed?:number; featured?:{room:RoomId;slot:number;program:ProgramId;mood:'hot'|'cold'}
+  audience?:number; repaired?:number; learned?:{kind:Expertise;gain:number}; financial?:number; noTraining?:true
+}
 export interface SeasonReport {
   contender?:{rank:number;score:number;thirdScore:number;leaderScore:number;priority:EvaluationComponent;period:'season'|'evaluation'}
   serviceMix?:ServiceMix
   peerComparison?:PeerComparison
   operationIssues?:OperationIssue[]
+  sessions?:SessionSummary[]
+  trustChange?:number
+  training?:TrainingResult[]
+  eventChoice?:number
   fixedCost?:number
   unpaidFixedCost?:number
   retiredSupportRefund?:number
@@ -176,7 +203,9 @@ export interface SeasonReport {
   weekly:{week:number;revenue:number;cost:number;visits:number}[]
   beforeCash:number; afterCash:number; annual:boolean
   rentalRevenue:number; classRevenue:number; rentalCost:number; classCost:number; reputationChange:number
-  eventImpact?:{id:string;cash:number;revenue:number;cost:number;reputation:number}
+  eventImpact?:EventImpact
+  story?:StoryRecord
+  midseason?:MidseasonRecord
   breakdownAvailable?:boolean
   participants?:number
   evaluation?:EvaluationRecord
@@ -184,13 +213,17 @@ export interface SeasonReport {
 export interface GameState {
   version:2; seed:number; year:number; season:number; phase:'planning'|'review'|'ending'
   eventDeck?:Array<string|null>; campaignVersion?:2; seasonIntroSeen?:string; specialtyRulesVersion?:1; migrationNotices?:string[]
+  /** 3 = games started with variable outcomes, staff training levels and choice events. Older saves keep their rules. */
+  rules?:3; eventChoices?:Record<string,number>
+  /** 2 = the event deck was drawn from (or refreshed with) the catalogue that includes the 2026-11-19 choice events. */
+  eventCatalog?:2
   planningStage:'rentals'|'classes'; player:Institution; rivals:Institution[]
   lastReport:SeasonReport|null; history:SeasonReport[]
 }
 export interface DemandGroup { id:string; title:string; programs:ProgramId[]; people:number; slots:number[]; maxFee:number; public:boolean; returning:number }
 export interface MutationResult { state:GameState; error?:string }
 export interface ProgramRequirements { ready:boolean; roomCompatible:boolean; missingFamilies:string[]; pendingFamilies:string[]; wornFamilies:string[]; spaceRequired:number; spaceReady:boolean }
-type Calendar = Pick<GameState,'seed'|'year'|'season'>
+type Calendar = Pick<GameState,'seed'|'year'|'season'>&Partial<Pick<GameState,'rules'|'eventChoices'|'eventDeck'>>
 const emptyStats = ():RawStats => ({publicServed:0,publicRequested:0,experienceSum:0,experienceWeight:0,use:0,weeks:0,learningServed:0,learningWeeks:0})
 const emptyEvaluationStats = (grants=0):EvaluationStats => ({...emptyStats(),revenue:0,cost:0,grants,seasons:0,reputationSum:0})
 const emptyPlan = ():Plan => Object.fromEntries(ROOM_IDS.map(id=>[id,[null,null,null,null,null]])) as Plan
@@ -199,6 +232,43 @@ const maintenanceCost = (inst:Institution):number => inst.inventory.reduce((sum,
 const hasFamily = (inst:Institution,family:string,room?:RoomId):boolean => inst.inventory.some(e=>!e.stored&&OFFER[e.id]?.family===family&&(room===undefined||e.room===room)&&e.ready&&e.condition>=20)
 const actualBaseCost = (inst:Institution):number => 80-(hasFamily(inst,'energy')?12:0)
 export function getLevel(xp:number):number { return [0,20,60,120,200].filter(n=>xp>=n).length-1 }
+/** Rules 3: staff training levels 0–5. Training, not routine operation, is the main source of progress. */
+export const STAFF_LEVELS=[0,30,80,150,240,350]
+export const STAFF_MAX_LEVEL=5
+export function staffLevel(xp:number,rules?:number):number { return rules===3?STAFF_LEVELS.filter(n=>xp>=n).length-1:getLevel(xp) }
+export function trainingCost(level:number,rules?:number):number { return rules===3?[20,30,45,60,80][Math.max(0,Math.min(4,level))]:12 }
+/** Weekly result odds for one class. Better-trained staff shift the odds; nothing is ever guaranteed. */
+export function outcomeOdds(level:number):Record<Outcome,number> { const l=Math.max(0,Math.min(STAFF_MAX_LEVEL,level)); return {great:round(.05+.05*l),good:round(.25+.03*l),flat:round(.40-.03*l),poor:round(.30-.05*l)} }
+/** Rentals are steadier: only a well-received or an awkward week moves the result. */
+export function rentalOdds(level:number):{great:number;poor:number} { const l=Math.max(0,Math.min(STAFF_MAX_LEVEL,level)); return {great:round(.10+.04*l),poor:round(.20-.03*l)} }
+export function classStaffLevel(inst:Institution,program:ProgramId,rules?:number):number {
+  const kind=PROGRAM[program]?.kind
+  if(kind==='culture'||kind==='sport'||kind==='event')return staffLevel(inst.xp[kind],rules)
+  return Math.floor((staffLevel(inst.xp.culture,rules)+staffLevel(inst.xp.sport,rules)+staffLevel(inst.xp.event,rules))/3)
+}
+/** Rules 3 growth tuning. A name is earned by well-run, well-balanced classes and has to be kept up. */
+export const REPUTATION_RATE=.0036
+export const REPUTATION_FADE=.01
+export const POOR_WEEK_REPUTATION=.015
+/** How much room is left to grow: wide at first, steeply narrower near the top so the last points take sustained excellence. */
+export function reputationHeadroom(reputation:number):number { return clamp(Math.pow(clamp((100-reputation)/70,0,1),1.5),.02,1) }
+/** A dull class (satisfaction 66 or less) barely registers; 90 counts in full; an outstanding class counts a little extra. */
+export function reputationQuality(experience:number):number { return clamp((experience-60)/30,.2,1.25) }
+/** A centre that neglects public service grows its name more slowly. Uses last season's public-service result. */
+export function reputationBalance(inst:Pick<Institution,'publicScore'|'history'>):number { return inst.history.length?clamp(.4+.6*inst.publicScore/80,.4,1):.8 }
+/** The satisfaction a centre must keep up for trust to hold: the more it is trusted, the more is expected. */
+export function trustExpectation(trust:number):number { return 70+trust/12 }
+export type RentalTrait='regular'|'commercial'|'community'|'culture'|'education'
+export interface RentalTraitRule { label:string; summary:string; fee:number; reputation:number; wear:number; learning:number; publicShare:number; satisfaction:number; clients:string[] }
+/** Rules 3: every request trades rent against what else the centre needs. Values are per weekly booking. */
+export const RENTAL_TRAITS:Record<RentalTrait,RentalTraitRule>={
+  regular:{label:'정기 모임',summary:'무난한 수입 · 다른 영향 적음',fee:1,reputation:.003,wear:1,learning:0,publicShare:0,satisfaction:0,clients:['동네 생활모임','지역 독서회','마을 동아리','생활문화 모임']},
+  commercial:{label:'기업·상업 행사',summary:'수입 큼 · 명성 없음 · 시설 부담 큼',fee:1.5,reputation:0,wear:2.5,learning:0,publicShare:0,satisfaction:-3,clients:['지역 기업 교육팀','브랜드 홍보 행사','동네 소상공인회','분양 설명회 기획사']},
+  community:{label:'주민 공익 모임',summary:'수입 적음 · 공공서비스·만족 기여',fee:.6,reputation:.01,wear:.8,learning:0,publicShare:.4,satisfaction:4,clients:['주민자치회','어르신 사랑방','돌봄 품앗이 모임','마을 봉사단']},
+  culture:{label:'지역 예술 단체',summary:'수입 보통 이하 · 명성 상승',fee:.8,reputation:.02,wear:1.2,learning:0,publicShare:0,satisfaction:2,clients:['청년 기획단','동네 극단','시민 합주단','마을 작가 모임']},
+  education:{label:'교육·세미나',summary:'수입 보통 · 교육 참여 실적 인정',fee:.95,reputation:.006,wear:1,learning:.5,publicShare:0,satisfaction:0,clients:['주민 학습회','평생학습 동아리','진로 특강 준비모임','생활법률 강좌팀']},
+}
+export const rentalTraitOf=(request:{trait?:RentalTrait}):RentalTraitRule|undefined=>request.trait?RENTAL_TRAITS[request.trait]:undefined
 export function freeCash(inst:Institution):number { return round(Math.max(0,inst.cash-inst.reserved)) }
 export function isRentalProgram(id:ProgramId|string):boolean { return ['P05','P08','P10','P36','P37','P38'].includes(id) }
 /** Room purpose only; opening, equipment installation and floor area are separate checks. */
@@ -240,12 +310,17 @@ export function getProgramRequirements(inst:Institution,room:RoomId,program:Prog
   return {ready:roomCompatible&&spaceReady&&!missingFamilies.length&&!pendingFamilies.length&&!wornFamilies.length,roomCompatible,missingFamilies,pendingFamilies,wornFamilies,spaceRequired:p.minArea,spaceReady}
 }
 export function canRunProgram(inst:Institution,room:RoomId,program:ProgramId):boolean { return getProgramRequirements(inst,room,program).ready }
+/** Equipment ordered in this planning phase may already be scheduled; the class starts once installation finishes. */
+export function canPlaceProgram(inst:Institution,room:RoomId,program:ProgramId):boolean {
+  const r=getProgramRequirements(inst,room,program)
+  return r.roomCompatible&&r.spaceReady&&!r.missingFamilies.length&&!r.wornFamilies.length
+}
 export function getProgramWeeklyCount(inst:Institution,program:ProgramId):number { return ROOM_IDS.reduce((sum,room)=>sum+inst.plan[room].filter(id=>id===program).length,0) }
-export function getProgramPlacementError(inst:Institution,room:RoomId,slot:number,program:ProgramId):string|undefined {
+export function getProgramPlacementError(inst:Institution,room:RoomId,slot:number,program:ProgramId,allowPending=true):string|undefined {
   if(!ROOM_IDS.includes(room)||!Number.isInteger(slot)||slot<0||slot>=BLOCKS.length)return '편성할 공간과 시간을 확인해 주세요.'
   if(!PROGRAM[program]||isRentalProgram(program))return '편성할 클래스를 골라 주세요.'
   if(getRentalAt(inst,room,slot))return '승인한 대관을 취소한 뒤 편성할 수 있어요.'
-  if(!canRunProgram(inst,room,program))return '이 방의 용도·면적과 필수 설비 설치·정비를 확인해 주세요.'
+  if(!(allowPending?canPlaceProgram:canRunProgram)(inst,room,program))return '이 방의 용도·면적과 필수 설비 설치·정비를 확인해 주세요.'
   const limit=PROGRAM[program].weeklyLimit
   if(limit&&getProgramWeeklyCount(inst,program)-(inst.plan[room][slot]===program?1:0)>=limit)return `${PROGRAM[program].shortName}는 센터 전체에서 주 ${limit}회까지 편성해요.`
 }
@@ -264,17 +339,27 @@ function generateRentals(inst:Institution,state:Calendar):RentalRequest[] {
     const managementBonus=managementDraw<clamp((management-60)/40,0,1)*.5?1:0
     const count=1+Math.floor(inst.reputation/40)+managementBonus
     const first=hash(`${state.seed}:${state.year}:${state.season}:${inst.id}:${room.id}:slot`)%5
-    for(let index=0;index<count+(room.id==='A'||room.id==='C'?1:0);index++){
-      const alternate=index===count&&(room.id==='A'||room.id==='C')
+    const rules3=state.rules===3,hasAlternate=rules3||room.id==='A'||room.id==='C'
+    for(let index=0;index<count+(hasAlternate?1:0);index++){
+      const alternate=index===count&&hasAlternate
       const slot=alternate?first:(first+index*2)%5
       const n=hash(`${state.seed}:${state.year}:${state.season}:${inst.id}:${room.id}:${index}`)
       const eligibleRentals=PROGRAMS.filter(p=>isRentalProgram(p.id)&&canRunProgram(inst,room.id,p.id))
       const program:ProgramId=eligibleRentals[n%eligibleRentals.length]?.id??'P05'
       const premium=program==='P08'?1.45:program==='P10'?1.2:program==='P36'?1.12:program==='P37'?1.1:program==='P38'?1.3:1
       const condition=.55+inst.reputation*.005+management*.003
-      const fee=round(definition.rentalBase*condition*(.95+(n%11)/100)*premium*getFacilityRentMultiplier(inst,room.id)*(1+campusBenefits(inst).rental))
+      let trait:RentalTrait|undefined
+      if(rules3){
+        // The competing request for the same hour always offers a different trade-off.
+        const pool:RentalTrait[]=program==='P08'?['culture','commercial','culture']:program==='P10'?['education','commercial','education']:program==='P36'?['culture','community']:program==='P37'?['community','education']:program==='P38'?['commercial','culture']:['regular','community','commercial','culture','education']
+        trait=pool[(n>>>8)%pool.length]
+        const rival=alternate?result.find(r=>r.room===room.id&&r.slot===slot):undefined
+        if(rival&&rival.trait===trait)trait=trait==='commercial'?'community':'commercial'
+      }
+      const traitRule=trait?RENTAL_TRAITS[trait]:undefined
+      const fee=round(definition.rentalBase*condition*(.95+(n%11)/100)*premium*getFacilityRentMultiplier(inst,room.id)*(1+campusBenefits(inst).rental)*(traitRule?.fee??1))
       const attendees=Math.max(4,Math.min(roomCapacity(room.id,program),Math.floor(definition.capacity*(.35+(n%40)/100))))
-      result.push({id:`${state.year}-${state.season}-${inst.id}-${room.id}-${index}`,room:room.id,slot,client:clients[n%clients.length],title:program==='P36'?'주민 작품 전시 대관':program==='P37'?'공예 체험 행사 대관':program==='P38'?'단체 프로필 촬영 대관':program==='P08'?'정기 공연 대관':program==='P10'?'발표·세미나 대관':room.id==='B'?'동호회 공간 대관':'정기 모임 대관',program,attendees,fee,cost:round(Math.max(1,definition.rentalBase*.12)+fee*rentalOperatingCostRate(state.year)+(program==='P08'?2:program==='P10'?1:0)),status:'pending'})
+      result.push({...(trait?{trait}:{}),id:`${state.year}-${state.season}-${inst.id}-${room.id}-${index}`,room:room.id,slot,client:traitRule?traitRule.clients[n%traitRule.clients.length]:clients[n%clients.length],title:program==='P36'?'주민 작품 전시 대관':program==='P37'?'공예 체험 행사 대관':program==='P38'?'단체 프로필 촬영 대관':program==='P08'?'정기 공연 대관':program==='P10'?'발표·세미나 대관':room.id==='B'?'동호회 공간 대관':'정기 모임 대관',program,attendees,fee,cost:round(Math.max(1,definition.rentalBase*.12)+fee*rentalOperatingCostRate(state.year)+(program==='P08'?2:program==='P10'?1:0)),status:'pending'})
     }
   }
   // Local rental demand is shared across the center, not multiplied endlessly by rooms.
@@ -284,9 +369,10 @@ function generateRentals(inst:Institution,state:Calendar):RentalRequest[] {
   const keys=new Set(selected.map(r=>`${r.room}:${r.slot}`))
   return result.filter(r=>keys.has(`${r.room}:${r.slot}`))
 }
-export function createGame(seed=20261105):GameState {
+/** `legacyRules` recreates the pre-variance rule set that older saves keep using. */
+export function createGame(seed=20261105,legacyRules=false):GameState {
   const definitions=[['boram','보람','주민 서비스'],['rhythm','리듬','공연 수입'],['tantan','탄탄','생활체육'],['baeum','배움','문화 교육'],['saebom','새봄','새로운 시도'],['neulpum','늘품','정비와 절약'],['pureun','푸른','에너지 효율'],['byeolbit','별빛','공간 확장'],['daon','다온','균형 성장']]
-  const state:GameState={version:2,campaignVersion:2,specialtyRulesVersion:1,eventDeck:createEventDeck(seed),seed,year:1,season:0,phase:'planning',planningStage:'rentals',player:initialInstitution('player','우리 센터','나만의 운영'),rivals:definitions.map(([id,name,kind])=>initialInstitution(id,name+'센터',kind)),lastReport:null,history:[]}
+  const state:GameState={version:2,campaignVersion:2,specialtyRulesVersion:1,...(legacyRules?{}:{rules:3 as const,eventChoices:{},eventCatalog:2 as const}),eventDeck:createEventDeck(seed,legacyRules?undefined:3),seed,year:1,season:0,phase:'planning',planningStage:'rentals',player:initialInstitution('player','우리 센터','나만의 운영'),rivals:definitions.map(([id,name,kind])=>initialInstitution(id,name+'센터',kind)),lastReport:null,history:[]}
   for(const inst of [state.player,...state.rivals])inst.rentalRequests=generateRentals(inst,state)
   return state
 }
@@ -451,11 +537,77 @@ export function maintainRoom(state:GameState,room:RoomId):MutationResult {
 export function trainStaff(state:GameState,kind:Expertise):MutationResult {
   if(state.phase!=='planning')return {state,error:'계획 화면에서 교육을 예약해 주세요.'}
   if(!['culture','sport','event'].includes(kind))return {state,error:'교육 분야를 확인해 주세요.'}
+  if(state.rules===3&&answeredEvent(state,state.player)?.noTraining)return {state,error:'이번 계절은 행정 점검 서류 정비에 집중하기로 했어요. 교육하려면 계절 소식에서 대응을 바꿔 주세요.'}
   if(state.player.trained)return {state,error:'이번 계절에는 교육을 이미 예약했어요.'}
-  if(state.player.xp[kind]===0)return {state,error:'이 분야를 한 번 운영한 뒤 교육할 수 있어요.'}
-  if(freeCash(state.player)<12)return {state,error:'교육에 120,000원이 필요해요.'}
-  const next=copy(state);next.player.cash=round(next.player.cash-12);next.player.evaluationStats.cost+=12;next.player.trained=true
+  const rules3=state.rules===3,level=staffLevel(state.player.xp[kind],state.rules),price=trainingCost(level,state.rules)
+  if(rules3&&level>=STAFF_MAX_LEVEL)return {state,error:'이 분야는 이미 최고 교육 단계예요.'}
+  if(!rules3&&state.player.xp[kind]===0)return {state,error:'이 분야를 한 번 운영한 뒤 교육할 수 있어요.'}
+  if(freeCash(state.player)<price)return {state,error:`교육에 ${wonAmount(price)}원이 필요해요.`}
+  const next=copy(state);next.player.cash=round(next.player.cash-price);next.player.evaluationStats.cost=round(next.player.evaluationStats.cost+price);next.player.trained=true
   next.player.pendingTasks.push({kind:'train',room:'A',remaining:1,expertise:kind});return {state:next}
+}
+/** Rules 3: answer this season's event. Free to change until the season runs. */
+export function chooseEventOption(state:GameState,index:number):GameState {
+  if(state.rules!==3||state.phase!=='planning'||!Number.isInteger(index))return state
+  const event=getSeasonEvent(state)
+  if(!event?.choices||index<0||index>=event.choices.length||eventOptionBlock(state,index))return state
+  const next=copy(state);next.eventChoices={...(next.eventChoices??{}),[seasonIntroKey(state)]:index};return next
+}
+/** Why an answer cannot be picked right now, or null. */
+export function eventOptionBlock(state:GameState,index:number):string|null {
+  const choice=state.rules===3?getSeasonEvent(state)?.choices?.[index]:undefined
+  if(choice?.noTraining&&state.player.trained)return '이번 계절 직원 교육을 이미 예약해서 고를 수 없어요.'
+  return choice&&index>0&&choice.cost>freeCash(state.player)?`쓸 수 있는 현금이 모자라요. ${wonAmount(choice.cost)}원이 필요해요.`:null
+}
+/** This season's event with the centre's own answer applied. */
+export function answeredEvent(state:Calendar,inst:{id:string}):SeasonEvent|null {
+  const event=getSeasonEvent(state)
+  return event?.choices?applyEventChoice(event,eventChoiceIndex(state,inst)):event
+}
+/** The neighbouring centre this season's encounter is with; the same one every time the season is shown. */
+export function eventRival(state:Pick<GameState,'seed'|'year'|'season'|'rivals'>):Institution|undefined { return state.rivals[hash(`${state.seed}:${state.year}:${state.season}:encounter`)%Math.max(1,state.rivals.length)] }
+/** Fills in the neighbouring centre's name wherever an event text mentions one. */
+export function eventText(text:string,state:Pick<GameState,'seed'|'year'|'season'|'rivals'>):string { return text.split(RIVAL_TOKEN).join(eventRival(state)?.name??'이웃 센터') }
+const EVENT_CATALOG_NOTICE='새 선택형 사건 11종을 앞으로 맞이할 계절에 섞었어요. 지난 계절과 이번 계절의 사건은 그대로예요.'
+/** Old operating experience was earned simply by running sessions; it converts to at most Lv.2 so training still matters. */
+export function legacyStaffPoints(xp:number):number { const level=getLevel(xp); return STAFF_LEVELS[level>=3?2:level>=1?1:0] }
+/**
+ * Opt an older save into rules 3 at the player's request. Settled seasons, evaluations, cash and equipment are
+ * never recalculated; every centre is converted by the same rule. The caller keeps a backup of the original.
+ */
+export function adoptRules3(state:GameState):MutationResult {
+  if(state.rules===3)return {state,error:'이미 새 규칙으로 진행 중이에요.'}
+  if(state.phase==='ending')return {state,error:'운영을 마친 기록에는 적용하지 않아요.'}
+  const next=copy(state);next.rules=3;next.eventChoices={}
+  const widened=expandEventDeck(next)
+  const kinds:Expertise[]=['culture','sport','event']
+  let rentalsRefreshed=false
+  for(const inst of [next.player,...next.rivals]){
+    for(const kind of kinds)inst.xp[kind]=legacyStaffPoints(inst.xp[kind])
+    if(next.phase!=='planning')continue
+    // Decisions already made this season stay; undecided requests are re-issued with their trade-offs.
+    const decided=inst.id==='player'&&(next.planningStage==='classes'||inst.rentalRequests.some(request=>request.status!=='pending'))
+    if(decided)continue
+    for(const room of ROOM_IDS)for(let slot=0;slot<BLOCKS.length;slot++)if(inst.plan[room][slot]&&isRentalProgram(inst.plan[room][slot]!))inst.plan[room][slot]=null
+    inst.rentalRequests=generateRentals(inst,next)
+    if(inst.id==='player')rentalsRefreshed=true
+  }
+  const levels=kinds.map(kind=>`${kind==='culture'?'문화':kind==='sport'?'체육':'행사'} Lv.${staffLevel(next.player.xp[kind],3)}`).join(' · ')
+  const notices=[
+    `${state.year}년 차 ${SEASONS[state.season]}부터 새 규칙을 적용했어요. 같은 수업도 주마다, 계절마다 결과가 달라져요. 지난 계절 기록과 평가, 자금, 장비는 다시 계산하지 않았어요.`,
+    `운영 숙련을 직원 교육 단계로 바꿨어요: ${levels}. 모든 센터에 같은 기준(최대 Lv.2)을 적용했고, 이제 직원 교육으로 Lv.5까지 올릴 수 있어요.`,
+    next.phase!=='planning'?'다음 계절부터 대관 신청에 성격(수입·명성·공공서비스·시설 부담)이 표시돼요.':rentalsRefreshed?'이번 계절 대관 신청을 성격이 있는 신청으로 다시 받았어요.':'이번 계절에 이미 검토한 대관은 그대로 두었어요. 다음 계절부터 신청에 성격이 표시돼요.',
+    '신뢰는 상한 없이 쌓여 수업 신청 주민을 늘리고, 30을 넘는 명성은 운영을 쉬면 서서히 식어요. 재정 건전성은 자체 수입으로 운영비를 충당한 비율로 평가해요.',
+    ...(widened?[EVENT_CATALOG_NOTICE]:[]),
+  ]
+  next.migrationNotices=[...new Set([...(next.migrationNotices??[]),...notices])].slice(-1000)
+  return validateSave(next)?{state:next}:{state,error:'이 저장에는 새 규칙을 적용할 수 없어요. 기존 진행은 그대로예요.'}
+}
+export function eventChoiceIndex(state:Calendar,inst:{id:string}):number {
+  const event=getSeasonEvent(state)
+  if(state.rules!==3||!event?.choices)return 0
+  if(inst.id==='player')return Math.min(event.choices.length-1,Math.max(0,state.eventChoices?.[seasonIntroKey(state)]??0))
+  return hash(`${state.seed}:${state.year}:${state.season}:${inst.id}:event-choice`)%event.choices.length
 }
 export function setWeekendSupport(state:GameState,enabled:boolean):MutationResult {
   if(state.phase!=='planning'||state.player.supportContract===enabled)return {state}
@@ -471,7 +623,9 @@ export function setGuideMode(state:GameState,mode:Institution['guideMode']):Game
   const next=copy(state);next.player.guideMode=mode;return next
 }
 
-export function getDemand(state:Calendar):DemandGroup[] {
+/** Rules 3: trust has no ceiling. More trust brings more applicants, with diminishing returns. */
+export function trustDemandFactor(trust:number):number { return trust>=50?round(1+.25*Math.log2(trust/50)):round(Math.max(.75,.75+.25*trust/50)) }
+export function getDemand(state:Calendar,inst?:{trust:number}):DemandGroup[] {
   const n=(id:string,base:number)=>base+hash(`${state.seed}:${state.year}:${state.season}:${id}`)%3
   const groups:DemandGroup[]=[
     {id:'craft-a',title:'오전 공예 모임',programs:['P01','P02'],people:n('ca',7),slots:[0,1],maxFee:1.2,public:true,returning:.8},
@@ -528,13 +682,19 @@ export function getDemand(state:Calendar):DemandGroup[] {
   if(state.year>=2)groups.push({id:'digital-b',title:'퇴근 후 디지털 교실',programs:['P07'],people:n('db',8),slots:[1,2,3],maxFee:1.2,public:false,returning:.7})
   if(state.season===1)groups.push({id:'summer-yoga',title:'여름 건강 교실',programs:['P03','P04'],people:10,slots:[1,2,4],maxFee:.95,public:true,returning:.5})
   if(state.season===3)groups.push({id:'winter-craft',title:'겨울 선물 만들기',programs:['P01','P02'],people:10,slots:[1,3,4],maxFee:1.2,public:true,returning:.4})
+  if(state.rules===3&&inst){const factor=trustDemandFactor(inst.trust);for(const group of groups)group.people=Math.max(1,Math.round(group.people*factor))}
   return groups
 }
-function feeFor(inst:Institution,p:Program):number {
-  const premium=p.kind!=='community'&&getLevel(inst.xp[p.kind])>=2&&inst.priceMode==='premium'
+function feeFor(inst:Institution,p:Program,rules?:number):number {
+  const premium=p.kind!=='community'&&staffLevel(inst.xp[p.kind],rules)>=2&&inst.priceMode==='premium'
   return p.income/p.capacity*(inst.priceMode==='discount'?.85:premium?1.15:1)
 }
-function finishTask(inst:Institution,task:Task):void {
+/** Below this a room is close to the point (20) where it stops running; the player is told while there is still time. */
+export const ROOM_CARE_WARNING=40
+export const ROOM_CARE_NOTICE='관리상태가 40 아래로 내려간 공간이 있어요. 20 아래가 되면 그 공간의 수업과 대관이 모두 쉬어요. 방에 들어가 정비를 예약하세요.'
+interface WeekContext { rules?:number; seed:number; year:number; season:number; week:number; variance:boolean; closure?:{rooms:RoomId[]|null;reason:string}; featured?:{key:string;mood:'hot'|'cold'}; promotion?:Set<string> }
+const roll=(ctx:WeekContext,key:string):number=>hash(`${ctx.seed}:${ctx.year}:${ctx.season}:${ctx.week}:${key}`)/4294967296
+function finishTask(inst:Institution,task:Task,ctx?:WeekContext,training?:TrainingResult[]):void {
   const room=roomOf(inst,task.room)!
   if(task.kind==='install'){
     const equipment=inst.inventory.find(e=>e.instanceId===task.equipment)
@@ -549,27 +709,39 @@ function finishTask(inst:Institution,task:Task):void {
     room.management=clamp(room.management+35)
     for(const equipment of inst.inventory.filter(e=>e.room===task.room))equipment.condition=clamp(equipment.condition+40)
   }
-  if(task.kind==='train'&&task.expertise)inst.xp[task.expertise]+=10
+  if(task.kind==='train'&&task.expertise){
+    if(ctx?.rules===3){
+      // The same course lands differently each time: 14–36 points, 25 on average.
+      const before=staffLevel(inst.xp[task.expertise],3),gain=ctx.variance?Math.round(14+roll(ctx,`${inst.id}:train:${task.expertise}`)*22):25
+      inst.xp[task.expertise]=round(inst.xp[task.expertise]+gain)
+      const level=staffLevel(inst.xp[task.expertise],3)
+      training?.push({kind:task.expertise,gain,level,leveledUp:level>before,grade:gain>=30?'우수':gain>=20?'보통':'미흡'})
+    } else inst.xp[task.expertise]+=10
+  }
   if(task.kind==='open')room.open=true
 }
 interface Session {
   room:RoomId;slot:number;program:Program;capacity:number;rental?:RentalRequest
   bookings:{group:DemandGroup;people:number}[]; attended:number; canceled:number; experience:number
+  outcome?:Outcome; revenue?:number; cost?:number; mood?:SeasonMood
 }
+interface WeekSession { mood?:SeasonMood; room:RoomId; slot:number; program:ProgramId; rental:boolean; attendees:number; revenue:number; cost:number; experience:number; reputation:number; outcome?:Outcome }
 interface WeekOutcome {
+  sessions:WeekSession[]; training:TrainingResult[]; closed:number; promoted:number
   stats:RawStats;activity:Activity[];revenue:number;cost:number;visits:number;publicVisits:number
   rentalRevenue:number;classRevenue:number;rentalCost:number;classCost:number
   investmentReputation:number
   issues:Omit<OperationIssue,'weeks'|'lastWeek'>[]
   ledger:{room:RoomId;slot:number;program:ProgramId;revenue:number;cost:number}[]
 }
-function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):WeekOutcome {
+function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>,ctx:WeekContext):WeekOutcome {
+  const rules3=ctx.rules===3,varied=rules3&&ctx.variance
   if(inst.supportContract){inst.cash=round(inst.cash+24);inst.evaluationStats.cost=Math.max(0,inst.evaluationStats.cost-24);inst.supportContract=false}
   advanceFacilityProjects(inst)
   advanceRoomRemodels(inst)
   const investmentReputation=advanceCampusProjects(inst)
   const stats=emptyStats();stats.weeks=1;stats.learningWeeks=1;stats.publicRequested=demand.filter(g=>g.public).reduce((n,g)=>n+g.people,0)
-  const result:WeekOutcome={stats,activity:[],issues:[],ledger:[],revenue:0,cost:0,visits:0,publicVisits:0,rentalRevenue:0,classRevenue:0,rentalCost:0,classCost:0,investmentReputation}
+  const result:WeekOutcome={sessions:[],training:[],closed:0,promoted:0,stats,activity:[],issues:[],ledger:[],revenue:0,cost:0,visits:0,publicVisits:0,rentalRevenue:0,classRevenue:0,rentalCost:0,classCost:0,investmentReputation}
   const sessions:Session[]=[],scheduledCounts=new Map<ProgramId,number>()
   for(let slot=0;slot<5;slot++)for(const room of inst.rooms){
     const id=inst.plan[room.id][slot];if(!room.open||!id)continue
@@ -580,11 +752,23 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
     scheduledCounts.set(id,count+1)
     sessions.push({room:room.id,slot,program:PROGRAM[id],capacity:roomCapacity(room.id,id),rental,bookings:[],attended:0,canceled:0,experience:0})
   }
-  const eligible=(g:DemandGroup,s:Session)=>!s.rental&&g.programs.includes(s.program.id)&&g.slots.includes(s.slot)&&feeFor(inst,s.program)<=g.maxFee+.0001&&canRunProgram(inst,s.room,s.program.id)
+  // Installation queued for this week finishes one slot at a time per room; later hours can already take bookings.
+  const installDone=new Map<string,number>(),queued=new Map<RoomId,number>()
+  for(const task of inst.pendingTasks){
+    if(task.remaining<=0)continue
+    const until=(queued.get(task.room)??0)+task.remaining;queued.set(task.room,until)
+    if(task.kind==='install'&&task.equipment)installDone.set(task.equipment,until-1)
+  }
+  const readyBy=(room:RoomId,program:ProgramId,slot:number):boolean=>{
+    if(canRunProgram(inst,room,program))return true
+    if(!canPlaceProgram(inst,room,program))return false
+    return getProgramRequirements(inst,room,program).pendingFamilies.every(family=>inst.inventory.some(e=>!e.stored&&e.room===room&&!e.ready&&OFFER[e.id].capabilities.includes(family)&&(installDone.get(e.instanceId)??99)<slot))
+  }
+  const eligible=(g:DemandGroup,s:Session)=>!s.rental&&g.programs.includes(s.program.id)&&g.slots.includes(s.slot)&&feeFor(inst,s.program,ctx.rules)<=g.maxFee+.0001&&readyBy(s.room,s.program.id,s.slot)
   for(const group of [...demand].sort((a,b)=>sessions.filter(s=>eligible(a,s)).length-sessions.filter(s=>eligible(b,s)).length||a.id.localeCompare(b.id))){
     // Each resident attends at most once; overflow people may choose another eligible session.
     let remaining=group.people
-    const choices=sessions.filter(s=>eligible(group,s)).sort((a,b)=>feeFor(inst,a.program)-feeFor(inst,b.program)||a.slot-b.slot||a.room.localeCompare(b.room))
+    const choices=sessions.filter(s=>eligible(group,s)).sort((a,b)=>feeFor(inst,a.program,ctx.rules)-feeFor(inst,b.program,ctx.rules)||a.slot-b.slot||a.room.localeCompare(b.room))
     for(const session of choices){
       const people=Math.min(remaining,session.capacity-session.bookings.reduce((n,b)=>n+b.people,0))
       if(people>0){session.bookings.push({group,people});remaining-=people}
@@ -595,18 +779,20 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
     const blocked=new Set<RoomId>()
     for(const room of inst.rooms){
       const task=inst.pendingTasks.find(t=>t.room===room.id&&t.remaining>0)
-      if(task){if(task.kind!=='train')blocked.add(room.id);task.remaining--;if(!task.remaining)finishTask(inst,task)}
+      if(task){if(task.kind!=='train')blocked.add(room.id);task.remaining--;if(!task.remaining)finishTask(inst,task,ctx,result.training)}
     }
     inst.pendingTasks=inst.pendingTasks.filter(t=>t.remaining>0)
     for(const session of sessions.filter(s=>s.slot===slot)){
       const p=session.program,rental=session.rental,booked=rental?.attendees??session.bookings.reduce((n,b)=>n+b.people,0)
       const cancel=(message:string)=>{session.canceled=booked;stats.experienceWeight+=booked;warnings.add(message);result.issues.push({room:session.room,slot,program:p.id,reason:message})}
+      // An event closure is nobody's failure: the visit simply does not happen, so satisfaction is not marked down.
+      if(ctx.closure&&(!ctx.closure.rooms||ctx.closure.rooms.includes(session.room))){session.canceled=booked;result.issues.push({room:session.room,slot,program:p.id,reason:ctx.closure.reason});result.closed++;continue}
       if(blocked.has(session.room)){cancel('설치·정비 시간과 겹친 예약이 있었어요.');continue}
       if(!canRunProgram(inst,session.room,p.id)){cancel('필수 설비의 설치·정비 상태를 확인해 주세요.');continue}
       if(!booked){
         const interested=demand.filter(g=>g.people>0&&g.programs.includes(p.id))
         const atTime=interested.filter(g=>g.slots.includes(slot))
-        const affordable=atTime.filter(g=>feeFor(inst,p)<=g.maxFee+.0001)
+        const affordable=atTime.filter(g=>feeFor(inst,p,ctx.rules)<=g.maxFee+.0001)
         if(!interested.length)cancel('이번 계절 이 수업을 희망하는 주민 수요가 없어요.')
         else if(!atTime.length)cancel(BLOCKS[slot]+'에 참여할 수 있는 희망 주민이 없어요. 다른 시간을 선택하세요.')
         else if(!affordable.length)cancel('현재 수강료가 희망 주민의 수강 예산보다 높아요. 요금 설정을 확인하세요.')
@@ -618,38 +804,63 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
         continue
       }
       if(getRoomManagement(inst,session.room)<20){cancel('관리상태가 낮은 공간은 운영을 쉬었어요.');continue}
+      if(getRoomManagement(inst,session.room)<ROOM_CARE_WARNING)warnings.add(ROOM_CARE_NOTICE)
       const room=roomOf(inst,session.room)!,switching=p.mode!=='nook'&&p.mode!==room.mode
       const flexible=hasFamily(inst,'flex',session.room)&&p.mode!=='stage'&&room.mode!=='stage'
       const delayed=false // Instructor and setup service are included in each booking.
       if(p.mode!=='nook')room.mode=p.mode
       const capacity=delayed?Math.floor(session.capacity*.75):session.capacity
       if(rental&&booked>capacity){cancel('대관 신청 인원이 현재 공간 정원을 초과해요.');continue}
-      const attendees=Math.min(booked,capacity)
-      const revenue=round(rental?rental.fee:feeFor(inst,p)*attendees)
-      const premium=!rental&&p.kind!=='community'&&getLevel(inst.xp[p.kind])>=2&&inst.priceMode==='premium'
+      let attendees=Math.min(booked,capacity),outcome:Outcome|undefined
+      const trait=rental&&rules3?rentalTraitOf(rental):undefined
+      if(varied){
+        // Seeded per week and session: reloading never rerolls, yet no two weeks play out alike.
+        const u=roll(ctx,`${inst.id}:${session.room}:${slot}:outcome`)
+        if(rental){const odds=rentalOdds(staffLevel(inst.xp.event,3));outcome=u<odds.great?'great':u>=1-odds.poor?'poor':'flat'}
+        else {
+          const level=classStaffLevel(inst,p.id,3),odds=outcomeOdds(level),tone=moodOdds(level)
+          // One draw per season and session: the whole term runs hot, steady or cold.
+          const m=hash(`${ctx.seed}:${ctx.year}:${ctx.season}:${inst.id}:${session.room}:${slot}:${p.id}:mood`)/4294967296
+          const mood:SeasonMood=ctx.featured?.key===`${session.room}:${slot}`?ctx.featured.mood:m<tone.hot?'hot':m>=1-tone.cold?'cold':'steady';session.mood=mood
+          const great=clamp(odds.great+(mood==='hot'?.15:mood==='cold'?-.05:0),0,1),poor=clamp(odds.poor+(mood==='cold'?.15:mood==='hot'?-.10:0),0,1),good=clamp(odds.good+(mood==='cold'?-.10:0),0,1)
+          outcome=u<great?'great':u<great+good?'good':u<1-poor?'flat':'poor'
+          // Word of mouth fills spare seats; an off week brings no-shows.
+          attendees=outcome==='great'?Math.min(capacity,attendees+Math.ceil(capacity*.15)):outcome==='poor'?Math.max(1,Math.round(attendees*.8)):attendees
+        }
+      }
+      // Mid-season promotion: posters and flyers bring newcomers every week to the classes chosen at the meeting.
+      let joined=0
+      if(!rental&&attendees<capacity&&ctx.promotion?.has(`${session.room}:${slot}`)){joined=Math.min(capacity-attendees,Math.max(1,Math.round(capacity*MIDSEASON_PROMOTION)));attendees+=joined}
+      const revenue=round(rental?rental.fee:feeFor(inst,p,ctx.rules)*attendees)
+      const premium=!rental&&p.kind!=='community'&&staffLevel(inst.xp[p.kind],ctx.rules)>=2&&inst.priceMode==='premium'
       const cost=round(rental?rental.cost:p.cost+(premium?1:0))
       if(freeCash(inst)+revenue<cost){cancel('운영비가 부족한 클래스는 쉬었어요. 다음 편성을 조정해 보세요.');continue}
-      session.attended=attendees;session.canceled=booked-attendees
+      session.attended=attendees;session.canceled=Math.max(0,booked-attendees);session.outcome=outcome;session.revenue=revenue;session.cost=cost;result.promoted+=joined
       const gear=inst.inventory.filter(e=>e.room===session.room&&OFFER[e.id].capabilities.some(cap=>p.requires.includes(cap)))
       const worn=gear.some(e=>e.condition<50),management=getRoomManagement(inst,session.room)
       const welcome=hasFamily(inst,'guide')?4:0
       const finishQuality=(room.facilityQuality-90)*.08
-      session.experience=clamp(68+management*.1+finishQuality+welcome+roomRemodelBonus(room)+campusBenefits(inst).experience+(p.kind==='community'?0:getLevel(inst.xp[p.kind])*3)+(premium?3:0)-(delayed?15:0)-(worn?8:0))
+      const outcomeMood=!outcome?0:rental?(outcome==='great'?5:outcome==='poor'?-6:0):(outcome==='great'?8:outcome==='good'?3:outcome==='poor'?-8:0)
+      session.experience=clamp(68+management*.1+finishQuality+welcome+roomRemodelBonus(room)+campusBenefits(inst).experience+(p.kind==='community'?0:staffLevel(inst.xp[p.kind],ctx.rules)*(rules3?2.4:3))+(premium?3:0)-(delayed?15:0)-(worn?8:0)+outcomeMood+(trait?.satisfaction??0))
       let publicAttended=0,remaining=attendees
       if(!rental)for(const booking of session.bookings){const admitted=Math.min(remaining,booking.people);if(booking.group.public)publicAttended+=admitted;remaining-=admitted}
+      // Public-interest lets admit residents who would otherwise have no place to meet.
+      if(trait?.publicShare)publicAttended+=Math.round(attendees*trait.publicShare)
       inst.cash=round(inst.cash+revenue-cost)
-      if(!rental&&p.kind!=='community')inst.xp[p.kind]++
-      if(rental&&p.kind==='event')inst.xp.event=round(inst.xp.event+.2)
+      if(!rental&&p.kind!=='community')inst.xp[p.kind]=rules3?round(inst.xp[p.kind]+.1):inst.xp[p.kind]+1
+      if(rental&&p.kind==='event')inst.xp.event=round(inst.xp.event+(rules3?.02:.2))
       for(const equipment of gear)equipment.condition=round(clamp(equipment.condition-(equipment.id==='E01B'?.15:.25)))
       if(switching&&flexible){const equipment=inst.inventory.find(e=>e.room===session.room&&OFFER[e.id].family==='flex')!;equipment.condition=round(clamp(equipment.condition-.2))}
-      room.management=round(clamp(room.management-(rental?.14:(switching&&flexible?.08:.1))))
-      if(rental)inst.reputation=clamp(inst.reputation+.002)
+      room.management=round(clamp(room.management-(rental?.14*(trait?.wear??1):(switching&&flexible?.08:.1))))
+      if(rental&&!rules3)inst.reputation=clamp(inst.reputation+.002)
       result.ledger.push({room:session.room,slot,program:p.id,revenue,cost});
       result.revenue+=revenue;result.cost+=cost;result.visits+=attendees;result.publicVisits+=publicAttended
       if(rental){result.rentalRevenue+=revenue;result.rentalCost+=cost}else{result.classRevenue+=revenue;result.classCost+=cost}
-      if(!rental)stats.learningServed=(stats.learningServed??0)+attendees;
-      stats.publicServed+=publicAttended;stats.experienceSum+=attendees*session.experience;stats.experienceWeight+=booked;stats.use+=attendees/session.capacity
-      result.activity.push({room:session.room,slot,program:p.id,attendees,capacity:session.capacity,experience:session.experience})
+      if(!rental)stats.learningServed=(stats.learningServed??0)+attendees
+      else if(trait?.learning)stats.learningServed=(stats.learningServed??0)+Math.round(attendees*trait.learning)
+      // A no-show after an off week is a missed visit, not a turned-away booking.
+      stats.publicServed+=publicAttended;stats.experienceSum+=attendees*session.experience;stats.experienceWeight+=outcome&&!rental?attendees:booked;stats.use+=attendees/session.capacity
+      result.activity.push({room:session.room,slot,program:p.id,attendees,capacity:session.capacity,experience:session.experience,...(outcome?{outcome}:{}),revenue})
 
       if(worn)warnings.add('자주 쓰는 장비를 정비하면 수업 품질이 좋아져요.')
     }
@@ -664,26 +875,40 @@ function runWeek(inst:Institution,demand:DemandGroup[],warnings:Set<string>):Wee
       }
     }
     // Reputation uses the final experience after noise and all quality adjustments.
-    for(const session of active)if(!session.rental&&session.program.kind!=='community')
-      inst.reputation=clamp(inst.reputation+session.attended*.015*session.experience/100*(session.program.reputationMultiplier??1))
+    for(const session of active){
+      const p=session.program,before=inst.reputation
+      let gain=0
+      if(rules3){
+        // Growth follows what actually happened in the room, so busy, well-run centres pull ahead.
+        const soft=reputationHeadroom(inst.reputation),balance=reputationBalance(inst)
+        if(session.rental)gain=(rentalTraitOf(session.rental)?.reputation??.003)*soft+(session.outcome==='great'?.05:session.outcome==='poor'?-.05:0)
+        else if(p.kind==='community')gain=session.outcome==='great'?.02:session.outcome==='poor'?-.02:0
+        else gain=session.attended*REPUTATION_RATE*reputationQuality(session.experience)*(p.reputationMultiplier??1)*(session.outcome==='great'?1.5:1)*soft*balance-(session.outcome==='poor'?POOR_WEEK_REPUTATION:0)
+      } else if(!session.rental&&p.kind!=='community')gain=session.attended*.015*session.experience/100*(p.reputationMultiplier??1)
+      if(gain)inst.reputation=clamp(inst.reputation+gain)
+      const moved=inst.reputation-before+(session.rental&&!rules3?.002:0)
+      const activity=result.activity.find(a=>a.room===session.room&&a.slot===slot);if(activity)activity.reputation=round(moved)
+      result.sessions.push({room:session.room,slot,program:p.id,rental:Boolean(session.rental),attendees:session.attended,revenue:session.revenue??0,cost:session.cost??0,experience:session.experience,reputation:moved,...(session.mood?{mood:session.mood}:{}),...(session.outcome?{outcome:session.outcome}:{})})
+    }
   }
   const mean=stats.experienceWeight?stats.experienceSum/stats.experienceWeight:70
-  if(stats.experienceWeight)inst.trust=clamp(inst.trust+clamp((mean-70)/30,-.7,.7))
+  if(stats.experienceWeight)inst.trust=rules3?Math.max(0,inst.trust+clamp((mean-trustExpectation(inst.trust))/30,-.7,.7)):clamp(inst.trust+clamp((mean-70)/30,-.7,.7))
   return result
 }
 function addStats(target:RawStats,source:RawStats):void { for(const key of Object.keys(source) as (keyof RawStats)[])target[key]=(target[key]??0)+(source[key]??0) }
 const fixedOperatingCost = (inst:Institution):number => actualBaseCost(inst)+maintenanceCost(inst)+facilityUpkeep(inst)+campusUpkeep(inst)
-function financialScore(inst:Institution):number {
+function financialScore(inst:Institution,rules?:number):number {
   const stats=inst.evaluationStats
-  const coverage=stats.cost>0?clamp((stats.revenue+stats.grants)/stats.cost,0,1):1
+  // Rules 3: the grant covers only half of the bill, so a centre that earns nothing cannot score full marks.
+  const coverage=stats.cost<=0?1:rules===3?clamp(stats.revenue/Math.max(stats.cost*.5,stats.cost-stats.grants*.5),0,1):clamp((stats.revenue+stats.grants)/stats.cost,0,1)
   const liquidity=clamp(inst.cash/Math.max(1,inst.reserved+fixedOperatingCost(inst)),0,1)
-  return round(60*coverage+40*liquidity)
+  return clamp(round(60*coverage+40*liquidity)+(stats.financeBonus??0))
 }
-export function getEvaluationComponents(inst:Institution):Record<EvaluationComponent,number> {
+export function getEvaluationComponents(inst:Institution,rules?:number):Record<EvaluationComponent,number> {
   const stats=inst.evaluationStats
   return {
     reputation:round(stats.seasons?stats.reputationSum/stats.seasons:inst.reputation),
-    financial:financialScore(inst),
+    financial:financialScore(inst,rules),
     satisfaction:round(stats.experienceWeight?clamp(stats.experienceSum/stats.experienceWeight):0),
     publicService:round(publicServiceScore(stats)),
   }
@@ -696,7 +921,7 @@ export function getBudgetChange(rank:number,participants=10):number {
   return rank>=participants-2?-2*(rank-(participants-3)):0
 }
 function settleEvaluation(state:GameState):void {
-  const standings=[state.player,...state.rivals].map(inst=>({inst,components:getEvaluationComponents(inst)}))
+  const standings=[state.player,...state.rivals].map(inst=>({inst,components:getEvaluationComponents(inst,state.rules)}))
     .map(entry=>({...entry,score:evaluationScore(entry.components)}))
     .sort((a,b)=>b.score-a.score||b.components.publicService-a.components.publicService||b.components.satisfaction-a.components.satisfaction||a.inst.id.localeCompare(b.inst.id))
   standings.forEach(({inst,components,score},index)=>{
@@ -711,26 +936,117 @@ function settleEvaluation(state:GameState):void {
     inst.evaluationStats=emptyEvaluationStats()
   })
 }
-function scoreStats(inst:Institution,stats:RawStats){
+function scoreStats(inst:Institution,stats:RawStats,rules?:number){
   const publicScore=publicServiceScore(stats)
   const experienceScore=stats.experienceWeight?clamp(stats.experienceSum/stats.experienceWeight):0
   const utilization=clamp(100*stats.use/Math.max(1,inst.rooms.filter(r=>r.open).length*5*stats.weeks))
-  const financial=financialScore(inst)
+  const financial=financialScore(inst,rules)
   return {publicScore:round(publicScore),experienceScore:round(experienceScore),utilization:round(utilization),score:round(.25*publicScore+.3*experienceScore+.25*inst.reputation+.2*financial)}
 }
-function resolveInstitution(inst:Institution,state:Calendar,observe?:(week:WeekOutcome)=>void):SeasonReport {
-  const beforeCash=inst.cash,reputationStart=inst.reputation,trustStart=inst.trust,warnings=new Set<string>(),stats=emptyStats(),demand=getDemand(state)
+/** Rules 3: the thirteen weeks pause once, before week 7, for one decision. */
+export const MIDSEASON_WEEK=6,MIDSEASON_REPAIR=25,MIDSEASON_REPAIR_ROOMS=2,MIDSEASON_PROMOTION=.08,MIDSEASON_PROMOTION_CLASSES=5
+export const MIDSEASON_OPTIONS:Record<MidseasonChoice,{label:string;description:string;effect:string;cost:number}>={
+  steady:{label:'그대로 진행',description:'지금 흐름을 믿고 남은 일곱 주를 이어 가요.',effect:'비용 없음 · 변화 없음',cost:0},
+  promotion:{label:'홍보 강화',description:'동네 게시판에 포스터를 붙이고 전단을 나눠 빈자리를 채워요.',effect:'남은 7주 동안 빈자리가 가장 많은 수업 5개에 매주 새 수강생 1~2명',cost:20},
+  repair:{label:'긴급 정비',description:'수업 사이 시간에 가장 낡은 공간부터 급히 손봐요. 정기 정비보다 비싸지만 수업을 쉬지 않아요.',effect:'상태가 가장 나쁜 공간 2곳의 관리상태와 그 방 장비 상태 +25',cost:30},
+}
+/** How satisfied residents leave a free occasion the centre hosts. */
+const EVENT_AUDIENCE_EXPERIENCE=92
+/** A class earns a story for every four unbroken seasons; a season counts when it ran at least ten of its thirteen weeks. */
+export const STORY_EVERY=4,STORY_MIN_WEEKS=10,STORY_REPUTATION=.3,STORY_TRUST=1
+/** The scenes one class can earn, in order: its own first, then the two every long-running class shares. */
+export function storySequence(program:ProgramId):StoryKind[] {
+  const p=PROGRAM[program]
+  const own:StoryKind[]=p.kind==='culture'?[p.requires.includes('craft')?'exhibition':'graduation']:p.kind==='sport'||p.kind==='event'?['contest']:[]
+  return [...own,'new-friend','teacher-letter']
+}
+/** Counts unbroken seasons per class and tells at most one story a season, the longest-running class first. */
+function tellStory(inst:Institution,sessions:{program:ProgramId;rental:boolean;weeks:number}[]):StoryRecord|undefined {
+  const ran=new Set(sessions.filter(session=>!session.rental&&session.weeks>=STORY_MIN_WEEKS).map(session=>session.program))
+  const streaks:Partial<Record<ProgramId,ClassStreak>>={}
+  for(const id of new Set([...ran,...Object.keys(inst.streaks??{}) as ProgramId[]])){
+    const previous=inst.streaks?.[id]??{seasons:0,told:0},seasons=ran.has(id)?previous.seasons+1:0
+    if(seasons||previous.told)streaks[id]={seasons,told:previous.told}
+  }
+  inst.streaks=streaks
+  const due=(Object.entries(streaks) as [ProgramId,ClassStreak][]).filter(([id,streak])=>streak.told<storySequence(id).length&&streak.seasons>=STORY_EVERY*(streak.told+1)).sort((a,b)=>b[1].seasons-a[1].seasons||a[0].localeCompare(b[0]))[0]
+  if(!due)return undefined
+  const [program,streak]=due,kind=storySequence(program)[streak.told]!,reputation=inst.reputation,trust=inst.trust
+  streak.told++
+  // Like every other gain under rules 3, a story moves a well-known centre less.
+  inst.reputation=clamp(inst.reputation+STORY_REPUTATION*reputationHeadroom(inst.reputation));inst.trust=Math.max(0,inst.trust+STORY_TRUST)
+  return {program,kind,seasons:streak.seasons,reputation:round(inst.reputation-reputation),trust:round(inst.trust-trust)}
+}
+/** The class a guest lecture or a departing instructor affects: the one with the most seats that can actually run. */
+function featuredClass(inst:Institution):{room:RoomId;slot:number;program:ProgramId}|undefined {
+  let best=-1,found:{room:RoomId;slot:number;program:ProgramId}|undefined
+  for(const room of inst.rooms)if(room.open)for(let slot=0;slot<5;slot++){
+    const id=inst.plan[room.id][slot];if(!id||isRentalProgram(id))continue
+    const size=roomCapacity(room.id,id)+(canPlaceProgram(inst,room.id,id)?1000:0)
+    if(size>best){best=size;found={room:room.id,slot,program:id}}
+  }
+  return found
+}
+function resolveInstitution(inst:Institution,state:Calendar,observe?:(week:WeekOutcome)=>void,variance=false,midseason:MidseasonChoice='steady'):SeasonReport {
+  const rules3=state.rules===3,sessionMap=new Map<string,SessionSummary&{experienceSum:number}>(),training:TrainingResult[]=[]
+  const beforeCash=inst.cash,reputationStart=inst.reputation,trustStart=inst.trust,warnings=new Set<string>(),stats=emptyStats(),demand=getDemand(state,inst)
+  // The season's event is known before the first week: some answers change how the weeks themselves run.
+  const baseEvent=getSeasonEvent(state),answer=baseEvent?.choices?eventChoiceIndex(state,inst):undefined
+  // An answer that costs money is paid in full when the season starts. A centre that cannot pay keeps the first answer,
+  // so an empty purse never buys the benefit for nothing.
+  const wanted=baseEvent&&answer?applyEventChoice(baseEvent,answer):null
+  const eventChoice=wanted&&wanted.cost>freeCash(inst)?0:answer
+  if(wanted&&eventChoice!==answer)warnings.add('사건 대응에 쓸 현금이 모자라 기본 대응으로 처리했어요.')
+  const event=baseEvent&&eventChoice!==undefined?applyEventChoice(baseEvent,eventChoice):baseEvent
+  const prepaid=event&&eventChoice?event.cost:0
+  if(prepaid)inst.cash=round(inst.cash-prepaid)
+  let repaired=0,closed=0,joined=0,restored=0,midseasonCost=0,decided:MidseasonChoice='steady',promotedClasses:Set<string>|undefined
+  if(event?.repair)for(const item of inst.inventory)if(!item.stored&&item.condition<100){item.condition=round(clamp(item.condition+event.repair));repaired++}
+  const closureWeek=event?.closure?hash(`${state.seed}:${state.year}:${state.season}:closure`)%13:-1
+  const busiest=inst.rooms.filter(room=>room.open).map(room=>({id:room.id,count:inst.plan[room.id].filter(Boolean).length})).sort((a,b)=>b.count-a.count)[0]
+  const closure=event?.closure?{rooms:event.closure==='all'?null:busiest?.count?[busiest.id]:[],reason:EVENT_CLOSURE_REASONS[event.id]??'센터 사정으로 한 주 쉬었어요.'}:undefined
+  const featured=event?.classMood?featuredClass(inst):undefined
   const retiredSupportRefund=inst.supportContract?24:0
   const serviceMix:ServiceMix={classVisits:0,freeClassVisits:0,paidClassVisits:0,rentalVisits:0}
   const issueMap=new Map<string,OperationIssue>()
   const weekly:SeasonReport['weekly']=[];let revenue=0,cost=0,visits=0,publicVisits=0,rentalRevenue=0,classRevenue=0,rentalCost=0,classCost=0,investmentReputation=0,activity:Activity[]=[]
   for(let week=0;week<13;week++){
-    const result=runWeek(inst,demand,warnings);observe?.(result);addStats(stats,result.stats)
+    if(rules3&&week===MIDSEASON_WEEK&&midseason!=='steady'&&freeCash(inst)>=MIDSEASON_OPTIONS[midseason].cost){
+      // Paid on the spot; it shapes the remaining seven weeks.
+      decided=midseason;midseasonCost=MIDSEASON_OPTIONS[midseason].cost;inst.cash=round(inst.cash-midseasonCost);cost+=midseasonCost
+      if(midseason==='promotion'){
+        // The campaign goes to the classes with the most empty seats over the first six weeks.
+        const open=[...sessionMap.values()].filter(s=>!s.rental).map(s=>({key:`${s.room}:${s.slot}`,empty:roomCapacity(s.room,s.program)*s.weeks-s.attendees})).filter(s=>s.empty>0).sort((a,b)=>b.empty-a.empty||a.key.localeCompare(b.key))
+        promotedClasses=new Set(open.slice(0,MIDSEASON_PROMOTION_CLASSES).map(s=>s.key))
+      }
+      if(midseason==='repair'){
+        // Only the two rooms in the worst state, counting their equipment: an emergency fix cannot replace regular upkeep.
+        const shape=(room:Room)=>Math.min(room.management,...inst.inventory.filter(item=>!item.stored&&item.room===room.id).map(item=>item.condition))
+        for(const room of inst.rooms.filter(room=>room.open).sort((a,b)=>shape(a)-shape(b)).slice(0,MIDSEASON_REPAIR_ROOMS)){
+          if(shape(room)>=100)continue
+          room.management=round(clamp(room.management+MIDSEASON_REPAIR));restored++
+          for(const item of inst.inventory)if(!item.stored&&item.room===room.id)item.condition=round(clamp(item.condition+MIDSEASON_REPAIR))
+        }
+      }
+    }
+    const result=runWeek(inst,demand,warnings,{rules:state.rules,seed:state.seed,year:state.year,season:state.season,week,variance,...(closure&&week===closureWeek?{closure}:{}),...(featured&&event?.classMood?{featured:{key:`${featured.room}:${featured.slot}`,mood:event.classMood}}:{}),...(promotedClasses?{promotion:promotedClasses}:{})});observe?.(result);addStats(stats,result.stats)
+    closed+=result.closed;joined+=result.promoted
+    training.push(...result.training)
+    for(const s of result.sessions){
+      const key=`${s.room}:${s.slot}:${s.program}`
+      const total=sessionMap.get(key)??{room:s.room,slot:s.slot,program:s.program,rental:s.rental,weeks:0,attendees:0,revenue:0,cost:0,reputation:0,satisfaction:0,tally:[0,0,0,0] as [number,number,number,number],experienceSum:0}
+      if(s.mood)total.mood=s.mood
+      total.weeks++;total.attendees+=s.attendees;total.revenue+=s.revenue;total.cost+=s.cost;total.reputation+=s.reputation;total.experienceSum+=s.attendees*s.experience
+      if(s.outcome)total.tally[OUTCOMES.indexOf(s.outcome)]++
+      sessionMap.set(key,total)
+    }
     for(const issue of result.issues){const key=[issue.room,issue.slot,issue.program,issue.reason].join(':');const previous=issueMap.get(key);issueMap.set(key,{...issue,weeks:(previous?.weeks??0)+1,lastWeek:week===12||Boolean(previous?.lastWeek)})}
     for(const a of result.activity){if(isRentalProgram(a.program))serviceMix.rentalVisits+=a.attendees;else{serviceMix.classVisits+=a.attendees;serviceMix[PROGRAM[a.program].income===0?'freeClassVisits':'paidClassVisits']+=a.attendees}}
     investmentReputation+=result.investmentReputation
-    inst.reputation=clamp(inst.reputation,Math.max(0,reputationStart-8),Math.min(100,reputationStart+seasonReputationGrowthLimit(reputationStart)+investmentReputation))
-    inst.trust=clamp(inst.trust,Math.max(0,trustStart-5),Math.min(100,trustStart+5))
+    // Rules 3: a name fades unless the rooms keep earning it. Nothing fades below the starting 30.
+    if(rules3)inst.reputation=Math.max(Math.min(inst.reputation,30),inst.reputation-REPUTATION_FADE*Math.max(0,inst.reputation-30)/13)
+    inst.reputation=clamp(inst.reputation,Math.max(0,reputationStart-8),Math.min(100,reputationStart+seasonReputationGrowthLimit(reputationStart)*(rules3?1.5:1)+investmentReputation))
+    inst.trust=rules3?Math.max(0,trustStart-6,Math.min(trustStart+6,inst.trust)):clamp(inst.trust,Math.max(0,trustStart-5),Math.min(100,trustStart+5))
     revenue+=result.revenue;cost+=result.cost;visits+=result.visits;publicVisits+=result.publicVisits
     rentalRevenue+=result.rentalRevenue;classRevenue+=result.classRevenue;rentalCost+=result.rentalCost;classCost+=result.classCost
     weekly.push({week:week+1,revenue:round(result.revenue),cost:round(result.cost),visits:result.visits})
@@ -741,14 +1057,23 @@ function resolveInstitution(inst:Institution,state:Calendar,observe?:(week:WeekO
   const release=inst.baseReserve+maintenanceCost(inst)+facilityUpkeep(inst)+campusUpkeep(inst)
   const paid=Math.min(inst.cash,fixed)
   inst.cash=round(inst.cash-paid);inst.reserved=round(Math.max(0,Math.min(inst.cash,inst.reserved-release)));cost+=paid
-  const event=getSeasonEvent(state)
   const eventRevenue=event?round(Math.max(-Math.min(25,freeCash(inst)),Math.min(25,revenue*event.revenueRate))):0
-  const eventCost=event?Math.min(event.cost,freeCash(inst)):0
-  const eventCash=event?.cash??0,oldReputation=inst.reputation
-  inst.cash=round(inst.cash+eventRevenue+eventCash-eventCost)
+  const eventCost=event?(eventChoice?prepaid:Math.min(event.cost,freeCash(inst))):0
+  const eventCash=event?.cash??0,oldReputation=inst.reputation,oldTrust=inst.trust
+  inst.cash=round(inst.cash+eventRevenue+eventCash-(eventChoice?0:eventCost))
   inst.reputation=clamp(inst.reputation+(event?.reputation??0))
+  if(event?.trust)inst.trust=Math.max(0,inst.trust+event.trust)
+  // Residents at a free occasion count toward satisfaction like any other satisfied visit.
+  if(event?.audience){stats.experienceSum+=event.audience*EVENT_AUDIENCE_EXPERIENCE;stats.experienceWeight+=event.audience}
+  let learned:{kind:Expertise;gain:number}|undefined
+  if(event?.staffPoints){const kind=(['culture','sport','event'] as Expertise[]).reduce((low,other)=>inst.xp[other]<inst.xp[low]?other:low);inst.xp[kind]=round(inst.xp[kind]+event.staffPoints);learned={kind,gain:event.staffPoints}}
+  if(event?.financeBonus)inst.evaluationStats.financeBonus=round((inst.evaluationStats.financeBonus??0)+event.financeBonus)
   revenue+=eventRevenue+eventCash;cost+=eventCost
-  const eventImpact=event?{id:event.id,cash:eventCash,revenue:eventRevenue,cost:eventCost,reputation:round(inst.reputation-oldReputation)}:undefined
+  const eventImpact:EventImpact|undefined=event?{id:event.id,cash:eventCash,revenue:eventRevenue,cost:eventCost,reputation:round(inst.reputation-oldReputation),
+    ...(event.trust?{trust:round(inst.trust-oldTrust)}:{}),...(closure?{closed}:{}),...(featured&&event.classMood?{featured:{...featured,mood:event.classMood}}:{}),
+    ...(event.audience?{audience:event.audience}:{}),...(event.repair?{repaired}:{}),...(learned?{learned}:{}),...(event.financeBonus?{financial:event.financeBonus}:{}),...(event.noTraining?{noTraining:true as const}:{})}:undefined
+  // A class that has run season after season earns its story after the event is settled, so the two stay separate.
+  const story=rules3?tellStory(inst,[...sessionMap.values()]):undefined
   inst.reputation=round(inst.reputation);inst.trust=round(inst.trust)
   addStats(inst.yearStats,stats)
   addStats(inst.evaluationStats,stats)
@@ -756,10 +1081,11 @@ function resolveInstitution(inst:Institution,state:Calendar,observe?:(week:WeekO
   // Unpaid fixed obligations remain costs for the financial evaluation.
   inst.evaluationStats.cost=round(inst.evaluationStats.cost+cost+fixed-paid)
   inst.evaluationStats.seasons++;inst.evaluationStats.reputationSum+=inst.reputation
-  const scores=scoreStats(inst,stats)
+  const scores=scoreStats(inst,stats,state.rules)
   Object.assign(inst,scores);inst.history.push(scores.score);if(state.season===3)inst.annualScores.push(scores.score)
   const profit=round(revenue-cost)
-  return {serviceMix,operationIssues:[...issueMap.values()],fixedCost:fixed,unpaidFixedCost:round(fixed-paid),retiredSupportRefund,eventImpact,year:state.year,season:state.season,revenue:round(revenue),cost:round(cost),profit,visits,publicVisits,...scores,rank:1,
+  const sessions:SessionSummary[]=[...sessionMap.values()].map(({experienceSum,...s})=>({...s,revenue:round(s.revenue),cost:round(s.cost),reputation:round(s.reputation),satisfaction:s.attendees?round(experienceSum/s.attendees):0}))
+  return {sessions,trustChange:round(inst.trust-trustStart),...(training.length?{training}:{}),...(eventChoice!==undefined?{eventChoice}:{}),...(story?{story}:{}),...(rules3&&variance?{midseason:{choice:decided,cost:midseasonCost,...(decided==='promotion'?{joined}:decided==='repair'?{restored}:{})}}:{}),serviceMix,operationIssues:[...issueMap.values()],fixedCost:fixed,unpaidFixedCost:round(fixed-paid),retiredSupportRefund,eventImpact,year:state.year,season:state.season,revenue:round(revenue),cost:round(cost),profit,visits,publicVisits,...scores,rank:1,
     highlights:[visits?`이번 계절 ${visits}번의 방문이 있었어요.`:'이번 계절에는 시설을 준비하며 쉬었어요.',`대관 수입 ${wonAmount(round(rentalRevenue))}원 · 클래스 수입 ${wonAmount(round(classRevenue))}원`],warnings:[...warnings],activity,weekly,beforeCash,afterCash:inst.cash,annual:state.season===3,rentalRevenue:round(rentalRevenue),classRevenue:round(classRevenue),rentalCost:round(rentalCost),classCost:round(classCost),reputationChange:round(inst.reputation-reputationStart),breakdownAvailable:true}
 }
 
@@ -807,6 +1133,23 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
     if(freeCash(inst)<offer.price+offer.maintenance*(4-state.season)+buffer)break
     if(buyFor(inst,next.id,next.room,state.season))break
   }
+  if(state.rules===3&&!inst.trained&&!answeredEvent(state,inst)?.noTraining){
+    // Rivals invest in staff too, in the field they lean on, when a seeded mood and their budget allow.
+    const kinds:Expertise[]=['culture','sport','event']
+    const preferred:Expertise|undefined=inst.id==='tantan'?'sport':inst.id==='rhythm'||inst.id==='byeolbit'?'event':undefined
+    const busiest=kinds.map(kind=>({kind,count:ROOM_IDS.reduce((sum,room)=>sum+inst.plan[room].filter(id=>id&&PROGRAM[id].kind===kind).length,0)})).sort((a,b)=>b.count-a.count||a.kind.localeCompare(b.kind))
+    const mood=hash(`${state.seed}:${state.year}:${state.season}:${inst.id}:training`)%100
+    const kind=mood%4===0?busiest[1].kind:preferred&&mood%3!==0?preferred:busiest[0].kind
+    const level=staffLevel(inst.xp[kind],3),price=trainingCost(level,3)
+    // How seriously each rival takes training differs from game to game.
+    const diligence=35+hash(`${state.seed}:${inst.id}:diligence`)%61
+    if(level<STAFF_MAX_LEVEL&&mood<diligence&&freeCash(inst)>=price+150){
+      inst.cash=round(inst.cash-price);inst.evaluationStats.cost=round(inst.evaluationStats.cost+price);inst.trained=true
+      inst.pendingTasks.push({kind:'train',room:'A',remaining:1,expertise:kind})
+    }
+  }
+  // Rules 3 rivals also weigh what a let does for their standing, not rent alone.
+  const rentalWorth=(request:RentalRequest)=>request.fee-request.cost+(state.rules===3?(rentalTraitOf(request)?.reputation??0)*(inst.id==='boram'||inst.id==='daon'||inst.id==='baeum'?60:20)+(rentalTraitOf(request)?.publicShare??0)*(inst.id==='boram'||inst.id==='daon'?6:1):0)
   inst.plan=emptyPlan();for(const request of inst.rentalRequests)request.status='pending'
   planRivalSpecialty(inst,state)
   if(adaptive){
@@ -814,7 +1157,7 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
     // sessions. Both plan from the same published demand and rental requests.
     inst.priceMode=inst.id==='daon'&&freeCash(inst)>=450?'discount':'standard'
     inst.guideMode=inst.id==='saebom'&&inst.rentalRequests.length>=7?'fast':'welcome'
-    const demand=getDemand(state),remaining=new Map(demand.map(group=>[group.id,group.people]))
+    const demand=getDemand(state,inst),remaining=new Map(demand.map(group=>[group.id,group.people]))
     const roomOrder:RoomId[]=inst.id==='daon'?['A','B','F','E','D','G','C']:['E','A','F','B','D','G','C']
     const order:ProgramId[]=inst.id==='daon'?['P02','P04','P07','P09','P01','P03','P06']:['P13','P09','P07','P03','P01','P04','P02','P06']
     const alternatives=new Map<string,number>()
@@ -826,14 +1169,16 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
     // class budget; occupied rooms may prevent accepting all requests.
     const lossBudget=Math.max(0,freeCash(inst)/13+[...alternatives.values()].reduce((sum,n)=>sum+n,0)*.5-4)
     let plannedLoss=0
-    const candidates=roomOrder.flatMap(room=>order.filter(id=>canRunProgram(inst,room,id)).map(id=>({room,id})))
-    for(let step=0;step<15;step++){
+    const candidates=roomOrder.flatMap(room=>order.filter(id=>(state.rules===3?canPlaceProgram:canRunProgram)(inst,room,id)).map(id=>({room,id})))
+    // Rules 3: how many classes the two planners manage to organise differs from game to game.
+    const reach=state.rules===3?10+hash(`${state.seed}:${inst.id}:reach`)%6:15
+    for(let step=0;step<reach;step++){
       let best:{room:RoomId;slot:number;id:ProgramId;utility:number;net:number;served:string[]}|undefined
       for(const {room,id} of candidates)for(let slot=0;slot<5;slot++){
         const p=PROGRAM[id]
-        if(inst.plan[room][slot]||getProgramPlacementError(inst,room,slot,id))continue
+        if(inst.plan[room][slot]||getProgramPlacementError(inst,room,slot,id,state.rules===3))continue
         let seats=roomCapacity(room,id),attendees=0,utility=0
-        const served:string[]=[],fee=feeFor(inst,p)
+        const served:string[]=[],fee=feeFor(inst,p,state.rules)
         for(const group of demand){
           if(!group.programs.includes(id)||!group.slots.includes(slot)||fee>group.maxFee+.0001)continue
           const count=Math.min(seats,remaining.get(group.id)??0)
@@ -854,7 +1199,7 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
       // A partially admitted group does not create a second weekly visit.
       for(const id of best.served)remaining.set(id,0)
     }
-    for(const request of [...inst.rentalRequests].sort((a,b)=>(b.fee-b.cost)-(a.fee-a.cost)||a.id.localeCompare(b.id))){
+    for(const request of [...inst.rentalRequests].sort((a,b)=>rentalWorth(b)-rentalWorth(a)||a.id.localeCompare(b.id))){
       if(inst.plan[request.room][request.slot])continue
       decideFor(inst,request.id,'accepted')
     }
@@ -862,42 +1207,44 @@ function chooseRivalPlan(inst:Institution,state:Calendar):void {
     return
   }
   const publicFirst=inst.id==='boram',rentalFirst=['rhythm','neulpum','pureun'].includes(inst.id)
-  const demand=getDemand(state),assigned=new Set<string>()
+  const demand=getDemand(state,inst),assigned=new Set<string>()
   const allocateClasses=()=>{
     const order:ProgramId[]=publicFirst?['P02','P04','P07','P01','P03','P09','P06']:inst.id==='tantan'?['P11','P16','P03','P09','P04','P01','P06']:['P12','P13','P14','P15','P17','P18','P19','P20','P21','P01','P07','P03','P09','P02','P04','P06']
     for(let slot=0;slot<5;slot++){
       for(const room of inst.rooms.filter(r=>r.open)){
         if(inst.plan[room.id][slot])continue
-        const candidates=order.filter(id=>!getProgramPlacementError(inst,room.id,slot,id)).map(id=>({id,group:demand.find(g=>!assigned.has(g.id)&&g.programs.includes(id)&&g.slots.includes(slot)&&feeFor(inst,PROGRAM[id])<=g.maxFee)})).filter(item=>item.group)
+        const candidates=order.filter(id=>!getProgramPlacementError(inst,room.id,slot,id,state.rules===3)).map(id=>({id,group:demand.find(g=>!assigned.has(g.id)&&g.programs.includes(id)&&g.slots.includes(slot)&&feeFor(inst,PROGRAM[id],state.rules)<=g.maxFee)})).filter(item=>item.group)
         const choice=candidates[0];if(!choice)continue
         inst.plan[room.id][slot]=choice.id;assigned.add(choice.group!.id)
       }
     }
   }
   const allocateRentals=()=>{
-    for(const request of [...inst.rentalRequests].sort((a,b)=>(b.fee-b.cost)-(a.fee-a.cost)||a.id.localeCompare(b.id))){
+    for(const request of [...inst.rentalRequests].sort((a,b)=>rentalWorth(b)-rentalWorth(a)||a.id.localeCompare(b.id))){
       decideFor(inst,request.id,'accepted')
     }
   }
   if(rentalFirst){allocateRentals();allocateClasses()}else{allocateClasses();allocateRentals()}
   for(const request of inst.rentalRequests)if(request.status==='pending')request.status='declined'
 }
-export interface ClassOutlook { interruptedWeeks?:number;interruptionReason?:string;publicService?:boolean;blockedReason?:string;operatingCost?:number; revenue:number;cost:number;profit:number;attendees:number;satisfaction:number|null;reputation:number;fee:number;slot:number;assumed:boolean;note:string }
+export interface ClassOutlook { interruptedWeeks?:number;interruptionReason?:string;publicService?:boolean;blockedReason?:string;operatingCost?:number; staffLevel?:number; odds?:Record<Outcome,number>; revenue:number;cost:number;profit:number;attendees:number;satisfaction:number|null;reputation:number;fee:number;slot:number;assumed:boolean;note:string }
 /** Read-only. Per-class direct costs are measured with the same weekly simulation. */
 export function previewClass(state:GameState,roomId:RoomId,programId:ProgramId,requestedSlot?:number|null):ClassOutlook {
-  const p=PROGRAM[programId],room=roomOf(state.player,roomId)!,fee=feeFor(state.player,p)
+  const p=PROGRAM[programId],room=roomOf(state.player,roomId)!,fee=feeFor(state.player,p,state.rules)
+  const rules3=state.rules===3,level=classStaffLevel(state.player,programId,state.rules),levelBonus=p.kind==='community'?0:level*(rules3?2.4:3)
+  const chance=rules3?{staffLevel:level,odds:outcomeOdds(level)}:{}
   const slots=[0,1,2,3,4].filter(s=>!getRentalAt(state.player,roomId,s))
   const slot=requestedSlot!=null&&slots.includes(requestedSlot)?requestedSlot:slots.find(s=>state.player.plan[roomId][s]===programId)??slots.find(s=>!state.player.plan[roomId][s])??slots[0]??0
-  const ready=roomSupportsProgram(roomId,programId)&&canRunProgram(state.player,roomId,programId)&&slots.length>0&&state.phase==='planning'
+  const ready=roomSupportsProgram(roomId,programId)&&canPlaceProgram(state.player,roomId,programId)&&slots.length>0&&state.phase==='planning'
   const remainingCount=getProgramWeeklyCount(state.player,programId)-(state.player.plan[roomId][slot]===programId?1:0)
   const baseline=(blockedReason?:string):ClassOutlook=>{
     const attendees=roomCapacity(roomId,programId)*.7
-    const premium=p.kind!=='community'&&getLevel(state.player.xp[p.kind])>=2&&state.player.priceMode==='premium'
-    const satisfaction=clamp(68+90*.1+(room.facilityQuality-90)*.08+campusBenefits(state.player).experience+roomRemodelBonus(room)+(p.kind==='community'?0:getLevel(state.player.xp[p.kind])*3)+(premium?3:0)+(hasFamily(state.player,'guide')?4:0))
+    const premium=p.kind!=='community'&&level>=2&&state.player.priceMode==='premium'
+    const satisfaction=clamp(68+90*.1+(room.facilityQuality-90)*.08+campusBenefits(state.player).experience+roomRemodelBonus(room)+levelBonus+(premium?3:0)+(hasFamily(state.player,'guide')?4:0))
     const revenue=round(fee*attendees),cost=p.cost+(premium?1:0)
-    return {publicService:p.income===0,blockedReason,revenue,cost,profit:round(revenue-cost),attendees:round(attendees),satisfaction:round(satisfaction),reputation:p.kind==='community'?0:round(attendees*.015*satisfaction/100*(p.reputationMultiplier??1)),fee,slot,assumed:true,note:'정상 운영 가정 · 정원 70% · 관리 90 · 필요한 장비 정상 · 소음 없음'}
+    return {...chance,publicService:p.income===0,blockedReason,revenue,cost,profit:round(revenue-cost),attendees:round(attendees),satisfaction:round(satisfaction),reputation:p.kind==='community'?0:round(rules3?attendees*REPUTATION_RATE*reputationQuality(satisfaction)*(p.reputationMultiplier??1)*reputationHeadroom(state.player.reputation)*reputationBalance(state.player):attendees*.015*satisfaction/100*(p.reputationMultiplier??1)),fee,slot,assumed:true,note:'정상 운영 가정 · 정원 70% · 관리 90 · 필요한 장비 정상 · 소음 없음'}
   }
-  if(!ready||(p.weeklyLimit&&remainingCount>=p.weeklyLimit))return baseline(!room.open?'시설 개방 필요':!canRunProgram(state.player,roomId,programId)?'필수 장비 설치·정비 또는 방 용도·면적 조건 확인 필요':!slots.length?'모든 시간이 승인 대관으로 차 있음':p.weeklyLimit&&remainingCount>=p.weeklyLimit?'센터 전체 주간 개설 한도 도달':undefined)
+  if(!ready||(p.weeklyLimit&&remainingCount>=p.weeklyLimit))return baseline(!room.open?'시설 개방 필요':!canPlaceProgram(state.player,roomId,programId)?'필수 장비 설치·정비 또는 방 용도·면적 조건 확인 필요':!slots.length?'모든 시간이 승인 대관으로 차 있음':p.weeklyLimit&&remainingCount>=p.weeklyLimit?'센터 전체 주간 개설 한도 도달':undefined)
   const inst=copy(state.player);inst.plan[roomId][slot]=programId
   let revenue=0,cost=0,attendees=0,experience=0,reputation=0
   const reasons=new Set<string>()
@@ -908,21 +1255,63 @@ export function previewClass(state:GameState,roomId:RoomId,programId:ProgramId,r
     const finance=week.ledger.find(a=>a.room===roomId&&a.slot===slot&&a.program===programId)
     const a=week.activity.find(a=>a.room===roomId&&a.slot===slot&&a.program===programId)
     if(finance){revenue+=finance.revenue;cost+=finance.cost}
-    if(a){attendees+=a.attendees;experience+=a.attendees*a.experience;if(p.kind!=='community')reputation+=a.attendees*.015*a.experience/100*(p.reputationMultiplier??1)}
+    if(a){attendees+=a.attendees;experience+=a.attendees*a.experience;reputation+=rules3?a.reputation??0:p.kind!=='community'?a.attendees*.015*a.experience/100*(p.reputationMultiplier??1):0}
   })
   if(!attendees)return baseline([...reasons].join(' · ')||'현재 편성으로 운영 예상 없음')
-  return {interruptedWeeks,interruptionReason:interruptedWeeks?[...reasons].join(' · '):undefined,publicService:p.income===0,blockedReason:attendees?undefined:[...reasons].join(' · ')||'실제 운영 예상 없음',operatingCost:p.cost+(p.kind!=='community'&&getLevel(state.player.xp[p.kind])>=2&&state.player.priceMode==='premium'?1:0),revenue:round(revenue/13),cost:round(cost/13),profit:round((revenue-cost)/13),attendees:round(attendees/13),satisfaction:attendees?round(experience/attendees):null,reputation:round(reputation/13),fee,slot,assumed:false,note:BLOCKS[slot]+' · 현재 수요·편성 기준 13주 평균'}
+  return {...chance,interruptedWeeks,interruptionReason:interruptedWeeks?[...reasons].join(' · '):undefined,publicService:p.income===0,blockedReason:attendees?undefined:[...reasons].join(' · ')||'실제 운영 예상 없음',operatingCost:p.cost+(p.kind!=='community'&&level>=2&&state.player.priceMode==='premium'?1:0),revenue:round(revenue/13),cost:round(cost/13),profit:round((revenue-cost)/13),attendees:round(attendees/13),satisfaction:attendees?round(experience/attendees):null,reputation:round(reputation/13),fee,slot,assumed:false,note:BLOCKS[slot]+' · 현재 수요·편성 기준 13주 평균'}
 }
 export function previewSeason(state:GameState):SeasonReport {
   if(state.phase!=='planning'&&state.lastReport)return copy(state.lastReport)
   const report=resolveInstitution(copy(state.player),state);report.rank=1+state.rivals.filter(r=>r.score>report.score).length;report.participants=state.rivals.length+1;return report
 }
-export function runSeason(state:GameState):GameState {
+export interface MidseasonBrief {
+  revenue:number; cost:number; visits:number; tally:[number,number,number,number]
+  /** Class seats offered and left empty over the first six weeks. */ classSeats:number; emptySeats:number
+  /** Weekly sessions that still have room, as planned. */ openClasses:number
+  canceled:number; lowestRoom:{id:RoomId;management:number}|null; wornItems:number; cash:number
+  options:{id:MidseasonChoice;label:string;description:string;effect:string;cost:number;affordable:boolean}[]
+}
+/**
+ * Rules 3: what the first six weeks will have looked like when the centre meets before week 7. Read-only, and exactly
+ * what the season itself will play out, because every weekly roll is seeded.
+ */
+export function previewMidseason(state:GameState):MidseasonBrief|null {
+  if(state.rules!==3||state.phase!=='planning'||state.planningStage!=='classes')return null
+  const inst=copy(state.player),tally:[number,number,number,number]=[0,0,0,0],open=new Set<string>()
+  let week=0,revenue=0,cost=0,visits=0,classSeats=0,emptySeats=0,canceled=0,brief:MidseasonBrief|null=null
+  resolveInstitution(inst,state,result=>{
+    if(week++>=MIDSEASON_WEEK)return
+    revenue+=result.revenue;cost+=result.cost;visits+=result.visits;canceled+=result.issues.length
+    for(const a of result.activity){
+      if(isRentalProgram(a.program))continue
+      classSeats+=a.capacity;emptySeats+=a.capacity-a.attendees
+      if(a.attendees<a.capacity)open.add(`${a.room}:${a.slot}`)
+      if(a.outcome)tally[OUTCOMES.indexOf(a.outcome)]++
+    }
+    if(week<MIDSEASON_WEEK)return
+    // The centre exactly as it stands when the meeting is held.
+    // The figure the player sees and the one that closes a room at 20: upkeep and the room's equipment together.
+    const rooms=inst.rooms.filter(room=>room.open).map(room=>({id:room.id,management:getRoomManagement(inst,room.id)})).sort((a,b)=>a.management-b.management),cash=freeCash(inst)
+    brief={revenue:round(revenue),cost:round(cost),visits,tally,classSeats,emptySeats,openClasses:open.size,canceled,cash,
+      lowestRoom:rooms[0]??null,wornItems:inst.inventory.filter(item=>!item.stored&&item.ready&&item.condition<60).length,
+      options:(Object.keys(MIDSEASON_OPTIONS) as MidseasonChoice[]).map(id=>({id,...MIDSEASON_OPTIONS[id],affordable:cash>=MIDSEASON_OPTIONS[id].cost}))}
+  },true)
+  return brief
+}
+/** Rivals hold the same meeting: they fix what is visibly worn, sometimes advertise, and otherwise carry on. */
+function rivalMidseason(inst:Institution,state:Calendar):MidseasonChoice {
+  const worn=inst.rooms.some(room=>room.open&&room.management<45)||inst.inventory.some(item=>!item.stored&&item.condition<55)
+  if(worn&&freeCash(inst)>=MIDSEASON_OPTIONS.repair.cost+120)return 'repair'
+  return hash(`${state.seed}:${state.year}:${state.season}:${inst.id}:midseason`)%100<30&&freeCash(inst)>=MIDSEASON_OPTIONS.promotion.cost+180?'promotion':'steady'
+}
+/** Runs the season. Under rules 3 the centre's mid-season decision applies from week 7; an unaffordable one is skipped. */
+export function runSeason(state:GameState,midseason:MidseasonChoice='steady'):GameState {
   if(state.phase!=='planning'||state.planningStage!=='classes')return state
+  if(!Object.hasOwn(MIDSEASON_OPTIONS,midseason))return state
   const next=copy(state)
   for(const rival of next.rivals)chooseRivalPlan(rival,next)
-  const report=resolveInstitution(next.player,next)
-  const peerReports=next.rivals.map(rival=>resolveInstitution(rival,next))
+  const report=resolveInstitution(next.player,next,undefined,true,midseason)
+  const peerReports=next.rivals.map(rival=>resolveInstitution(rival,next,undefined,true,rivalMidseason(rival,next)))
   if(peerReports.length){
     const average=(read:(r:SeasonReport)=>number)=>peerReports.reduce((sum,r)=>sum+read(r),0)/peerReports.length
     report.peerComparison={count:peerReports.length,visits:average(r=>r.visits),profit:average(r=>r.profit),reputationChange:average(r=>r.reputationChange),serviceMix:{classVisits:average(r=>r.serviceMix!.classVisits),freeClassVisits:average(r=>r.serviceMix!.freeClassVisits),paidClassVisits:average(r=>r.serviceMix!.paidClassVisits),rentalVisits:average(r=>r.serviceMix!.rentalVisits)}}
@@ -935,7 +1324,7 @@ export function runSeason(state:GameState):GameState {
   }
   const measured=[next.player,...next.rivals].map((inst,i)=>{
     const r=i===0?report:peerReports[i-1],e=report.evaluation?inst.evaluations.at(-1):undefined
-    const components=e?.components??{reputation:inst.reputation,financial:financialScore(inst),satisfaction:r.experienceScore,publicService:r.publicScore}
+    const components=e?.components??{reputation:inst.reputation,financial:financialScore(inst,next.rules),satisfaction:r.experienceScore,publicService:r.publicScore}
     return {id:inst.id,score:e?.score??r.score,components}
   }).sort((a,b)=>b.score-a.score||b.components.publicService-a.components.publicService||b.components.satisfaction-a.components.satisfaction||a.id.localeCompare(b.id))
   const ours=measured.find(e=>e.id===next.player.id)!,rank=measured.indexOf(ours)+1
@@ -1009,7 +1398,16 @@ function validReport(value:unknown,legacy=false):boolean {
   if(value.operationIssues!==undefined&&(!Array.isArray(value.operationIssues)||!value.operationIssues.every(i=>object(i)&&ROOM_IDS.includes(i.room as RoomId)&&integerIn(i.slot,0,4)&&programId(i.program)&&typeof i.reason==='string'&&integerIn(i.weeks,1,13)&&typeof i.lastWeek==='boolean')))return false
   if(['fixedCost','unpaidFixedCost','retiredSupportRefund'].some(key=>value[key]!==undefined&&!numberIn(value[key])))return false
   if(value.participants!==undefined&&(!integerIn(value.participants,1,11)||value.rank>value.participants))return false
-  if(value.eventImpact!==undefined){const e=value.eventImpact;if(!object(e)||typeof e.id!=='string'||!numberIn(e.cash,0,20)||!numberIn(e.cost,0,15)||!numberIn(e.revenue,-25,25)||!numberIn(e.reputation,-1.5,1.5))return false}
+  if(value.eventImpact!==undefined){const e=value.eventImpact;if(!object(e)||typeof e.id!=='string'||!numberIn(e.cash,0,40)||!numberIn(e.cost,0,60)||!numberIn(e.revenue,-25,25)||!numberIn(e.reputation,-3,3))return false
+    if((e.trust!==undefined&&!numberIn(e.trust,-10,10))||(e.closed!==undefined&&!integerIn(e.closed,0,35))||(e.audience!==undefined&&!integerIn(e.audience,0,1000))||(e.repaired!==undefined&&!integerIn(e.repaired,0,500))||(e.financial!==undefined&&!numberIn(e.financial,0,20))||(e.noTraining!==undefined&&e.noTraining!==true))return false
+    if(e.featured!==undefined&&(!object(e.featured)||!roomId(e.featured.room)||!integerIn(e.featured.slot,0,4)||!programId(e.featured.program)||!['hot','cold'].includes(e.featured.mood as string)))return false
+    if(e.learned!==undefined&&(!object(e.learned)||!['culture','sport','event'].includes(e.learned.kind as string)||!numberIn(e.learned.gain,0,100)))return false}
+  if(value.sessions!==undefined&&(!Array.isArray(value.sessions)||!value.sessions.every(s=>object(s)&&roomId(s.room)&&integerIn(s.slot,0,4)&&programId(s.program)&&typeof s.rental==='boolean'&&integerIn(s.weeks,0,13)&&['attendees','revenue','cost','satisfaction'].every(key=>numberIn(s[key]))&&numberIn(s.reputation,-100,100)&&Array.isArray(s.tally)&&s.tally.length===4&&s.tally.every(n=>integerIn(n,0,13)))))return false
+  if(value.training!==undefined&&(!Array.isArray(value.training)||!value.training.every(t=>object(t)&&['culture','sport','event'].includes(t.kind as string)&&numberIn(t.gain,0,100)&&integerIn(t.level,0,STAFF_MAX_LEVEL)&&typeof t.leveledUp==='boolean'&&typeof t.grade==='string')))return false
+  if(value.eventChoice!==undefined&&!integerIn(value.eventChoice,0,1))return false
+  if(value.story!==undefined&&(!object(value.story)||!programId(value.story.program)||!['exhibition','graduation','contest','new-friend','teacher-letter'].includes(value.story.kind as string)||!integerIn(value.story.seasons,1,28)||!numberIn(value.story.reputation,0,5)||!numberIn(value.story.trust,0,5)))return false
+  if(value.midseason!==undefined&&(!object(value.midseason)||typeof value.midseason.choice!=='string'||!Object.hasOwn(MIDSEASON_OPTIONS,value.midseason.choice)||!numberIn(value.midseason.cost,0,100)||(value.midseason.joined!==undefined&&!integerIn(value.midseason.joined,0,5000))||(value.midseason.restored!==undefined&&!integerIn(value.midseason.restored,0,7))))return false
+  if(value.trustChange!==undefined&&!numberIn(value.trustChange,-100,100))return false
   if(value.evaluation!==undefined&&(!validEvaluation(value.evaluation)||value.evaluation.year!==value.year||value.season!==3))return false
   if(!['revenue','cost','visits','publicVisits','beforeCash','afterCash'].every(key=>numberIn(value[key]))||!numberIn(value.profit,-Number.MAX_SAFE_INTEGER))return false
   if(!['publicScore','experienceScore','score'].every(key=>numberIn(value[key],0,100))||!strings(value.highlights)||!strings(value.warnings))return false
@@ -1019,7 +1417,7 @@ function validReport(value:unknown,legacy=false):boolean {
 }
 function validInstitution(value:unknown,legacy=false):boolean {
   if(!object(value)||!['id','name','archetype','lastPurchase'].every(key=>typeof value[key]==='string'))return false
-  if(!numberIn(value.cash)||!numberIn(value.reserved,0,value.cash)||!numberIn(value.baseReserve)||!numberIn(value.trust,0,100))return false
+  if(!numberIn(value.cash)||!numberIn(value.reserved,0,value.cash)||!numberIn(value.baseReserve)||!numberIn(value.trust,0,100000))return false
   if(!['score','publicScore','experienceScore','utilization'].every(key=>numberIn(value[key],0,100))||!numbers(value.history)||!numbers(value.annualScores))return false
   if(!object(value.xp)||!['culture','sport','event'].every(key=>numberIn((value.xp as Data)[key])))return false
   if(!validLearningEvidence(value.yearStats))return false
@@ -1060,11 +1458,13 @@ function validInstitution(value:unknown,legacy=false):boolean {
   if(evaluationYears.some((year,index)=>index>0&&year<=evaluationYears[index-1]))return false
   if(!validLearningEvidence(value.evaluationStats))return false
   if(!object(value.evaluationStats)||!['publicServed','publicRequested','experienceSum','experienceWeight','use','weeks','revenue','cost','grants','reputationSum'].every(key=>numberIn((value.evaluationStats as Data)[key]))||!integerIn(value.evaluationStats.seasons,0,8))return false
+  if(value.evaluationStats.financeBonus!==undefined&&!numberIn(value.evaluationStats.financeBonus,0,40))return false
+  if(value.streaks!==undefined&&(!object(value.streaks)||!Object.entries(value.streaks).every(([id,streak])=>programId(id)&&object(streak)&&integerIn(streak.seasons,0,28)&&integerIn(streak.told,0,3))))return false
   if(value.evaluationStats.weeks!==value.evaluationStats.seasons*13||!numberIn(value.evaluationStats.reputationSum,0,value.evaluationStats.seasons*100+.01))return false
   if(!numberIn(value.reputation,0,100)||!Array.isArray(value.rentalRequests))return false
   const occupied=new Set<string>(),requestIds=new Set<string>()
   for(const request of value.rentalRequests){
-    if(!object(request)||typeof request.id!=='string'||requestIds.has(request.id)||!roomId(request.room)||!integerIn(request.slot,0,4)||!programId(request.program)||!isRentalProgram(request.program)||typeof request.client!=='string'||typeof request.title!=='string'||!numberIn(request.attendees,1,roomCapacity(request.room,request.program))||!numberIn(request.fee)||!numberIn(request.cost)||!['pending','accepted','declined'].includes(request.status as string))return false
+    if(!object(request)||typeof request.id!=='string'||requestIds.has(request.id)||!roomId(request.room)||!integerIn(request.slot,0,4)||!programId(request.program)||!isRentalProgram(request.program)||typeof request.client!=='string'||typeof request.title!=='string'||!numberIn(request.attendees,1,roomCapacity(request.room,request.program))||!numberIn(request.fee)||!numberIn(request.cost)||!['pending','accepted','declined'].includes(request.status as string)||(request.trait!==undefined&&!Object.hasOwn(RENTAL_TRAITS,request.trait as string)))return false
     requestIds.add(request.id)
     if(!(value.rooms as unknown as Room[]).find(room=>room.id===request.room)?.open)return false
     if(request.status==='accepted'){
@@ -1081,6 +1481,9 @@ export function validateSave(value:unknown):value is GameState {
   try {
     if(!object(value)||value.version!==2||!integerIn(value.seed,0,Number.MAX_SAFE_INTEGER)||!integerIn(value.year,1,MAX_YEARS)||!integerIn(value.season,0,3)||!['planning','review','ending'].includes(value.phase as string)||!['rentals','classes'].includes(value.planningStage as string))return false
     if(value.campaignVersion!==undefined&&value.campaignVersion!==2)return false
+    if(value.rules!==undefined&&value.rules!==3)return false
+    if(value.eventCatalog!==undefined&&value.eventCatalog!==2)return false
+    if(value.eventChoices!==undefined&&(!object(value.eventChoices)||Object.keys(value.eventChoices).length>28||!Object.entries(value.eventChoices).every(([key,choice])=>/^[1-7]-[0-3]$/.test(key)&&integerIn(choice,0,1))))return false
     if(value.eventDeck!==undefined&&(!Array.isArray(value.eventDeck)||value.eventDeck.length!==28||value.eventDeck.some(id=>id!==null&&!SEASON_EVENTS.some(e=>e.id===id))||new Set(value.eventDeck.filter(id=>id!==null)).size!==value.eventDeck.filter(id=>id!==null).length))return false
     if(value.seasonIntroSeen!==undefined&&(typeof value.seasonIntroSeen!=='string'||!/^([1-7])-[0-3]$/.test(value.seasonIntroSeen)))return false
     if(value.specialtyRulesVersion!==undefined&&value.specialtyRulesVersion!==1)return false
@@ -1149,6 +1552,7 @@ export function migrateSave(value:unknown):GameState|null {
     for(const report of [...next.history,...(next.lastReport?[next.lastReport]:[])])if(report.participants===undefined)report.participants=Math.max(next.rivals.length+1,report.rank)
     migrateSpecialtyRules(next)
     migrateEventDeck(next)
+    if(expandEventDeck(next))next.migrationNotices=[...new Set([...(next.migrationNotices??[]),EVENT_CATALOG_NOTICE])].slice(-1000)
     return next
   }
   try {

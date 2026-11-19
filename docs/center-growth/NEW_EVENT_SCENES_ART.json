@@ -1,0 +1,155 @@
+{
+  "purpose": "새 선택형 사건 8종의 기본 장면과 두 번째 대응 장면 16장",
+  "appliedOn": "2026-11-19",
+  "tool": "ChatGPT 이미지 생성으로 추정 (제작자가 2026-11-19에 앞선 전달분을 두고 '그림을 만든 도구는 모두 chatgp imagen'이라고 알려 줌. 이 전달분은 따로 확인받지 않았고 정확한 모델명도 확인하지 못함)",
+  "sourceArchive": "C:\\Users\\pc\\Downloads\\community-event-scenes.zip (WebP 16장, 각 1536x1024)",
+  "style": "Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean slice-of-life management game, warm daylight, no text, no letters, no logos, no watermarks, complete heads safely framed, adults and seniors of varied ages in everyday Korean clothing.",
+  "processing": "전달받은 WebP는 수정하지 않음. sharp로 1200x800 WebP(quality 84)로 다시 저장해 public/center/milestones-v1/ 에 둠(기존 사건 그림과 같은 크기). 잘라내기·보정·글자 추가 없음.",
+  "review": "16장 모두 축소판(장당 960x640)으로 열어 확인: 지정한 장면과 일치, 읽히는 글자·로고는 보이지 않음(부채·서류철·화면은 빈 면). inspection-b 창밖에 남산타워를 닮은 탑이 보인다. 사람이 아닌 Claude Code가 본 것임.",
+  "assets": [
+    {
+      "file": "public/center/milestones-v1/heatwave.webp",
+      "source": "heatwave.webp",
+      "sourceSha256": "0cf628f5ad8dc8161c672dd94c3a007166f994d1ae40ccabf5337cdf03731fd4",
+      "bytes": 299558,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "A scorching summer afternoon outside a brick community center, residents fanning themselves under a shimmering sun, cicadas implied by stillness."
+    },
+    {
+      "file": "public/center/milestones-v1/heatwave-b.webp",
+      "source": "heatwave-b.webp",
+      "sourceSha256": "cc466886abcf7395ff9dec36939d492bae4d8f581d7c37ded136116f63c75120",
+      "bytes": 256594,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "The community center lobby turned into a cool resting place, seniors relaxing with cold barley tea and electric fans, staff handing out paper fans with blank surfaces."
+    },
+    {
+      "file": "public/center/milestones-v1/tv-crew.webp",
+      "source": "tv-crew.webp",
+      "sourceSha256": "8663c21cf85fb2220a204d415b3035cbf49e34f99c7f0db55e7c5104ae91651d",
+      "bytes": 288554,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "A small local broadcast crew with a camera and boom microphone arriving at a community center entrance, staff greeting them with curiosity."
+    },
+    {
+      "file": "public/center/milestones-v1/tv-crew-b.webp",
+      "source": "tv-crew-b.webp",
+      "sourceSha256": "796061a1372eae38e4341f82aedb06069a8f307721cc673c5857d366d817ce13",
+      "bytes": 200744,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "A camera crew filming a lively dance class in a community center studio, participants a little shy but smiling."
+    },
+    {
+      "file": "public/center/milestones-v1/guest-teacher.webp",
+      "source": "guest-teacher.webp",
+      "sourceSha256": "7f9c9154fc74d2d8bc795dc2458d4a577dc069347175d989188e8ac2dbd74111",
+      "bytes": 217848,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "A well-known instructor in a smart casual outfit visiting a community center office with a portfolio, staff listening with interest."
+    },
+    {
+      "file": "public/center/milestones-v1/guest-teacher-b.webp",
+      "source": "guest-teacher-b.webp",
+      "sourceSha256": "eb142f0f4ac004b1af56255da071aba5a5c96d205d6aa45e9a676b2a1d4d450d",
+      "bytes": 212834,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "A packed special lecture in a community hall with an inspiring guest instructor on stage, every seat taken."
+    },
+    {
+      "file": "public/center/milestones-v1/blackout.webp",
+      "source": "blackout.webp",
+      "sourceSha256": "ae848c8db2f1343dcbf6f07a8917b3b49dc6c007851fbe88ac87e5bd8ad4ec14",
+      "bytes": 161612,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "A community center lobby during a sudden power cut, staff holding flashlights and calmly guiding residents, dim daylight from large windows."
+    },
+    {
+      "file": "public/center/milestones-v1/blackout-b.webp",
+      "source": "blackout-b.webp",
+      "sourceSha256": "3c49b1dd186f0b89dc6770e910557a77a594ef93b27a7dc05becb183b99ac9e4",
+      "bytes": 233440,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "A portable generator humming outside a community center side door at dusk, lights back on inside, a technician checking cables."
+    },
+    {
+      "file": "public/center/milestones-v1/club-showcase.webp",
+      "source": "club-showcase.webp",
+      "sourceSha256": "f74d22c0351bffa8ebffe30b92cdc075f18b7a3d4bb41cde14b0368db84ff557",
+      "bytes": 255044,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "Members of resident hobby clubs excitedly asking a staff member about holding a showcase, holding instruments and handmade crafts."
+    },
+    {
+      "file": "public/center/milestones-v1/club-showcase-b.webp",
+      "source": "club-showcase-b.webp",
+      "sourceSha256": "04e83fb25df352a29d000b03db5b9e818023d47f5781f7354081534d6f1116e5",
+      "bytes": 232846,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "A joyful resident club showcase in a community hall, a ukulele group on stage and craft displays along the wall, families applauding."
+    },
+    {
+      "file": "public/center/milestones-v1/sister-center.webp",
+      "source": "sister-center.webp",
+      "sourceSha256": "197a5e38e83a1ec585c654c9bb173b935761f40b913ed73d796f6ccca4b0cdbc",
+      "bytes": 288874,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "A visiting delegation from another town's community center arriving by small bus, exchanging polite bows with staff at the entrance."
+    },
+    {
+      "file": "public/center/milestones-v1/sister-center-b.webp",
+      "source": "sister-center-b.webp",
+      "sourceSha256": "b1cd5d939af038de57f7642a5643c4c74565d4b7da741bbcfc69b0e42606a585",
+      "bytes": 270544,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "A warm welcome tea table in a community center meeting room, visitors and staff exchanging small gifts and looking at a model of the building."
+    },
+    {
+      "file": "public/center/milestones-v1/donated-goods.webp",
+      "source": "donated-goods.webp",
+      "sourceSha256": "adf9bb2d4ae5390ece2bd0ca3eb9005b33a4c2827eeb5c2d94598825963f2d86",
+      "bytes": 218320,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "Staff opening large donated boxes of used sports and craft equipment in a community center storage room, surprised and grateful."
+    },
+    {
+      "file": "public/center/milestones-v1/donated-goods-b.webp",
+      "source": "donated-goods-b.webp",
+      "sourceSha256": "345c4970e5a89e7c8286535a8cb577670a8e3b3c5d9385d1ff23933f7af33a27",
+      "bytes": 275810,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "Staff and volunteers repairing and cleaning donated equipment on a workbench, neatly arranged tools, satisfying order."
+    },
+    {
+      "file": "public/center/milestones-v1/inspection.webp",
+      "source": "inspection.webp",
+      "sourceSha256": "540e3bf8c8fee51d423ee64f72c36cf72000482ee58816433e7cadf9af78cfec",
+      "bytes": 192696,
+      "size": "1200x800",
+      "use": "계절 사건 · 기본 장면",
+      "prompt": "Two municipal inspectors with document folders arriving at a community center office, staff standing politely by tidy shelves of binders with blank spines."
+    },
+    {
+      "file": "public/center/milestones-v1/inspection-b.webp",
+      "source": "inspection-b.webp",
+      "sourceSha256": "2ae6ac370f0c028a35e74045dabddc4606928aa3fcd084ac49ea494b477bba93",
+      "bytes": 196372,
+      "size": "1200x800",
+      "use": "계절 사건 · 두 번째 대응 장면",
+      "prompt": "A staff team working late at an office table covered in neatly sorted binders with blank spines and a calculator, tired but organised."
+    }
+  ]
+}

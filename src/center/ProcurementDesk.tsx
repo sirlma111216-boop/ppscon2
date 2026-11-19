@@ -155,6 +155,7 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
   const [category, setCategory] = useState('all')
   const [familyFilter, setFamilyFilter] = useState<string | null>(initialOffer?.family || null)
   const [query, setQuery] = useState('')
+  const [roomOnly, setRoomOnly] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(initialOffer?.id || null)
   const submitting = useRef(false)
   const detail = useRef<HTMLElement>(null)
@@ -170,9 +171,12 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
   const alternatives = selected ? OFFERS.filter((offer) => offer.family === selected.family) : []
   const requestedPrograms = selected ? PROGRAMS.filter((program) => program.requires.some((cap) => selected.capabilities.includes(cap))) : []
   const chosenCategory = CATEGORIES.find((item) => item.id === category)!
-  const offers = OFFERS.filter((offer) => (!familyFilter || offer.family === familyFilter)
+  const matching = OFFERS.filter((offer) => (!familyFilter || offer.family === familyFilter)
     && (category === 'all' || (chosenCategory.families as readonly string[]).includes(offer.family))
     && `${offer.name} ${offer.description}`.includes(query.trim()))
+  const elsewhere = matching.filter((offer) => !roomSupportsOffer(room, offer.id)).length
+  // What this room can use comes first; goods for other rooms are one tap away.
+  const offers = (roomOnly && !familyFilter ? matching.filter((offer) => roomSupportsOffer(room, offer.id)) : [...matching].sort((a, b) => Number(roomSupportsOffer(room, b.id)) - Number(roomSupportsOffer(room, a.id))))
 
   useEffect(() => { submitting.current = false }, [game, room, selectedId])
 
@@ -219,17 +223,21 @@ export default function ProcurementDesk({ game, room, onRoomChange, onBuy, onClo
         <label className="pps-search"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명·기능으로 검색" aria-label="조달 물품 검색" /></label>
         <div className="pps-catalog-top"><h3>{familyFilter ? '같은 기능 상품 비교' : chosenCategory.label}<span>{offers.length}건</span></h3><span className="pps-result-room">설치 대상 · {ROOM_NAMES[room]}</span></div>
         {familyFilter && <button className="pps-filter-reset" onClick={() => setFamilyFilter(null)}>전체 물품 보기 <Icon name="close" size={12} /></button>}
+        {!familyFilter && elsewhere > 0 && <label className="pps-room-only"><input type="checkbox" checked={roomOnly} onChange={(event) => setRoomOnly(event.target.checked)} /><span>{ROOM_NAMES[room]}에 설치할 수 있는 물품만 보기</span><small>{roomOnly ? `다른 방 전용 ${elsewhere}건 숨김` : `다른 방 전용 ${elsewhere}건 포함`}</small></label>}
         <div className="pps-catalog-list">{offers.map((offer) => {
           const owned = game.player.inventory.some((equipment) => !equipment.stored && (equipment.room === room || equipment.room === null) && OFFERS.find((item) => item.id === equipment.id)?.family === offer.family)
           const compatible = roomSupportsOffer(room, offer.id)
-          const connections = PROGRAMS.filter((program) => program.requires.some((capability) => offer.capabilities.includes(capability)))
+          const linked = PROGRAMS.filter((program) => program.requires.some((capability) => offer.capabilities.includes(capability)))
+          // The list names what this room gains; the request panel still shows every linked class.
+          const here = linked.filter((program) => getProgramRequirements(game.player, room, program.id).roomCompatible)
+          const connections = compatible && here.length ? here : linked.slice(0, 3), hiddenLinks = linked.length - connections.length
           return <button className={`pps-product ${selectedId === offer.id ? 'is-selected' : ''} ${owned ? 'is-owned' : ''} ${!compatible ? 'is-incompatible' : ''}`} key={offer.id} aria-pressed={selectedId === offer.id} onClick={() => chooseOffer(offer)}>
             <span className="pps-product-image"><ProductDrawing family={offer.family} /></span>
             <span className="pps-product-info"><span className="pps-product-code">게임 물품번호 {offer.id}{owned && <em>보유 중</em>}</span><strong>{offer.name}</strong>{!compatible && <span className="pps-room-incompatible"><Icon name="lock" size={12} />이 공간에 설치 불가</span>}<span className="pps-product-connections" aria-label="연결 클래스와 효과">{connections.length ? <><small>연결 클래스 · 대관</small>{connections.map((program) => {
               const connection = connectionNote(program, offer)
               const name = isRentalProgram(program.id) ? program.shortName.includes('대관') ? program.shortName : `${program.shortName} 대관` : program.shortName
               return <span className={connection.ready ? 'is-ready' : 'needs-equipment'} key={program.id}><Icon name={connection.ready ? 'check' : 'plus'} size={11} /><b>{name}</b><em>{connection.note}</em></span>
-            })}</> : <span className="operating-effect"><Icon name="tools" size={12} />{OPERATING_EFFECTS[offer.family] || offer.description}</span>}</span><span className="pps-product-facts"><span>단가 <b>{wonAmount(offer.price)}</b>원</span><span>유지 <b>{wonAmount(offer.maintenance)}</b>원/계절</span><span>설치 <b>{offer.installSlots}</b>칸</span></span></span>
+            })}{hiddenLinks > 0 && <span className="more-links">다른 방 수업 {hiddenLinks}개 더</span>}</> : <span className="operating-effect"><Icon name="tools" size={12} />{OPERATING_EFFECTS[offer.family] || offer.description}</span>}</span><span className="pps-product-facts"><span>단가 <b>{wonAmount(offer.price)}</b>원</span><span>유지 <b>{wonAmount(offer.maintenance)}</b>원/계절</span><span>설치 <b>{offer.installSlots}</b>칸</span></span></span>
             <span className="pps-product-select"><Icon name={selectedId === offer.id ? 'check' : 'plus'} size={17} /></span>
           </button>
         })}{offers.length === 0 && <div className="pps-no-results"><Icon name="box" size={34} /><p>찾는 물품이 없어요.</p><button onClick={() => { setQuery(''); setFamilyFilter(null); setCategory('all') }}>전체 물품 보기</button></div>}</div>

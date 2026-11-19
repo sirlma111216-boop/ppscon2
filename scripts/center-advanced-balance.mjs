@@ -89,7 +89,7 @@ function invest(state,policy){
 }
 function planSeason(state,policy){
   const plan=Object.fromEntries(sim.ROOM_IDS.map(room=>[room,[null,null,null,null,null]]));
-  const planned={...state.player,plan},demand=sim.getDemand(state),remaining=new Map(demand.map(g=>[g.id,g.people]));
+  const planned={...state.player,plan},demand=sim.getDemand(state,state.player),remaining=new Map(demand.map(g=>[g.id,g.people]));
   const lossBudget=Math.max(0,(sim.freeCash(state.player)-180)/13+state.player.rentalRequests.reduce((n,r)=>n+Math.max(0,r.fee-r.cost),0)*.3);let plannedLoss=0;
   for(let step=0;step<20;step++){
     let best;
@@ -136,7 +136,7 @@ function run(policy,seed){
     state=planSeason(state,policy);
     if(policy.remodel&&state.year>=5){const target=state.player.rooms.filter(r=>r.open&&!r.remodel&&state.player.plan[r.id].some(Boolean)).sort((a,b)=>state.player.plan[b.id].filter(Boolean).length-state.player.plan[a.id].filter(Boolean).length)[0];if(target&&sim.freeCash(state.player)-REMODEL_COST[target.id]>=1800)state=contractRoomRemodel(state,target.id).state;}
     const forecast=sim.previewSeason(state);if(forecast.warnings.some(w=>w.includes('운영비가 부족')))forecastWarnings++;
-    const demand=sim.getDemand(state);state=sim.runSeason(state);
+    const demand=sim.getDemand(state,state.player);state=sim.runSeason(state);
     check(sim.validateSave(state),'valid completed save');
     if(policy.expansion&&facilities.getFacilityProject(state.player,policy.expansion)?.stage==='complete'&&construction.completedTurn===null){
       construction.completedTurn=turn;check(turn===construction.contractedTurn+Math.floor((construction.bid.weeks-1)/13),'construction completion matches actual funded contract');

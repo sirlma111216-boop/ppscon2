@@ -51,7 +51,7 @@ test('old six-year endings migrate without replay, then pay final-year bonus onc
 })
 
 test('sixteen distinct seasonal images map to 2-year periods and the final year',()=>{
- const paths=new Set<string>();for(let year=1;year<=7;year++)for(let season=0;season<4;season++){const path=seasonArtPath({year,season});assert.ok(existsSync(new URL('../../public'+path,import.meta.url)),path);paths.add(path);if([2,4,6].includes(year))assert.equal(path,seasonArtPath({year:year-1,season}))}assert.equal(paths.size,16);assert.equal(SEASON_EVENTS.length,28)
+ const paths=new Set<string>();for(let year=1;year<=7;year++)for(let season=0;season<4;season++){const path=seasonArtPath({year,season});assert.ok(existsSync(new URL('../../public'+path,import.meta.url)),path);paths.add(path);if([2,4,6].includes(year))assert.equal(path,seasonArtPath({year:year-1,season}))}assert.equal(paths.size,16);assert.equal(SEASON_EVENTS.length,39)
 })
 
 
