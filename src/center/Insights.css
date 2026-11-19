@@ -185,3 +185,21 @@
   .midseason-meeting { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 22px; align-items: start; }
   .midseason-meeting > img { max-height: none; aspect-ratio: 3 / 2; }
 }
+
+/* Rental review guide (2026-11-19): says where to click to deal with rental requests, before the confirm button is reached. */
+.rental-guide { margin: 12px 0; padding: 14px 16px; background: #fffdf8; border: 1px solid #d6cbbc; border-left: 4px solid #2a72de; border-radius: 4px; }
+.rental-guide-head h3 { margin: 0 0 4px; font-family: var(--display); font-size: clamp(17px, 2vw, 20px); line-height: 1.4; }
+.rental-guide-head p { margin: 0; color: #4a4741; font-size: 14px; line-height: 1.6; }
+.rental-guide-rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px; }
+.center-game .rental-guide-rooms button { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 8px; min-height: 54px; padding: 8px 12px; background: #fff; border: 1px solid #b9ab97; border-radius: 4px; color: #1c1b1a; text-align: left; cursor: pointer; }
+.rental-guide-rooms button b { font-size: 15px; }
+.rental-guide-rooms button span { grid-column: 1; color: #655e54; font-size: 13px; }
+.rental-guide-rooms button svg { grid-column: 2; grid-row: 1 / span 2; color: #1d56ad; }
+.center-game .rental-guide-rooms button.has-pending { border-color: #2a72de; box-shadow: inset 0 0 0 1px #2a72de; }
+.rental-guide-rooms button.has-pending span { color: #1d56ad; font-weight: 700; }
+.center-game .rental-guide-rooms button:hover { background: #eef4fd; }
+.center-game .rental-guide-rooms button:focus-visible { outline: 3px solid #2a72de; outline-offset: 2px; }
+.rental-guide .rental-quick-pick { margin: 14px 0 0; padding: 12px 0 0; background: none; border: 0; border-top: 1px dashed #cfc3b1; border-radius: 0; }
+.scene-instruction.is-call { padding: 3px 10px; background: #fffdf8; border-radius: 12px; color: #1d56ad; font-weight: 700; }
+/* On a narrow screen the call to review rentals gets the whole toolbar line. */
+@media (max-width: 600px) { .scene-toolbar:has(.scene-instruction.is-call) > span:first-child { display: none; } .scene-toolbar:has(.scene-instruction.is-call) > div { flex: 1; justify-content: center; } }

@@ -17,7 +17,8 @@
     "assets": "node scripts/build-assets.mjs",
     "e2e": "node scripts/e2e-playthrough.mjs",
     "test:center": "node --test \"tests/center/*.test.ts\"",
-    "balance:center": "node scripts/center-balance.mjs"
+    "balance:center": "node scripts/center-balance.mjs",
+    "submission": "node scripts/build-submission.mjs"
   },
   "dependencies": {
     "react": "19.3.1",

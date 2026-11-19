@@ -127,3 +127,23 @@ Use case: style-transfer / companion character portrait. The supplied image is t
 ### Final prompt
 
 Use case: style-transfer / companion character portrait. The supplied image is the STYLE REFERENCE for an existing game cast, not an identity to preserve. Produce one NEW cast portrait in precisely the same refined hand-drawn 2D Korean life-simulation illustration style: varied-weight dark navy outlines, clear two/three-value cel shading, subtle painterly texture in fabric, warm upper-left light, adult realistic animation proportions. Replace the reference woman entirely with Yoon Harin, a 29-year-old Korean woman culture and craft instructor. Distinct youthful adult face, expressive lively eyes and a bright enthusiastic smile; charcoal-black short bob hair with short straight bangs, different face and silhouette from the reference manager. Long cream shirt with sleeves neatly rolled, muted coral-pink artist apron with useful pockets. One hand holds a small paintbrush, the other supports a plain blank sketchbook, natural coherent hands, relaxed engaged teaching pose. Waist-up portrait with full head and both hands fully in frame, angled slightly towards the player, consistent scale and finish with the reference. Friendly creative energy, mature approachable actual community arts instructor, not a fantasy heroine. Single character only. Genuine transparent alpha background and clean silhouette edges, no scenery or shadow beyond figure. No words, lettering, logos, watermark, decorative UI or frame. Not chibi, not photoreal, not 3D or paper-cutout.
+
+## 2026-11-19 정리: 저장소에서 뺀 파일
+
+사용자 요청("쓰지 않는 파일들, 예를 들어 수정 전 효과음 파일 같은 것을 지워 달라")에 따라, 게임의 어느 화면도 요청하지 않는 파일을 `public/center`에서 지웠다. 지우기 전에 소스 전체에서 경로와 파일 이름을 만드는 코드를 대조했다. 위 표와 아래 제작 기록은 이력으로 그대로 두며, 지운 파일은 모두 커밋 `3856f4d`에 같은 경로로 남아 있다.
+
+| 지운 파일 | 수 | 지운 까닭 |
+|---|---:|---|
+| `audio/sfx_*.wav` 가운데 앞 공백이 있던 전달 원본 | 15 | 잘라 낸 파일이 같은 이름으로 대체(`audio-trimmed/` 폴더는 없앰). 기록은 SFX_TRIMMED.json |
+| `center-interior.png` | 1 | 이전 3실 배경. 현재 장면에서 쓰지 않음 |
+| `doyun-portrait.png` · `harin-portrait.png` · `jiseon-portrait.png` | 3 | 화면은 같은 이름의 `.webp`(480×494)를 쓴다 |
+| `official/nareumi-dari-3d.png` · `official/pps-logo-vertical.jpg` | 2 | 화면은 `nareumi-dari-3d.webp`와 가로형 로고만 쓴다 |
+| `classes-v2/` · `classes-v3/` | 19 | 수업 그림은 `activities-v4/`·`course-symbols-v4/`가 대신한다 |
+| `interface-v2/` | 2 | 이전 안내판 시안. 버튼은 `interface-v3/` |
+| `building-v2/exterior-garden.webp` · `exterior-renovated.webp` | 2 | 이전 성장 외관 시안. 외관은 `campus-v3/` |
+| `milestones-v1/spring·summer·autumn·winter·ceremony.webp` | 5 | 계절 그림은 `<계절>-y<연차>.webp`, 시상 그림은 `ceremonies-v2/`가 대신한다 |
+| `prototypes/pottery/` 일체와 관련 소스·테스트·스크립트 | 5 + 5 | 본게임에 연결되지 않은 움직임 시안(POTTERY_ANIMATION_PROTOTYPE.md) |
+
+`room-upgrades-v1/provenance.json`과 `schedule-icons-v1/provenance.json`은 게임과 함께 배포되던 기록 파일이라 `docs/center-growth/ROOM_UPGRADES_PROVENANCE.json`, `SCHEDULE_ICONS_PROVENANCE.json`으로 옮겼다.
+
+지우지 않은 것: 첫 번째 게임(《내일을 여는 상자》)의 소스·테스트·그림(`src/App.tsx` 등, `public/assets/`)은 현재 게임이 쓰지 않지만 빌드에서 이미 빠지며, 통째로 지울지는 제작자가 정할 일이라 그대로 두었다. `.preview/`의 생성 원본 보관본과 `reports/`의 밸런스 기록도 그대로다.

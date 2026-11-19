@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, rmSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import type { Plugin } from 'vite'
@@ -12,18 +13,18 @@ const imageFiles = readdirSync(imageDirectory, { withFileTypes: true })
   .sort((a, b) => a.localeCompare(b))
 
 // The published game never requests these: the first game's originals and derivatives (the asset gallery is
-// development-only) and a 5 MB PNG whose WebP copy is the one in use. The source files in `public` stay untouched.
-// Effects that the game plays from a trimmed copy (src/center/audio.ts SFX_TRIMMED): their delivered originals stay in `public` but are not shipped.
-// Read from the folder of trimmed copies so the list cannot drift; a test keeps that folder equal to SFX_TRIMMED.
-const trimmedEffects = readdirSync(fileURLToPath(new URL('./public/center/audio-trimmed/', import.meta.url))).filter((name) => /^sfx_.*\.wav$/.test(name))
-const unusedInBuild = ['assets/images', 'assets/game', 'assets/audio', 'center/official/nareumi-dari-3d.png', ...trimmedEffects.map((name) => `center/audio/${name}`)]
+// development-only) and its page icon (this game's icon is center/favicon.svg). The source files in `public` stay untouched.
+const unusedInBuild = ['assets/images', 'assets/game', 'assets/audio', 'favicon.svg']
 function pruneUnusedPublicFiles(): Plugin {
+  // The output folder is read from the resolved configuration: the contest build (scripts/build-submission.mjs) writes elsewhere.
+  let outDir = fileURLToPath(new URL('./dist/', import.meta.url))
   return {
     name: 'prune-unused-public-files',
     apply: 'build',
+    configResolved(config) { outDir = resolve(config.root, config.build.outDir) },
     closeBundle() {
       for (const entry of unusedInBuild) {
-        const target = fileURLToPath(new URL('./dist/' + entry, import.meta.url))
+        const target = resolve(outDir, entry)
         if (existsSync(target)) rmSync(target, { recursive: true, force: true })
       }
     },

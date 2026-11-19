@@ -1,7 +1,7 @@
 {
   "source": "User-provided ElevenLabs exports, Downloads folder",
   "date": "2026-11-10",
-  "totalBytes": 34004259,
+  "totalBytes": 31883109,
   "files": [
     {
       "name": "bgm_comic_event.mp3",
@@ -73,12 +73,15 @@
     },
     {
       "name": "sfx_briefing_open.wav",
-      "bytes": 960078,
-      "sha256": "6a8ac7ab9c4789c2948242c9a78c017beb2731c7405a9a44fffb9380b34acd3f",
+      "bytes": 941804,
+      "sha256": "5d0eb27e0ce34f62647c7d8cdfde47d58696a2d224642362f2f031b01422de13",
       "date": "2026-11-19",
       "use": "결산 · 위에 해당하지 않는 계절의 브리핑",
       "source": "C:\\Users\\pc\\Downloads\\briefing_open.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
-      "prompt": "A clipboard set down gently, one page turned, and a single soft piano note. Attentive and friendly. No voice."
+      "prompt": "A clipboard set down gently, one page turned, and a single soft piano note. Attentive and friendly. No voice.",
+      "deliveredBytes": 960078,
+      "deliveredSha256": "6a8ac7ab9c4789c2948242c9a78c017beb2731c7405a9a44fffb9380b34acd3f",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_delta_down.wav",
@@ -100,32 +103,47 @@
     },
     {
       "name": "sfx_event_choice.wav",
-      "bytes": 576078,
-      "sha256": "9b59d597b1aea4708a612690a9c8f05e352b7dbaa74e596e5f54d9b69da959be",
+      "bytes": 421484,
+      "sha256": "6fe1dcd58fb09f36021d9c65787efc57e42e4be6840cd46e320ca27b5d3d1204",
       "date": "2026-11-19",
       "use": "사건 대응 확정, 계절 중간 점검 결정",
       "source": "C:\\Users\\pc\\Downloads\\event_choice.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
-      "prompt": "Decisive soft stamp on a paper form followed by a single warm marimba note. Confident and neat. No voice."
+      "prompt": "Decisive soft stamp on a paper form followed by a single warm marimba note. Confident and neat. No voice.",
+      "deliveredBytes": 576078,
+      "deliveredSha256": "9b59d597b1aea4708a612690a9c8f05e352b7dbaa74e596e5f54d9b69da959be",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_event_comic.wav",
-      "bytes": 230478,
-      "sha256": "95030f401b74217a24bbf781a21ffe7a5430727f60f9e1139338c83d4e065298"
+      "bytes": 106604,
+      "sha256": "8f84865c3a4e760d6f418e8122cfa8294b2fd61baf10b831a325b06040a4749d",
+      "deliveredBytes": 230478,
+      "deliveredSha256": "95030f401b74217a24bbf781a21ffe7a5430727f60f9e1139338c83d4e065298",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_event_negative.wav",
-      "bytes": 284238,
-      "sha256": "7ccc266d720c1630ad3cbe00b31773c4a2ef4b1e9964882c26d9c67e9c69f195"
+      "bytes": 177644,
+      "sha256": "1762d0a6b6b8bae720c8544c13db26b799807809d602478bbb3a53afa2068381",
+      "deliveredBytes": 284238,
+      "deliveredSha256": "7ccc266d720c1630ad3cbe00b31773c4a2ef4b1e9964882c26d9c67e9c69f195",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_event_positive.wav",
-      "bytes": 384078,
-      "sha256": "e785cfe659bea95d4aac5b44a89d3a1b4cf67f2771e04727339f2fd150ed44d9"
+      "bytes": 237164,
+      "sha256": "47575bc02569c8d5f96ab93f6cd7dd5310b17377f9c4152139d9afec4b2f3a8c",
+      "deliveredBytes": 384078,
+      "deliveredSha256": "e785cfe659bea95d4aac5b44a89d3a1b4cf67f2771e04727339f2fd150ed44d9",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_install_complete.wav",
-      "bytes": 245838,
-      "sha256": "28d67de175b2d837151228a04edc1d43683f2462a84e18d4fefcef122a65abdf"
+      "bytes": 110444,
+      "sha256": "819f69e066431e029849f1ba66403a4cadb12bbf688122b0f94444dbd8b63a40",
+      "deliveredBytes": 245838,
+      "deliveredSha256": "28d67de175b2d837151228a04edc1d43683f2462a84e18d4fefcef122a65abdf",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_level_up.wav",
@@ -138,12 +156,15 @@
     },
     {
       "name": "sfx_mood_cold.wav",
-      "bytes": 1152078,
-      "sha256": "fd1eef085d38a71c0bdc831731a218c51f7abf6a1c7bb3058391e1f627527338",
+      "bytes": 1078124,
+      "sha256": "d7787bb4c0848c7960ce7e9563262caf70a12e9db4fa166b0d33e1b0652fe1ba",
       "date": "2026-11-19",
       "use": "결과 순회 · 부진한 계절의 수업",
       "source": "C:\\Users\\pc\\Downloads\\mood_cold.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
-      "prompt": "Soft falling clarinet phrase over a quiet room tone, calm and slightly wistful, not gloomy. No voice, no speech. Smooth tail."
+      "prompt": "Soft falling clarinet phrase over a quiet room tone, calm and slightly wistful, not gloomy. No voice, no speech. Smooth tail.",
+      "deliveredBytes": 1152078,
+      "deliveredSha256": "fd1eef085d38a71c0bdc831731a218c51f7abf6a1c7bb3058391e1f627527338",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_mood_hot.wav",
@@ -184,8 +205,11 @@
     },
     {
       "name": "sfx_rental_approve.wav",
-      "bytes": 93486,
-      "sha256": "fb8e87eafcdb300ec3b48fef9c0aa1e4cf812a936fd98096be04dcf48d215770"
+      "bytes": 27212,
+      "sha256": "d4fab645711fdbae7376ebb5c82ae20f24ecedb4d4afa33669a7fbad78f52cf2",
+      "deliveredBytes": 93486,
+      "deliveredSha256": "fb8e87eafcdb300ec3b48fef9c0aa1e4cf812a936fd98096be04dcf48d215770",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_rental_stamp.wav",
@@ -203,13 +227,19 @@
     },
     {
       "name": "sfx_save_complete.wav",
-      "bytes": 116526,
-      "sha256": "d0d5b4b1ac4d6e4397a0881f022b1a334f6cb0b481596a2b2827c0ed7402d519"
+      "bytes": 54092,
+      "sha256": "1eb37cb421e3de4379e4d8f4078866cb55c3f2b0a5f37043648d55a2879c949e",
+      "deliveredBytes": 116526,
+      "deliveredSha256": "d0d5b4b1ac4d6e4397a0881f022b1a334f6cb0b481596a2b2827c0ed7402d519",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_schedule_place.wav",
-      "bytes": 960078,
-      "sha256": "1af6e382d84433a62f7c36eb621358cf66a4d1e6fe651479b893eedbe2bcf160"
+      "bytes": 244844,
+      "sha256": "1aa03a3eab4aff56a96ab11ccd0a1fa41edf8c86b84e389a1d1732108909d9f1",
+      "deliveredBytes": 960078,
+      "deliveredSha256": "1af6e382d84433a62f7c36eb621358cf66a4d1e6fe651479b893eedbe2bcf160",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_schedule_remove.wav",
@@ -218,36 +248,51 @@
     },
     {
       "name": "sfx_season_open.wav",
-      "bytes": 284238,
-      "sha256": "4d0d9f79dc33bdba68e9c1b52b738822001a7b026a12882bd31ab03bde2b13ad"
+      "bytes": 118124,
+      "sha256": "696a5b94c46f5b2d4267633a45e77ee2794dd5e3d377a633b305e6b6783c6aeb",
+      "deliveredBytes": 284238,
+      "deliveredSha256": "4d0d9f79dc33bdba68e9c1b52b738822001a7b026a12882bd31ab03bde2b13ad",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_settlement.wav",
-      "bytes": 230478,
-      "sha256": "a31420b888350ab2ef885e049a9c616c2191522e0ebc1c8b8742a37f95c26bcc"
+      "bytes": 219884,
+      "sha256": "1a9af7791536bf37eb20a7fcab710058e8f95c3f8c56aeeb4cace083a8d7f092",
+      "deliveredBytes": 230478,
+      "deliveredSha256": "a31420b888350ab2ef885e049a9c616c2191522e0ebc1c8b8742a37f95c26bcc",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_tender_contract.wav",
-      "bytes": 384078,
-      "sha256": "4f09b1886f03c840a4b71feaa05a9dea8b71e61984f71b959f1d14ea1cffb999"
+      "bytes": 196844,
+      "sha256": "418ff707b74282c34e34bc229af34e49f60b04a7c0e6387dd6a9fe45cc5b91e6",
+      "deliveredBytes": 384078,
+      "deliveredSha256": "4f09b1886f03c840a4b71feaa05a9dea8b71e61984f71b959f1d14ea1cffb999",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_training_done.wav",
-      "bytes": 576078,
-      "sha256": "c1878ae8ab58505b54090fa236484b8cd31df607dce43d3bd750ab9b50d23e18",
+      "bytes": 463724,
+      "sha256": "273c0a8b2c2640a340cd708ff384dd452af553af2f52485c8072a190ab1a5b5a",
       "date": "2026-11-19",
       "use": "결산 · 직원 교육 성과(승급 없음)",
       "source": "C:\\Users\\pc\\Downloads\\training_done.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
-      "prompt": "Short satisfied completion cue, a pencil check stroke on paper followed by two warm vibraphone notes. Tidy and encouraging. No voice."
+      "prompt": "Short satisfied completion cue, a pencil check stroke on paper followed by two warm vibraphone notes. Tidy and encouraging. No voice.",
+      "deliveredBytes": 576078,
+      "deliveredSha256": "c1878ae8ab58505b54090fa236484b8cd31df607dce43d3bd750ab9b50d23e18",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_trust_milestone.wav",
-      "bytes": 768078,
-      "sha256": "a2986ebff5e0c169957d1b44df1ba86d144d4499b8393cc2e7956de1c31d67c5",
+      "bytes": 726764,
+      "sha256": "a670ada00ab0123d3d250676e64caffb4485a6d0164abc2da6d5f68127007391",
       "date": "2026-11-19",
       "use": "결산 · 신뢰 100·150·200 달성",
       "source": "C:\\Users\\pc\\Downloads\\trust_milestone.wav (제작자 전달본을 이름만 바꿔 그대로 복사)",
-      "prompt": "Warm community cue, a small group of hand claps with a rising acoustic guitar strum and a soft bell. Heartfelt, not grand. No voice, no cheering words."
+      "prompt": "Warm community cue, a small group of hand claps with a rising acoustic guitar strum and a soft bell. Heartfelt, not grand. No voice, no cheering words.",
+      "deliveredBytes": 768078,
+      "deliveredSha256": "a2986ebff5e0c169957d1b44df1ba86d144d4499b8393cc2e7956de1c31d67c5",
+      "trimmed": "앞 공백을 잘라 낸 파일(SFX_TRIMMED.json). 전달받은 원본은 커밋 3856f4d에 있다."
     },
     {
       "name": "sfx_ui_click.wav",
@@ -288,5 +333,8 @@
       "processing": "전달받은 파일은 손대지 않았다. 음량 보정은 하지 않았다.",
       "review": "사람이 들어 보지 않았다. Claude Code는 소리를 들을 수 없어 형식·길이·시작 시점·음량만 수치로 확인했다. 음색, 음성 유무, 장면과 어울리는지는 확인하지 못했다."
     }
-  ]
+  ],
+  "deliveredTotalBytes": 34004259,
+  "consolidatedOn": "2026-11-19",
+  "consolidation": "사용자 요청(쓰지 않는 파일 정리)에 따라 앞 공백이 있던 효과음 15개는 잘라 낸 파일만 남겼다. bytes·sha256은 지금 들어 있는 파일, deliveredBytes·deliveredSha256은 전달받은 원본의 값이다. 음악 11곡과 나머지 효과음 13개는 전달받은 그대로다."
 }

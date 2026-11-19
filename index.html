@@ -10,6 +10,10 @@
     <style>
       html { background: #f7f1e8; }
     </style>
+    <!-- A first visit opens on the title picture: start fetching it alongside the scripts. The key is the game's SAVE_KEY (a test keeps them equal). -->
+    <script>
+      try { if (!localStorage.getItem('ppscon2.center.v1')) { var art = document.createElement('link'); art.rel = 'preload'; art.as = 'image'; art.href = '/center/campus-v3/exterior-0.webp'; document.head.appendChild(art) } } catch (error) { /* the picture still loads with the title screen */ }
+    </script>
   </head>
   <body>
     <div id="root"></div>

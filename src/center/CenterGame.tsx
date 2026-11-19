@@ -1,6 +1,6 @@
 import RoomCareControls from './RoomCareControls'
 import { SessionResultCard, RunningTotals } from './ResultCard'
-import { RENTAL_PRIORITY_LABELS, autoPickRentals, replacementComparison, sessionAt, sessionSound, sessionsInTourOrder } from './resultInsights'
+import { RENTAL_PRIORITY_LABELS, autoPickRentals, rentalReviewRooms, replacementComparison, sessionAt, sessionSound, sessionsInTourOrder } from './resultInsights'
 import type { RentalPriority } from './resultInsights'
 import ConditionBadge from './ConditionBadge'
 import AudioControls from './AudioControls'
@@ -14,12 +14,12 @@ import { ClassEconomicsCard, ClassEconomicsDetail } from './ClassEconomics'
 import { wonAmount, legacyMoneyText, signedWonAmount } from './currency'
 import SeasonOpening from './SeasonOpening'
 import { seasonIntroKey, getSeasonEvent, applyEventChoice } from './seasonEvents'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import CenterScene from './CenterScene'
 import ScheduleProgramIcon from './ScheduleProgramIcon'
 import { selectActivityStill, selectLastActivityStill } from './activityPreview'
-import { courseSymbolPath } from './activityArt'
+import { tourStillPaths, courseSymbolPath } from './activityArt'
 import ProcurementDesk from './ProcurementDesk'
 import RentalReview from './RentalReview'
 import RoomScheduleSummary from './RoomScheduleSummary'
@@ -170,6 +170,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
   const facilityProject = getFacilityProject(game.player, room)
   const acceptedRentals = game.player.rentalRequests.filter((request) => request.status === 'accepted')
   const pendingRentals = game.player.rentalRequests.filter((request) => request.status === 'pending')
+  const rentalRooms = rentalReviewRooms(game), undecidedCount = rentalRooms.reduce((sum, item) => sum + item.undecided, 0)
   const emptyRoomSchedules = game.player.rooms.filter(value => value.open).map(value => ({
     room: value.id,
     slots: BLOCKS.map((_, slot) => slot).filter(slot => !game.player.plan[value.id][slot] && !getRentalAt(game.player, value.id, slot)),
@@ -185,13 +186,19 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
     : game.player.rooms
   const currentProgram = PROGRAMS.find((p) => p.id === selected && roomSupportsProgram(room, p.id))
   const roomPrograms = PROGRAMS.filter(program => !isRentalProgram(program.id) && roomSupportsProgram(room, program.id))
-  const classOutlooks = useMemo(()=>Object.fromEntries(PROGRAMS.filter(p=>!isRentalProgram(p.id)&&roomSupportsProgram(room,p.id)).map(p=>[p.id,previewClass(game,room,p.id,selectedSlot)])),[game,room,selectedSlot])
+  // Each outlook card costs a whole season simulation (about 20–50 ms for a room's classes), so the cards are worked out
+  // only while the class panel is on screen, and after the tap that changed the plan has been painted.
+  const showClassPanel = insideRoom && !reviewingRentals
+  const outlookGame = useDeferredValue(game), outlookSlot = useDeferredValue(selectedSlot)
+  const classOutlooks = useMemo(()=>showClassPanel?Object.fromEntries(PROGRAMS.filter(p=>!isRentalProgram(p.id)&&roomSupportsProgram(room,p.id)).map(p=>[p.id,previewClass(outlookGame,room,p.id,outlookSlot)])):{},[outlookGame,room,outlookSlot,showClassPanel])
   const currentRequirements = currentProgram ? getProgramRequirements(game.player, room, currentProgram.id) : null
   const cast = CAST[speaker]
   const turn = (game.year - 1) * 4 + game.season + 1
   const standings = game.phase === 'ending' ? getFinalStandings(game) : [...game.rivals, game.player].sort((a, b) => b.score - a.score || b.publicScore - a.publicScore || b.experienceScore - a.experienceScore || a.name.localeCompare(b.name))
   const demand = useMemo(() => getDemand(game, game.player).filter((group) => group.programs.some((id) => !isRentalProgram(id))), [game.seed, game.year, game.season, game.rules, game.player.trust])
   const tourSessions = useMemo(() => sessionsInTourOrder(game.lastReport), [game.lastReport])
+  // The stills of the result tour are fetched while the thirteen weeks play, so each scene opens with its picture already there.
+  useEffect(() => { if (game.phase === 'planning') return; for (const still of tourStillPaths(tourSessions)) new Image().src = still }, [tourSessions, game.phase])
   const activeSession = viewingResult && insideRoom ? sessionAt(game.lastReport, room, activeSlot) : undefined
   const replacementCost = replacementRental ? replacementComparison(game, replacementRental) : null
   const trustBoost = Math.round((trustDemandFactor(game.player.trust) - 1) * 100)
@@ -492,16 +499,21 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
             <div className={`scene-toolbar ${activeActivityStill ? 'has-activity' : ''}`}>
               <span><span className={`live-dot ${playing ? 'active' : ''}`} />{playing ? `운영 중 · ${ROOM_NAMES[room]} · ${BLOCKS[activeSlot]} (${tourIndex+1}/${operationTour.length})` : viewingResult ? `운영 기록 · ${BLOCKS[activeSlot]}${activeActivityStill ? ' · ' + PROGRAMS.find(program => program.id === activeActivityStill.program)?.shortName : ''}` : insideRoom ? `${ROOM_NAMES[room]} 둘러보기` : '늘봄 문화체육센터'}</span>
               <div>
-                {playing ? <><button className="text-button" onClick={() => setOperationPaused(!operationPaused)} aria-pressed={operationPaused}>{operationPaused ? '운영 계속' : '운영 멈춤'}</button><button className="text-button" onClick={() => setSpeed(speed === 1 ? 2 : 1)}>{speed}× 속도</button><button className="text-button" onClick={() => { setPlaying(false); setModal('review') }}>건너뛰기 · 결과 <Icon name="arrow" size={13} /></button></> : <span className="scene-instruction">{viewingResult ? insideRoom && !roomHasActualClass ? '이 방에서 실제 진행된 클래스가 없어요' : '시간표를 눌러 운영 기록 보기' : insideRoom ? '공간 안에서 다음 계획을 세워요' : '방 이름을 눌러 들어가세요'} <Icon name="arrow" size={12} /></span>}
+                {playing ? <><button className="text-button" onClick={() => setOperationPaused(!operationPaused)} aria-pressed={operationPaused}>{operationPaused ? '운영 계속' : '운영 멈춤'}</button><button className="text-button" onClick={() => setSpeed(speed === 1 ? 2 : 1)}>{speed}× 속도</button><button className="text-button" onClick={() => { setPlaying(false); setModal('review') }}>건너뛰기 · 결과 <Icon name="arrow" size={13} /></button></> : <span className={`scene-instruction ${reviewingRentals && !insideRoom && undecidedCount ? 'is-call' : ''}`}>{viewingResult ? insideRoom && !roomHasActualClass ? '이 방에서 실제 진행된 클래스가 없어요' : '시간표를 눌러 운영 기록 보기' : insideRoom ? '공간 안에서 다음 계획을 세워요' : reviewingRentals && undecidedCount ? '대관 신청이 온 방을 눌러 검토하세요' : '방 이름을 눌러 들어가세요'} <Icon name="arrow" size={12} /></span>}
               </div>
             </div>
             {playing && tourSessions.length > 0 && <RunningTotals sessions={tourSessions} upTo={tourIndex} />}
-            <div className="scene-stage"><CenterScene selectedRoom={room} view={insideRoom ? 'room' : 'exterior'} onSelectRoom={selectRoom} onBack={leaveRoom} onManageEquipment={() => setModal('equipment')} campusExterior={playerExterior} onOpenCampus={() => setModal('campus')} rooms={sceneRooms} facilityProjects={game.player.facilityProjects} plan={game.player.plan} viewingResult={viewingResult} activeSlot={activeSlot} season={game.season} report={viewingResult ? game.lastReport : null} reducedMotion={reducedMotion} /></div>
+            <div className="scene-stage"><CenterScene selectedRoom={room} view={insideRoom ? 'room' : 'exterior'} onSelectRoom={selectRoom} onBack={leaveRoom} onManageEquipment={() => setModal('equipment')} campusExterior={playerExterior} onOpenCampus={() => setModal('campus')} rooms={sceneRooms} facilityProjects={game.player.facilityProjects} plan={game.player.plan} viewingResult={viewingResult} activeSlot={activeSlot} season={game.season} report={viewingResult ? game.lastReport : null} reducedMotion={reducedMotion} roomBadges={reviewingRentals ? Object.fromEntries(rentalRooms.filter((item) => item.undecided).map((item) => [item.room, item.undecided])) : undefined} /></div>
             {insideRoom && viewingResult && roomState.open && Boolean(game.lastReport?.sessions) && <div className="scene-result" aria-live="polite">{activeSession ? <SessionResultCard key={`${room}-${activeSlot}`} session={activeSession} /> : <p className="scene-result-empty">{BLOCKS[activeSlot]}에는 운영한 활동이 없어 달라진 것이 없어요.</p>}</div>}
             {insideRoom && <div className="scene-footer scene-footer--room">{roomState.open ? <button type="button" className="footer-equipment" onClick={() => setModal('equipment')} aria-label="설치 물품 관리 · 다른 실 이전 또는 창고 보관"><Icon name="box" size={15} />{roomGear.length ? roomGear.map(item => <span key={item.instanceId} className={item.ready ? '' : 'is-pending'}>{OFFERS.find(offer => offer.id === item.id)?.name || item.id}{!item.ready && <em> 설치 대기</em>}</span>) : <span className="is-empty">설치한 장비가 없어요</span>}<Icon name="arrow" size={12} /></button> : <span className="footer-equipment is-locked"><Icon name="lock" size={14} />개방 전 공간</span>}<span className="footer-care"><ConditionBadge value={getRoomManagement(game.player, room)} /></span></div>}
           </div>
 
-          {reviewingRentals && game.rules === 3 && pendingRentals.length > 0 && <div className="rental-quick-pick" role="group" aria-label="대관 신청 한 번에 승인"><span><b>대관 신청 한 번에 승인</b><small>비어 있는 시간마다 기준에 가장 맞는 대관 신청을 하나씩 승인해요. 수업이 잡힌 시간은 그대로 두고, 승인한 대관은 하나씩 바꿀 수 있어요.</small></span>{(Object.keys(RENTAL_PRIORITY_LABELS) as RentalPriority[]).map(priority => <button key={priority} type="button" onClick={() => quickPickRentals(priority)}>{RENTAL_PRIORITY_LABELS[priority]}</button>)}</div>}
+          {reviewingRentals && !insideRoom && rentalRooms.length > 0 && <section className="rental-guide" aria-label="대관 신청 검토 방법">
+            <div className="rental-guide-head"><h3>{undecidedCount ? `대관 신청 ${undecidedCount}건이 기다리고 있어요` : '대관 신청을 모두 살펴봤어요'}</h3><p>{undecidedCount ? '신청이 온 공간을 눌러 하나씩 승인하거나 거절하세요. 결정하지 않은 신청은 다음 단계로 넘어갈 때 거절돼요.' : '아래의 "대관 확정 · 클래스 편성"을 눌러 수업을 편성하세요. 공간을 눌러 결정을 바꿀 수도 있어요.'}</p></div>
+            <div className="rental-guide-rooms" role="group" aria-label="대관 신청이 온 공간">{rentalRooms.map((item) => <button key={item.room} type="button" className={item.undecided ? 'has-pending' : ''} onClick={() => selectRoom(item.room)}><b>{ROOM_NAMES[item.room]}</b><span>{item.undecided ? `신청 ${item.undecided}건 검토하기` : '검토 완료'}{item.accepted ? ` · 승인 ${item.accepted}건` : ''}</span><Icon name="arrow" size={14} /></button>)}</div>
+            {game.rules === 3 && pendingRentals.length > 0 && <div className="rental-quick-pick" role="group" aria-label="대관 신청 한 번에 승인"><span><b>또는 한 번에 승인</b><small>비어 있는 시간마다 기준에 가장 맞는 대관 신청을 하나씩 승인해요. 수업이 잡힌 시간은 그대로 두고, 승인한 대관은 하나씩 바꿀 수 있어요.</small></span>{(Object.keys(RENTAL_PRIORITY_LABELS) as RentalPriority[]).map(priority => <button key={priority} type="button" onClick={() => quickPickRentals(priority)}>{RENTAL_PRIORITY_LABELS[priority]}</button>)}</div>}
+          </section>}
+          {reviewingRentals && insideRoom && game.rules === 3 && pendingRentals.length > 0 && <div className="rental-quick-pick" role="group" aria-label="대관 신청 한 번에 승인"><span><b>대관 신청 한 번에 승인</b><small>비어 있는 시간마다 기준에 가장 맞는 대관 신청을 하나씩 승인해요. 수업이 잡힌 시간은 그대로 두고, 승인한 대관은 하나씩 바꿀 수 있어요.</small></span>{(Object.keys(RENTAL_PRIORITY_LABELS) as RentalPriority[]).map(priority => <button key={priority} type="button" onClick={() => quickPickRentals(priority)}>{RENTAL_PRIORITY_LABELS[priority]}</button>)}</div>}
           {(!insideRoom || reviewingRentals) && <RoomScheduleSummary game={game} selectedRoom={insideRoom ? room : undefined} overview={!insideRoom} onSelectRoom={selectRoom} />}
           {insideRoom && !reviewingRentals && <section className="schedule-panel" aria-label={`${ROOM_NAMES[room]} ${viewingResult ? '운영 기록' : '주간 계획'}`}>
             <div className="section-heading"><div><span className="small-overline">{viewingResult ? '03 · 마지막 주의 실제 운영 기록' : '02 · 남은 시간에 클래스 편성'}</span><h2>{ROOM_NAMES[room]}의 한 주</h2></div><span className="schedule-hint">{canEdit && currentProgram ? <><Icon name={PROGRAM_ICONS[currentProgram.id]!} size={15} /><b>{currentProgram.shortName}</b> {currentRequirements?.ready ? '선택 중' : '개설 조건 확인'}</> : viewingResult ? '시간을 눌러 마지막 주 기록 확인' : '이 계획으로 13주를 운영해요'}</span></div>
@@ -525,7 +537,7 @@ export default function CenterGame({onHome,skipWelcome=false}: {onHome?:()=>void
         </section>
 
         {insideRoom && reviewingRentals && <RentalReview game={game} room={room} onDecide={reviewRental} onClearClass={clearClass} onOpenFacility={(targetRoom) => { selectRoom(targetRoom); setModal('facility') }} />}
-        {insideRoom && !reviewingRentals && <aside className="decision-column">
+        {showClassPanel && <aside className="decision-column">
           <div className="room-panel"><div className="class-panel-heading"><h2>클래스 선택</h2><span>{ROOM_NAMES[room]}</span></div>
             {canEdit && selectedSlot !== null && <div className="slot-selection-prompt"><span><b>{BLOCKS[selectedSlot]}</b>에 열 클래스 선택</span><button className="text-button" onClick={cancelSlotSelection}>시간 선택 취소</button></div>}
             {!roomState.open && <div className="room-facility-entry"><span><Icon name="lock" size={14} />{facilityProject?.stage === 'construction' ? `공사 중 · ${constructionTurns(facilityProject.remainingWeeks)}턴 남음` : '시설 조성 후 개방할 공간'}</span><button className="class-requirement-action" onClick={() => setModal('facility')}><Icon name="tools" size={15} />{facilityProject?.stage === 'construction' ? '시공 현황 보기' : '시설 입찰 진행'}<Icon name="arrow" size={13} /></button></div>}

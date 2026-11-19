@@ -114,7 +114,7 @@ Landscape 3:2, precise ink contours, hand painted rich natural colors, Korean sl
 
 ### A-7. 효과음 (12종) — 적용 완료
 
-**2026-11-19 적용.** `public/center/audio/sfx_<name>.wav`. 결과 순회의 각 장면에서 그 수업의 결과에 맞는 소리 하나가 난다(호조·부진 > 대호응·아쉬움이 많았던 수업 > 순수입 증감). 사건 대응 확정과 중간 점검 결정에는 event_choice, 대관 빠른 승인에는 rental_stamp, 결산에서는 정산 소리 0.9초 뒤에 신뢰 달성 > 교육 승급 > 교육 수료 > 브리핑 시작 가운데 하나가 난다. 늦게 시작하는 5개는 잘라 낸 사본을 재생한다. 기록: [AUDIO_ASSETS.json](AUDIO_ASSETS.json), [SFX_TRIMMED.json](SFX_TRIMMED.json). 사람이 들어 확인하지는 않았다.
+**2026-11-19 적용.** `public/center/audio/sfx_<name>.wav`. 결과 순회의 각 장면에서 그 수업의 결과에 맞는 소리 하나가 난다(호조·부진 > 대호응·아쉬움이 많았던 수업 > 순수입 증감). 사건 대응 확정과 중간 점검 결정에는 event_choice, 대관 빠른 승인에는 rental_stamp, 결산에서는 정산 소리 0.9초 뒤에 신뢰 달성 > 교육 승급 > 교육 수료 > 브리핑 시작 가운데 하나가 난다. 늦게 시작하는 5개는 앞 공백을 잘라 낸 파일로 들어 있다(2026-11-19 정리 뒤로 효과음마다 파일 하나). 기록: [AUDIO_ASSETS.json](AUDIO_ASSETS.json), [SFX_TRIMMED.json](SFX_TRIMMED.json). 사람이 들어 확인하지는 않았다.
 
 위치 제안: `public/center/audio/sfx_<name>.wav`. 모두 대사·음성 없이 만든다.
 

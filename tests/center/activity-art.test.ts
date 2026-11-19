@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync } from 'node:fs'
 import { PROGRAMS, isRentalProgram } from '../../src/center/simulation.ts'
-import { courseSymbolPath, activityStillPath } from '../../src/center/activityArt.ts'
+import { courseSymbolPath, activityStillPath, tourStillPaths } from '../../src/center/activityArt.ts'
 import { selectActivityStill, selectLastActivityStill } from '../../src/center/activityPreview.ts'
 
 test('every playable course and rental has its own operating asset; course symbols are separate',()=>{
@@ -16,6 +16,12 @@ test('every playable course and rental has its own operating asset; course symbo
       assert.ok(existsSync(new URL('../../public'+symbol,import.meta.url)),program.id)
     }
   }
+})
+test('the result tour fetches each still it will show once, and none for a session nobody attended',()=>{
+  const sessions=[{program:'P03',attendees:12},{program:'P01',attendees:0},{program:'P03',attendees:7},{program:'P05',attendees:20},{program:'unknown',attendees:9}]
+  assert.deepEqual(tourStillPaths(sessions),['/center/activities-v4/P03.webp','/center/activities-v4/P05.webp'])
+  assert.deepEqual(tourStillPaths([]),[])
+  for(const still of tourStillPaths(PROGRAMS.map(program=>({program:program.id,attendees:1}))))assert.ok(existsSync(new URL('../../public'+still,import.meta.url)),still)
 })
 test('actual classes and rentals show their own still, only in attended operating slots',()=>{
   for(const p of PROGRAMS){

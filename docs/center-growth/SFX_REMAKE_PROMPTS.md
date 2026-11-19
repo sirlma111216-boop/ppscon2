@@ -28,12 +28,12 @@
 
 ## 적용한 조치: 앞 공백을 잘라 낸 사본 사용
 
-위 10개는 **앞 공백을 잘라 낸 사본**(`public/center/audio-trimmed/`)을 만들어 게임이 그 파일을 재생한다. 전달받은 원본(`public/center/audio/`)은 고치지 않았고, 배포본에는 사본만 싣는다.
-사본은 `node scripts/trim-sfx.cjs`가 만든다(재인코딩 없이 구간만 복사, 시작 3ms·끝 12ms 페이드). 구간과 원본 해시는 [SFX_TRIMMED.json](SFX_TRIMMED.json)에 있다.
+위 10개는 **앞 공백을 잘라 낸 파일**로 바꿔 게임이 그 파일을 재생한다. 처음에는 사본을 `public/center/audio-trimmed/`에 따로 두고 전달받은 원본을 함께 보관했으나, 2026-11-19 정리에서 사본을 `public/center/audio/`로 옮겨 원본을 대체했다(원본은 커밋 3856f4d에 남아 있다).
+잘라 내기는 `scripts/trim-sfx.cjs`가 한다(재인코딩 없이 구간만 복사, 시작 3ms·끝 12ms 페이드). 구간과 원본 해시는 [SFX_TRIMMED.json](SFX_TRIMMED.json)에 있다.
 따라서 **지연 때문에 다시 만들 필요는 없다.** 아래 프롬프트는 소리 자체를 바꾸고 싶을 때만 쓴다.
 
 - `rental_approve` 사본은 본 소리 0.1초 앞의 작은 예비음을, `season_open` 사본은 앞쪽의 약한 바람 소리를 포함하지 않는다. 원래대로 듣고 싶으면 사본 구간을 넓히면 된다.
-- 새로 만든 파일로 원본을 교체할 때는 `src/center/audio.ts`의 `SFX_TRIMMED`와 `vite.config.ts`의 `trimmedEffects`에서 그 이름을 지우고 사본 파일도 지운다.
+- 새로 만든 파일을 넣을 때는 `node scripts/trim-sfx.cjs --force <받은 파일>`을 실행한다. 앞 공백이 60ms 이상이면 잘라서, 아니면 그대로 `public/center/audio/`에 넣는다. 코드에서 고칠 목록은 없다.
 
 ## 다시 만들 때 공통 조건
 

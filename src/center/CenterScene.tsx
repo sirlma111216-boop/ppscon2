@@ -28,6 +28,8 @@ export interface CenterSceneProps {
   season: number
   report?: { activity: { room: string; slot: number; program: string; attendees: number; capacity: number }[] } | null
   reducedMotion: boolean
+  /** Rental requests still to decide in each room, shown above its name plate on the exterior. */
+  roomBadges?: Partial<Record<RoomId, number>>
 }
 
 const HOTSPOTS: Record<RoomId, { left: string; top: string }> = {
@@ -44,7 +46,7 @@ function preserveButtonRatio(event: SyntheticEvent<HTMLImageElement>) {
 }
 const PROGRAM_NAMES: Record<string, string> = Object.fromEntries(PROGRAMS.map(program => [program.id, program.shortName]))
 
-export default function CenterScene({ selectedRoom, view, onSelectRoom, onBack, campusExterior = EXTERIOR, onOpenCampus, rooms, facilityProjects = [], plan, viewingResult, activeSlot, season, report, reducedMotion }: CenterSceneProps) {
+export default function CenterScene({ selectedRoom, view, onSelectRoom, onBack, campusExterior = EXTERIOR, onOpenCampus, rooms, facilityProjects = [], plan, viewingResult, activeSlot, season, report, reducedMotion, roomBadges }: CenterSceneProps) {
   const scene = useRef<HTMLElement>(null)
   const previousView = useRef(view)
   useEffect(() => {
@@ -72,7 +74,8 @@ export default function CenterScene({ selectedRoom, view, onSelectRoom, onBack, 
           const open = rooms.find(state => state.id === item.id)?.open === true
           const project = facilityProjects.find(value => value.room === item.id && value.stage === 'construction')
           const stateLabel = !open ? project ? ' · 시공 중 ' + constructionTurns(project.remainingWeeks) + '턴 남음' : ' · 미개방 시설' : ''
-          return <button key={item.id} type="button" data-room={item.id} className={'scene-art-button building-room-link ' + (!open ? 'is-locked' : '')} style={HOTSPOTS[item.id]} onClick={() => onSelectRoom(item.id)} aria-label={item.name + ' 들어가기' + stateLabel}><img src={BUTTON_ART + 'room-' + item.id + '.webp'} alt="" draggable={false} onLoad={preserveButtonRatio} /><span className="scene-art-hit" aria-hidden="true" />{!open && <span className="scene-art-lock" aria-hidden="true"><Icon name="lock" size={9} /></span>}</button>
+          const badge = open ? roomBadges?.[item.id] : undefined
+          return <button key={item.id} type="button" data-room={item.id} className={'scene-art-button building-room-link ' + (!open ? 'is-locked' : '')} style={HOTSPOTS[item.id]} onClick={() => onSelectRoom(item.id)} aria-label={item.name + ' 들어가기' + stateLabel + (badge ? ' · 대관 신청 ' + badge + '건' : '')}><img src={BUTTON_ART + 'room-' + item.id + '.webp'} alt="" draggable={false} onLoad={preserveButtonRatio} /><span className="scene-art-hit" aria-hidden="true" />{badge ? <span className="scene-art-badge" aria-hidden="true"><span>신청 </span>{badge}</span> : null}{!open && <span className="scene-art-lock" aria-hidden="true"><Icon name="lock" size={9} /></span>}</button>
         })}
       </div>
     </div> : <div key={selectedRoom} className={'center-building__interior ' + (!room?.open ? 'is-locked' : '')}>

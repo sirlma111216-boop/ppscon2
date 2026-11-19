@@ -16,7 +16,7 @@ test('every season has a unique deterministic event, with small bounded effects 
   const deck=createEventDeck(seed);assert.equal(new Set(deck).size,28);assert.equal(deck.filter(id=>COMIC_EVENT_IDS.includes(id)).length,6);assert.equal(deck.filter(id=>SPECIAL_EVENT_IDS.includes(id)).length,4)
  }
  for(const e of SEASON_EVENTS){assert.ok(Math.abs(e.revenueRate)<=.03);assert.ok(Math.abs(e.reputation)<=1.5);assert.ok(e.cash<=20&&e.cost<=15);assert.ok(existsSync(new URL(`../../public/center/milestones-v1/${e.id}.webp`,import.meta.url)))}
- for(const id of ['spring','summer','autumn','winter','ceremony','finale'])assert.ok(existsSync(new URL(`../../public/center/milestones-v1/${id}.webp`,import.meta.url)))
+ assert.ok(existsSync(new URL('../../public/center/milestones-v1/finale.webp',import.meta.url)),'the tutorial closes on the finale picture')
 })
 test('event settlement is idempotent, forecast is read-only, and next season has no carryover modifier',()=>{
  for(const event of SEASON_EVENTS){

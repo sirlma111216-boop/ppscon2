@@ -131,6 +131,18 @@ export function replacementComparison(game: GameState, request: RentalRequest): 
   return { classProfit: outlook.profit, classAttendees: outlook.attendees, classReputation: outlook.reputation, classPublic: Boolean(outlook.publicService), rentalNet: forecast.net, rentalReputation: Math.round(forecast.reputation / 13 * 100) / 100, weeklyDifference, seasonDifference: Math.round(weeklyDifference * 13 * 100) / 100, assumed: outlook.assumed }
 }
 
+export interface RentalReviewRoom { room: RoomId; undecided: number; accepted: number; total: number }
+/**
+ * Rooms that received rental requests this season and how many still need a decision.
+ * A pending request whose hour already has an approved rental is no longer waiting.
+ */
+export function rentalReviewRooms(game: GameState): RentalReviewRoom[] {
+  const requests = game.player.rentalRequests
+  return game.player.rooms.filter(room => room.open).map(room => {
+    const mine = requests.filter(request => request.room === room.id)
+    return { room: room.id, total: mine.length, accepted: mine.filter(request => request.status === 'accepted').length, undecided: mine.filter(request => request.status === 'pending' && !getRentalAt(game.player, request.room, request.slot)).length }
+  }).filter(item => item.total > 0)
+}
 export type RentalPriority = 'income' | 'reputation' | 'public'
 export const RENTAL_PRIORITY_LABELS: Record<RentalPriority, string> = { income: '수입 우선', reputation: '명성 우선', public: '공공서비스 우선' }
 /** One-click review: for every free hour, approve the request that best serves the chosen priority. */

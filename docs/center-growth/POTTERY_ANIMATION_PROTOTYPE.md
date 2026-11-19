@@ -1,5 +1,7 @@
 # 도예 수업 — 고정 배경 움직임 시안
 
+> **2026-11-19 정리.** 이 움직임 시안은 본게임 화면에 연결되어 있지 않아(어느 화면도 `PotteryActivity`를 불러오지 않음) 사용자 요청에 따라 관련 파일을 저장소에서 지웠다: `public/center/prototypes/pottery/`(5개), `src/center/PotteryActivity.tsx`·`.css`, `src/center/potteryMotion.ts`, `tests/center/pottery-motion.test.ts`, `scripts/export-pottery-motion.mjs`. 아래 내용은 제작 이력이며, 파일은 커밋 3856f4d에서 되찾을 수 있다.
+
 2026-11-06. 독립 미리보기에서 시작한 도예 장면이다. 최신 사용자 요청은 실제 운영 중인 공예 수업을 해당 방의 그림 자리에 보여 주는 방식이며, 팝업이나 계획 단계 미리보기는 제거한다. 아래에서 현재 사람 전체 동작의 검증과 이전 저장 시안의 기록을 구분한다. 본게임 화면 연결의 검증은 `IMPLEMENTATION_STATUS.md`에 별도로 기록한다.
 
 ## 변경 이유와 구현

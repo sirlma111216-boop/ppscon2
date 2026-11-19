@@ -5,9 +5,8 @@ export const SFX = ['ui_click','room_enter','schedule_place','schedule_remove','
  // Delivered 2026-11-19: how a class went, what moved, and the moments of a season's settlement.
  'outcome_great','outcome_poor','mood_hot','mood_cold','delta_up','delta_down','training_done','level_up','event_choice','rental_stamp','trust_milestone','briefing_open'] as const
 export type Sound = typeof SFX[number]
-/** Effects whose delivered file starts with silence play from a trimmed copy made by scripts/trim-sfx.cjs. The delivered files stay in /center/audio. Remove a name here when its original is replaced by a file that starts at once. */
-export const SFX_TRIMMED:ReadonlySet<Sound>=new Set<Sound>(['schedule_place','tender_contract','season_open','event_positive','install_complete','event_comic','event_negative','save_complete','rental_approve','settlement','briefing_open','event_choice','mood_cold','training_done','trust_milestone'])
-export const sfxPath=(name:Sound):string=>`/center/${SFX_TRIMMED.has(name)?'audio-trimmed':'audio'}/sfx_${name}.wav`
+/** Every effect is one file in /center/audio. Fifteen of them were delivered with silence at the start and are stored already trimmed (scripts/trim-sfx.cjs; record in docs/center-growth/SFX_TRIMMED.json). */
+export const sfxPath=(name:Sound):string=>`/center/audio/sfx_${name}.wav`
 const KEY='ppscon2.audio.v1'
 type Settings={muted:boolean;bgm:number;sfx:number}
 let settings:Settings={muted:false,bgm:.3,sfx:.65}
@@ -46,7 +45,9 @@ export function playOnce(key:string,sound:Sound){if(once.has(key)||!audible())re
 /** Short, frequent effects are fetched once after the first gesture so the first click is not late. */
 const WARM:Sound[]=['ui_click','room_enter','schedule_place','schedule_remove','rental_approve','notice','procurement_order','settlement','delta_up','delta_down']
 let warmed=false
-function warmEffects(){if(warmed||typeof fetch!=='function')return;warmed=true;for(const name of WARM){try{void fetch(sfxPath(name)).catch(()=>{})}catch{/* playback still loads on demand */}}}
+/** Opened straight from disk (the contest ZIP) there is nothing to warm and fetch cannot read local files, so it is skipped. */
+const fromDisk=()=>typeof location!=='undefined'&&location.protocol==='file:'
+function warmEffects(){if(warmed||typeof fetch!=='function'||fromDisk())return;warmed=true;for(const name of WARM){try{void fetch(sfxPath(name)).catch(()=>{})}catch{/* playback still loads on demand */}}}
 export function mountAudio(){const unlock=()=>{if(!unlocked){unlocked=true;sync();warmEffects()}};const visibility=()=>{if(document.hidden)stopEffects();sync()};document.addEventListener('pointerdown',unlock,true);document.addEventListener('keydown',unlock,true);document.addEventListener('visibilitychange',visibility);return()=>{document.removeEventListener('pointerdown',unlock,true);document.removeEventListener('keydown',unlock,true);document.removeEventListener('visibilitychange',visibility);generation++;music?.pause();stopEffects()}}
 export function useAudioBoot(){useEffect(mountAudio,[])}
 export const COMIC_EVENTS=new Set(['cat-director','balloons','robot-dance','rooster-mic','mascot-parade','umbrella-mixup'])

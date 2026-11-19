@@ -1,0 +1,9 @@
+# Cloudflare Pages response headers. Without this file every picture and sound is re-checked with the server on each use.
+# Built scripts and styles carry a content hash in their name, so they never change under the same address.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Pictures and sounds keep their names when replaced: reuse them for four hours without asking,
+# then keep showing the stored copy while a fresh one is fetched in the background.
+/center/*
+  Cache-Control: public, max-age=14400, stale-while-revalidate=604800

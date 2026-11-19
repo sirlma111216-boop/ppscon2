@@ -11,8 +11,15 @@ window.addEventListener('hashchange', () => window.location.reload())
 const Screen = import.meta.env.DEV && isGallery
   ? lazy(() => import('./dev/AssetGallery'))
   : lazy(async () => {
-      await import('./center/center.css')
-      return import('./center/CenterShell')
+      // The development server applies styles in the order modules finish, so there the base stylesheet is awaited first.
+      if (import.meta.env.DEV) {
+        await import('./center/center.css')
+        return import('./center/CenterShell')
+      }
+      // In the published build both parts download together. The base stylesheet is still requested first,
+      // so its <link> is placed first and the cascade is the same as when they loaded one after the other.
+      const base = import('./center/center.css'), shell = import('./center/CenterShell')
+      return Promise.all([base, shell]).then(([, module]) => module)
     })
 
 createRoot(root).render(

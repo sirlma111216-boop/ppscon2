@@ -1,18 +1,25 @@
-// Makes trimmed copies of effect sounds that start with silence. The delivered files are never modified.
-// Usage: node scripts/trim-sfx.cjs [--force]
-//   reads  public/center/audio/sfx_*.wav          (as delivered)
-//   writes public/center/audio-trimmed/sfx_*.wav  (only for files whose sound starts 60 ms or later)
-// A copy starts 15 ms before the sound, with a 3 ms fade-in so the cut cannot click, and ends 80 ms after
-// the sound has died away, with a 12 ms fade-out. Prints one JSON line per file for the provenance record.
+// Brings delivered effect sounds into the game, trimming those that start with silence. The delivered files are never modified.
+// Usage: node scripts/trim-sfx.cjs [--force] <delivered sfx_*.wav> [more files]
+//   reads  the files named on the command line (as delivered, wherever they are)
+//   writes public/center/audio/sfx_*.wav: trimmed when the sound starts 60 ms or later, otherwise an exact copy
+// A trimmed file starts 15 ms before the sound, with a 3 ms fade-in so the cut cannot click, and ends 80 ms after
+// the sound has died away, with a 12 ms fade-out. Prints one JSON line per file for the provenance record
+// (docs/center-growth/SFX_TRIMMED.json). Until 2026-11-19 the trimmed files lived in public/center/audio-trimmed
+// beside the delivered ones; since then the game keeps one file per effect.
 const fs = require('fs')
 const path = require('path')
 const { createHash } = require('crypto')
-const input = 'public/center/audio', output = 'public/center/audio-trimmed', force = process.argv.includes('--force')
+const output = 'public/center/audio', force = process.argv.includes('--force')
+const inputs = process.argv.slice(2).filter(arg => !arg.startsWith('--'))
+if (!inputs.length) { console.error('Usage: node scripts/trim-sfx.cjs [--force] <delivered sfx_*.wav> [more files]'); process.exit(1) }
 const LEAD_THRESHOLD_MS = 60, PRE_ROLL_MS = 15, TAIL_MS = 80, FADE_IN_MS = 3, FADE_OUT_MS = 12
 
 fs.mkdirSync(output, { recursive: true })
-for (const name of fs.readdirSync(input).filter(file => /^sfx_.*\.wav$/.test(file)).sort()) {
-  const source = fs.readFileSync(path.join(input, name))
+for (const file of inputs) {
+  const name = path.basename(file), target = path.join(output, name)
+  if (!/^sfx_.*\.wav$/.test(name)) throw new Error(name + ': expected a file named sfx_<effect>.wav')
+  if (fs.existsSync(target) && !force) throw new Error(target + ' exists; pass --force to replace it')
+  const source = fs.readFileSync(file)
   if (source.toString('ascii', 0, 4) !== 'RIFF' || source.toString('ascii', 8, 12) !== 'WAVE') throw new Error(name + ': not a WAV file')
   let pos = 12, fmt = null, data = null
   while (pos + 8 <= source.length) {
@@ -35,7 +42,7 @@ for (const name of fs.readdirSync(input).filter(file => /^sfx_.*\.wav$/.test(fil
   let begin = envelope.findIndex(value => level(value) >= -12)
   while (begin > 0 && level(envelope[begin - 1]) >= -30) begin--
   const onsetMs = begin * 10
-  if (onsetMs < LEAD_THRESHOLD_MS) { console.log(JSON.stringify({ name, action: 'kept', onsetMs })); continue }
+  if (onsetMs < LEAD_THRESHOLD_MS) { fs.writeFileSync(target, source); console.log(JSON.stringify({ name, action: 'copied as delivered', onsetMs, bytes: source.length })); continue }
   let lastWindow = envelope.length - 1
   while (lastWindow > 0 && level(envelope[lastWindow]) < -45) lastWindow--
   const first = Math.max(0, Math.round((onsetMs - PRE_ROLL_MS) / 1000 * fmt.rate))
@@ -49,8 +56,6 @@ for (const name of fs.readdirSync(input).filter(file => /^sfx_.*\.wav$/.test(fil
   header.write('RIFF', 0, 'ascii'); header.writeUInt32LE(36 + pcm.length, 4); header.write('WAVE', 8, 'ascii'); header.write('fmt ', 12, 'ascii')
   header.writeUInt32LE(16, 16); header.writeUInt16LE(1, 20); header.writeUInt16LE(fmt.channels, 22); header.writeUInt32LE(fmt.rate, 24)
   header.writeUInt32LE(fmt.rate * frame, 28); header.writeUInt16LE(frame, 32); header.writeUInt16LE(16, 34); header.write('data', 36, 'ascii'); header.writeUInt32LE(pcm.length, 40)
-  const target = path.join(output, name)
-  if (fs.existsSync(target) && !force) throw new Error(target + ' exists; pass --force to rebuild')
   fs.writeFileSync(target, Buffer.concat([header, pcm]))
   console.log(JSON.stringify({ name, action: 'trimmed', sourceSha256: createHash('sha256').update(source).digest('hex'), sourceMs: Math.round(frames / fmt.rate * 1000), cutFromMs: Math.round(first / fmt.rate * 1000), cutToMs: Math.round(last / fmt.rate * 1000), lengthMs: Math.round(length / fmt.rate * 1000), sourceBytes: source.length, bytes: 44 + pcm.length }))
 }

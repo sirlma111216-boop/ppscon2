@@ -108,3 +108,10 @@
 /* Keep navigation outside the activity picture even in a narrow room panel. */
 .center-game .center-building__interior:has(.room-activity-still) button.room-return-button,
 .center-game .center-building__interior:has(.room-activity-still) button.room-return-button:is(:hover,:active,:focus){max-width:23%;left:1%;}
+
+/* Rental requests waiting in a room (rental review only). Drawn in the DOM so the count stays readable at any size. */
+.center-game .center-building .scene-art-badge{position:absolute;right:-8px;bottom:calc(100% - 5px);z-index:4;min-width:22px;padding:1px 7px;text-align:center;border:2px solid #fffdf8;border-radius:11px;background:#1d56ad;color:#fff;font:700 13px/1.35 system-ui,sans-serif;letter-spacing:0;white-space:nowrap;pointer-events:none;box-shadow:0 1px 4px #0006}
+@media (prefers-reduced-motion:no-preference){.center-game .center-building:not(.center-building--reduced) .scene-art-badge{animation:scene-badge-nudge 2.6s ease-in-out infinite}}
+@keyframes scene-badge-nudge{0%,72%,100%{transform:translateY(0)}82%{transform:translateY(-3px)}92%{transform:translateY(0)}}
+/* On a narrow scene the plates are small and close together: only the number is shown. */
+@container center-scene (max-width: 620px){.center-game .center-building .scene-art-badge{right:-7px;bottom:calc(100% - 4px);padding:0 5px;border-width:1.5px}.center-game .center-building .scene-art-badge>span{display:none}}

@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync } from 'node:fs'
 import {
-  createGame, finishRentalReview, runSeason, nextSeason, previewSeason, previewMidseason, buyEquipment, trainStaff,
+  createGame, finishRentalReview, runSeason, nextSeason, previewSeason, previewMidseason, buyEquipment, trainStaff, decideRental,
   chooseEventOption, eventOptionBlock, answeredEvent, eventText, eventRival, validateSave, migrateSave, adoptRules3,
   getEvaluationComponents, storySequence, MIDSEASON_OPTIONS, MIDSEASON_WEEK, STORY_EVERY, STORY_TRUST, ROOM_CARE_NOTICE,
 } from '../../src/center/simulation.ts'
@@ -12,7 +12,7 @@ import {
   SEASON_EVENTS, EVENT_CHOICES, EVENT_CHOICE_ART, ADDED_EVENT_IDS, LEGACY_EVENT_COUNT, EVENT_CLOSURE_REASONS, RIVAL_TOKEN,
   createEventDeck, getSeasonEvent, eventArtPath,
 } from '../../src/center/seasonEvents.ts'
-import { eventImpactNotes, midseasonAdvice, storyLine, STORY_ART } from '../../src/center/resultInsights.ts'
+import { autoPickRentals, eventImpactNotes, midseasonAdvice, rentalReviewRooms, storyLine, STORY_ART } from '../../src/center/resultInsights.ts'
 import { briefingMood, seasonBriefing } from '../../src/center/briefingAnalysis.ts'
 
 /** Mat set ordered and yoga scheduled in the sports room during the first planning phase. */
@@ -268,6 +268,20 @@ test('the mid-season meeting sees exactly the first six weeks and its decision s
   const legacy=scheduleClass(finishRentalReview(buyEquipment(createGame(2,true),'E02','B').state),'B',1,'P03').state
   assert.deepEqual(report(runSeason(legacy,'promotion')),report(runSeason(legacy)));assert.equal(report(runSeason(legacy)).midseason,undefined)
   const tampered=runSeason(plan,'repair');tampered.lastReport!.midseason!.choice='party' as never;assert.equal(validateSave(tampered),false)
+})
+
+test('the rental review knows which rooms still have requests waiting',()=>{
+  const game=createGame(4),rooms=rentalReviewRooms(game)
+  assert.ok(rooms.length>0);assert.equal(rooms.reduce((sum,item)=>sum+item.total,0),game.player.rentalRequests.length)
+  assert.ok(rooms.every(item=>item.undecided===item.total&&item.accepted===0&&game.player.rooms.find(room=>room.id===item.room)!.open))
+  // Approving one request settles its hour: the other request for that hour stops waiting.
+  const first=game.player.rentalRequests[0]!,sameHour=game.player.rentalRequests.filter(request=>request.room===first.room&&request.slot===first.slot).length
+  const approved=decideRental(game,first.id,'accepted');assert.equal(approved.error,undefined)
+  const before=rooms.find(item=>item.room===first.room)!,after=rentalReviewRooms(approved.state).find(item=>item.room===first.room)!
+  assert.equal(after.accepted,1);assert.equal(after.undecided,before.undecided-sameHour);assert.equal(after.total,before.total)
+  const all=rentalReviewRooms(autoPickRentals(game,'income').state)
+  assert.equal(all.reduce((sum,item)=>sum+item.undecided,0),0,'one approval per hour leaves nothing waiting');assert.ok(all.every(item=>item.accepted>0))
+  assert.deepEqual(rentalReviewRooms(finishRentalReview(game)).map(item=>item.undecided),rooms.map(()=>0),'requests left undecided are declined on the way to the classes')
 })
 
 test('every delivered scene for encounters, the mid-season meeting and stories is in place',()=>{
